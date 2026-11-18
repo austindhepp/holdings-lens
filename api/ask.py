@@ -45,7 +45,9 @@ This answer is shown on a public web page to someone skimming. Format:
   - At most one short caveat line, only if it changes how to read the answer.
   - In prose, name filings by fund and date (e.g. "the June 30, 2026 10-Q"), not by F-number;
     keep [F<id>] only inside the brackets of a citation.
-  - If the question needs more than this, answer the core of it and suggest one narrower follow-up."""
+  - If the question needs more than this, answer the core of it and suggest one narrower follow-up.
+  - Before you finish, re-check every comparison word (larger/smaller, up/down, rose/fell, more/less)
+    against the actual numbers it compares, and fix any that point the wrong way."""
 ALLOWED_ORIGIN = os.environ.get("LIVE_ALLOWED_ORIGIN", "")  # e.g. https://holdings-lens.vercel.app; empty = same-origin only
 
 _visits: dict[str, deque] = defaultdict(deque)
