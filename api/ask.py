@@ -32,7 +32,19 @@ MAX_QUESTION_CHARS = int(os.environ.get("LIVE_MAX_QUESTION_CHARS", "300"))
 PER_VISITOR_PER_HOUR = int(os.environ.get("LIVE_PER_VISITOR_PER_HOUR", "5"))
 DAILY_CAP = int(os.environ.get("LIVE_DAILY_CAP", "150"))
 MAX_TURNS = int(os.environ.get("LIVE_MAX_TURNS", "6"))
-MAX_TOKENS = int(os.environ.get("LIVE_MAX_TOKENS", "1200"))
+MAX_TOKENS = int(os.environ.get("LIVE_MAX_TOKENS", "1600"))
+
+# Visitors skim: short answers read better and cost less. Appended to the agent's system prompt.
+LIVE_STYLE = """
+
+This answer is shown on a public web page to someone skimming. Format:
+  - Under 180 words. No headings.
+  - First line: the answer in one bold sentence, with the key number.
+  - Then at most 5 short bullets, with [H<id>] citations.
+  - At most one short caveat line, only if it changes how to read the answer.
+  - In prose, name filings by fund and date (e.g. "the June 30, 2026 10-Q"), not by F-number;
+    keep [F<id>] only inside the brackets of a citation.
+  - If the question needs more than this, answer the core of it and suggest one narrower follow-up."""
 ALLOWED_ORIGIN = os.environ.get("LIVE_ALLOWED_ORIGIN", "")  # e.g. https://holdings-lens.vercel.app; empty = same-origin only
 
 _visits: dict[str, deque] = defaultdict(deque)
@@ -79,7 +91,7 @@ def answer(question: str, post=None) -> dict:
     old_turns = agent.MAX_TURNS
     agent.MAX_TURNS = MAX_TURNS
     try:
-        r = agent.ask(question, db_path=DB_PATH, post=capped)
+        r = agent.ask(question, db_path=DB_PATH, post=capped, style=LIVE_STYLE)
     finally:
         agent.MAX_TURNS = old_turns
     return {"answer": r["answer"], "citations": r["citations"], "grounded": r["citations"]["grounded"],

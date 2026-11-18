@@ -44,6 +44,10 @@ Database (SQLite):
   - mark = fair_value / cost (0.85 means valued at 85% of cost). spread_bps is the margin over base_rate.
   - company_key is a normalized borrower name: use it to match the same company across funds/quarters.
   - maturity is ISO (YYYY-MM-DD) or YYYY-MM when the filing shows only month/year.
+  - Flags (non_accrual, pik, non_income) come from the filing's own footnotes, whose full text is in
+    the footnotes column. Before interpreting a flag, read that text instead of assuming: e.g. some
+    filers put preferred equity on non-accrual for unpaid non-cash dividends.
+  - A small negative fair_value on a zero-cost row is usually an unfunded commitment valued below par.
 
 Tools: run_sql for anything; portfolio_summary, compare_filings and shared_borrowers return
 precomputed analytics (with holding ids to cite); get_sources returns original filing rows.
@@ -187,20 +191,36 @@ def check_citations(answer: str, tools: Tools) -> dict:
     }
 
 
+TRIMMED_NOTE = "\n\n_(Answer trimmed at the length limit. Ask a narrower question for more detail.)_"
+
+
+def trim_to_complete(text: str) -> str:
+    """Cut a length-limited answer back to its last complete line or sentence."""
+    text = text.rstrip()
+    cut = text.rfind("\n")
+    if cut < len(text) * 0.5:  # no late line break: fall back to the last sentence end
+        cut = max(text.rfind(". "), text.rfind(".\n"), text.rfind(".)"))
+        cut = cut + 1 if cut > 0 else len(text)
+    return text[:cut].rstrip() + TRIMMED_NOTE
+
+
 def ask(question: str, db_path: str = DEFAULT_DB, post: Callable[[dict], dict] = _post,
-        model: Optional[str] = None) -> dict:
+        model: Optional[str] = None, style: str = "") -> dict:
     tools = Tools(db_path)
     messages = [{"role": "user", "content": question}]
     trace, usage = [], {"input_tokens": 0, "output_tokens": 0}
     answer = ""
     for _ in range(MAX_TURNS):
-        resp = post({"model": model or MODEL, "max_tokens": 1500, "system": SYSTEM,
+        resp = post({"model": model or MODEL, "max_tokens": 1500, "system": SYSTEM + style,
                      "tools": TOOLS, "messages": messages})
         for k in usage:
             usage[k] += resp.get("usage", {}).get(k, 0)
         content = resp.get("content", [])
         messages.append({"role": "assistant", "content": content})
         tool_uses = [b for b in content if b.get("type") == "tool_use"]
+        if resp.get("stop_reason") == "max_tokens":  # out of room: never show a sentence cut mid-word
+            answer = trim_to_complete("".join(b.get("text", "") for b in content if b.get("type") == "text"))
+            break
         if not tool_uses:
             answer = "".join(b.get("text", "") for b in content if b.get("type") == "text").strip()
             break

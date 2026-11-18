@@ -37,7 +37,8 @@ def fake_post_factory():
 
     def fake_post(payload):
         calls.append(payload)
-        assert payload["max_tokens"] <= 1200
+        import ask as live_api
+        assert payload["max_tokens"] <= live_api.MAX_TOKENS
         if len(calls) == 1:
             return {"content": [{"type": "tool_use", "id": "t1", "name": "run_sql",
                                  "input": {"query": "SELECT id, company FROM v_latest ORDER BY fair_value_usd DESC LIMIT 1"}}],
@@ -124,3 +125,27 @@ def test_export_live_db_drops_sample_funds(tmp_path, monkeypatch):
     assert funds == {"Real Fund"}
     assert live.execute("SELECT COUNT(*) FROM holdings").fetchone()[0] > 0
     assert "Left out" in r.stdout
+
+
+def test_live_answers_use_short_style_and_footnote_guidance(monkeypatch):
+    import ask
+    seen = []
+    def fake(payload):
+        seen.append(payload)
+        return {"content": [{"type": "text", "text": "**Short answer.**"}], "stop_reason": "end_turn",
+                "usage": {"input_tokens": 1, "output_tokens": 1}}
+    ask.answer("What is on non-accrual?", post=fake)
+    system = seen[0]["system"]
+    assert "Under 180 words" in system and "footnotes column" in system
+    assert seen[0]["max_tokens"] <= ask.MAX_TOKENS
+
+
+def test_length_limited_answer_is_trimmed_cleanly():
+    import ask
+    long = "**Answer: 27 loans.**\n- Titan Fitness: $32.5M\n- Wineshipping: $8.3M\n- H2110 FP"
+    def fake(payload):
+        return {"content": [{"type": "text", "text": long}], "stop_reason": "max_tokens",
+                "usage": {"input_tokens": 1, "output_tokens": 1}}
+    out = ask.answer("q", post=fake)["answer"]
+    assert "H2110 FP" not in out and out.startswith("**Answer: 27 loans.**")
+    assert "Wineshipping: $8.3M" in out and "trimmed at the length limit" in out
