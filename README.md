@@ -42,6 +42,7 @@ Getting there meant handling what real EDGAR filings do and the synthetic sample
 - unlabeled numeric subtotals
 - (Ares) affiliate roll-forward tables and interest-rate-swap tables that also have "fair value" and "cost" columns but repeat or aren't investments: the first run over-counted by $5.3B and the totals check caught it
 - (Ares) footnote numbers in their own column between fair value and % of net assets, with the definitions several tables further on: non-accrual loans then came out at 2.41% of cost, matching the 2.4% Ares itself reports
+- (Ares) base rate and spread in separate columns ("SOFR (Q)" | "5.25 %") and non-US base rates (NIBOR, TONA, BBSY, CDOR): spreads went from 0 to 890 of 1,008 loans; the rest are fixed-rate or undrawn
 - (Ares) ownership stakes named without the word "equity" ("Limited partnership interest", "Ordinary shares") and no Debt/Equity section headings
 - (Ares) XBRL members spelled as names (`arcc:ATIRestorationLLCMember`), including a filer typo and one tagged by business description
 
@@ -97,7 +98,7 @@ python -m holdings_lens demo           # cache answers for the landing pages
 | `holdings_lens/evals.py` | Scorecard |
 | `holdings_lens/fetch.py` · `db.py` | EDGAR downloader, SQLite schema and views |
 | `samples/` · `tools/make_samples.py` | **Fictional** filings (2 funds, 2 quarters, 2 layouts) with XBRL tags |
-| `tests/` | 53 tests, a few seconds, no network (API calls mocked) |
+| `tests/` | 54 tests, a few seconds, no network (API calls mocked) |
 | `web/` | Personalized landing pages with charts |
 | `api/ask.py` · `vercel.json` | Live ask box: serverless endpoint with rate limits and a token cap |
 

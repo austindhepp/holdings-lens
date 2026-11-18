@@ -27,6 +27,7 @@ FIELD_KEYWORDS: list[tuple[str, list[str]]] = [
     ("principal", ["principal", "par amount", "par value", "shares", "units", "par", "face amount"]),
     ("maturity", ["maturity", "expiration"]),
     ("spread", ["spread", "reference rate", "index"]),
+    ("base_ref", ["reference"]),  # a separate base-rate column ("SOFR (Q)"), with the spread in its own column
     ("interest_rate", ["interest rate", "coupon", "rate", "yield"]),
     ("industry", ["industry", "sector"]),
     ("company", ["portfolio company", "company", "issuer", "borrower", "name of"]),
@@ -46,8 +47,11 @@ DASHES = {"—", "–", "-", "--"}
 UNIT_MULT = {"thousands": 1_000, "millions": 1_000_000, "dollars": 1}
 
 BASE_RATES = {"S": "SOFR", "SOFR": "SOFR", "SF": "SOFR", "CA": "CORRA", "A": "BBSY", "L": "LIBOR", "LIBOR": "LIBOR", "P": "Prime", "PRIME": "Prime",
-              "E": "EURIBOR", "EURIBOR": "EURIBOR", "SONIA": "SONIA", "SN": "SONIA", "C": "CORRA", "CORRA": "CORRA"}
-SPREAD_RE = re.compile(r"\b(SOFR|LIBOR|PRIME|EURIBOR|SONIA|CORRA|SF|SN|CA|S|L|P|E|C|A)\s*\+\s*([\d.]+)\s*(%|bps)?", re.I)
+              "E": "EURIBOR", "EURIBOR": "EURIBOR", "SONIA": "SONIA", "SN": "SONIA", "C": "CORRA", "CORRA": "CORRA",
+              "NIBOR": "NIBOR", "STIBOR": "STIBOR", "CIBOR": "CIBOR", "TONA": "TONA", "TIBOR": "TIBOR", "BBSY": "BBSY",
+              "BKBM": "BKBM", "CDOR": "CDOR", "SARON": "SARON", "ESTR": "ESTR", "€STR": "ESTR", "SORA": "SORA", "HIBOR": "HIBOR"}
+SPREAD_RE = re.compile(r"\b(SOFR|LIBOR|PRIME|EURIBOR|SONIA|CORRA|NIBOR|STIBOR|CIBOR|TONA|TIBOR|BBSY|BKBM|CDOR|SARON|ESTR|SORA|HIBOR|"
+                       r"SF|SN|CA|S|L|P|E|C|A)\s*\+\s*([\d.]+)\s*(%|bps)?", re.I)
 
 
 @dataclass
@@ -148,6 +152,14 @@ def parse_spread(spread: Optional[str], rate: Optional[str] = None) -> tuple[Opt
             bps = val if unit == "bps" or (unit != "%" and val > 25) else val * 100
             return base, round(bps, 1)
     return None, None
+
+
+def join_base_and_spread(ref: str, spread: str) -> str:
+    """'SOFR (Q)' + '5.25 %' -> 'SOFR + 5.25 %', for filers that print the base rate and spread in
+    separate columns. '(Q)' / '(M)' is the reset frequency; 'Base Rate' is the prime-based rate."""
+    tok = re.sub(r"\(.*?\)", "", ref).strip()
+    tok = {"BASE RATE": "Prime", "BASE": "Prime"}.get(tok.upper(), tok)
+    return f"{tok} + {spread}" if re.fullmatch(r"[A-Za-z]+", tok) else spread
 
 
 def parse_rate(rate: Optional[str]) -> Optional[float]:
@@ -567,6 +579,9 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
             instrument = strip_footnotes(get("instrument")[0]) or None
             rate = strip_footnotes(text_in_span(grid, cols.get("interest_rate", []))) or None
             spread = strip_footnotes(text_in_span(grid, cols.get("spread", []))) or None
+            ref = strip_footnotes(text_in_span(grid, cols.get("base_ref", []))) or None
+            if ref and spread and not SPREAD_RE.search(spread):
+                spread = join_base_and_spread(ref, spread)
 
             h = Holding(
                 company=company, industry=industry, investment_type=cur_type, instrument=instrument,

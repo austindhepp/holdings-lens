@@ -169,3 +169,12 @@ def test_footnote_numbers_in_their_own_column_are_read():
     assert marker_column(grid, cols) == ["2", "8"]  # between fair value and % of net assets
     assert marker_column(["Acme", "( 22 )", "", "", "", "( 21 )", "", "( 4 )"], {"fair_value": [5]}) == []  # negatives
     assert marker_column(["(2)", "", "", "", "", "1.0"], {"fair_value": [5]}) == []  # only right of fair value
+
+
+def test_base_rate_and_spread_in_separate_columns():
+    from holdings_lens.extract import join_base_and_spread, parse_spread
+    assert parse_spread(join_base_and_spread("SOFR (Q)", "5.25 %")) == ("SOFR", 525.0)
+    assert parse_spread(join_base_and_spread("Base Rate (Q)", "4.00 %")) == ("Prime", 400.0)
+    assert parse_spread(join_base_and_spread("NIBOR (Q)", "4.75 %")) == ("NIBOR", 475.0)
+    assert parse_spread(join_base_and_spread("TONA (S)", "5.00 %")) == ("TONA", 500.0)
+    assert parse_spread("SF + 4.50 %") == ("SOFR", 450.0)  # combined form unchanged
