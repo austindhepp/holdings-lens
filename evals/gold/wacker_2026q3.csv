@@ -1,0 +1,11 @@
+investment_type,company,industry,instrument,interest_rate,spread,maturity,principal,cost,fair_value,pct_net_assets,non_accrual,pik
+First Lien Senior Secured Debt,Prairie Analytics LLC,Software,First lien term loan,9.90%,SOFR + 550,2029-03-15,18000,17730,17910,4.4,0,0
+First Lien Senior Secured Debt,Wabash Dental Group,Healthcare Providers,First lien term loan,11.10%,SOFR + 675,2027-09,9000,8960,7020,1.7,0,1
+First Lien Senior Secured Debt,"Kinzie Cloud Systems, Inc.",Software,First lien term loan,9.35%,SOFR + 500,2031-01-31,22000,21670,22175,5.4,0,0
+First Lien Senior Secured Debt,"Lakefront Logistics Holdings, LLC",Transportation & Logistics,First lien term loan,9.70%,SOFR + 525,2030-06-01,15000,14790,14850,3.6,0,0
+First Lien Senior Secured Debt,"Logan Square Media, Inc.",Media,First lien term loan,12.40%,SOFR + 800,2027-03,10500,10290,4725,1.2,1,0
+First Lien Senior Secured Debt,Evanston Robotics Corp.,Industrial Machinery,First lien term loan,10.25%,SOFR + 575,2030-11-30,16500,16253,16335,4.0,0,0
+First Lien Senior Secured Debt,"Oak Lawn Medical Billing, LLC",Health Care Technology,Unitranche term loan,12.00% (incl. 3.00% PIK),SOFR + 700,2029-06-30,13000,12805,12350,3.0,0,1
+First Lien Senior Secured Debt,Andersonville Pet Health,Veterinary Services,First lien term loan,10.60%,SOFR + 600,2029-09,11200,11032,11088,2.7,0,0
+Equity Investments,"Logan Square Media, Inc.",Media,Common equity,,,,750,750,0,0.0,0,0
+Equity Investments,Evanston Robotics Corp.,Industrial Machinery,Warrants,,,,120,0,410,0.1,0,0

@@ -1,0 +1,10 @@
+{
+  "buildCommand": "",
+  "outputDirectory": "docs",
+  "functions": {
+    "api/ask.py": {
+      "maxDuration": 60,
+      "includeFiles": "{holdings_lens/**,api/holdings.db}"
+    }
+  }
+}

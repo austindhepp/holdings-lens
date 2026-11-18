@@ -1,0 +1,56 @@
+[
+  {
+    "question": "What is the total fair value of Lakeshore Example Capital Corp's first lien debt as of September 30, 2026?",
+    "check": "number",
+    "sql": "SELECT SUM(fair_value_usd) FROM v_holdings WHERE fund = 'Lakeshore Example Capital Corp' AND period = '2026-09-30' AND lien = 'first_lien'",
+    "tolerance": 0.005
+  },
+  {
+    "question": "Which positions did Lakeshore exit between June 30 and September 30, 2026?",
+    "check": "contains",
+    "expected": ["Cicero Packaging"]
+  },
+  {
+    "question": "Which new positions did Lakeshore add in the September 2026 quarter?",
+    "check": "contains",
+    "expected": ["Bronzeville"]
+  },
+  {
+    "question": "Which of Lakeshore's loans were marked down by more than 5 points of cost quarter over quarter?",
+    "check": "contains",
+    "expected": ["Wabash", "Calumet"]
+  },
+  {
+    "question": "Which borrower held by both funds has the largest difference in how the two funds value it?",
+    "check": "contains",
+    "expected": ["Wabash"]
+  },
+  {
+    "question": "What percentage of Wacker Street Credit Fund's total fair value is on non-accrual?",
+    "check": "number",
+    "sql": "SELECT ROUND(100.0 * SUM(CASE WHEN non_accrual = 1 THEN fair_value_usd ELSE 0 END) / SUM(fair_value_usd), 2) FROM v_holdings WHERE fund = 'Wacker Street Credit Fund'",
+    "tolerance": 0.03
+  },
+  {
+    "question": "What is the fair-value-weighted average spread, in basis points, on Lakeshore's first lien loans as of September 30, 2026?",
+    "check": "number",
+    "sql": "SELECT ROUND(SUM(spread_bps * fair_value_usd) / SUM(fair_value_usd), 1) FROM v_holdings WHERE fund = 'Lakeshore Example Capital Corp' AND period = '2026-09-30' AND lien = 'first_lien'",
+    "tolerance": 0.01
+  },
+  {
+    "question": "How many distinct borrowers does Wacker Street Credit Fund hold?",
+    "check": "number",
+    "sql": "SELECT COUNT(DISTINCT company_key) FROM v_holdings WHERE fund = 'Wacker Street Credit Fund'",
+    "tolerance": 0
+  },
+  {
+    "question": "Which debt investments in the latest filings pay part of their interest in kind (PIK)?",
+    "check": "contains",
+    "expected": ["Wabash", "Oak Lawn"]
+  },
+  {
+    "question": "What is the single largest holding by fair value across the funds' latest filings?",
+    "check": "contains",
+    "expected": ["Kinzie"]
+  }
+]

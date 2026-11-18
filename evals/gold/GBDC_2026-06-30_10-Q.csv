@@ -1,0 +1,31 @@
+investment_type,company,industry,instrument,interest_rate,spread,maturity,principal,cost,fair_value,pct_net_assets,non_accrual,pik
+Debt investments,"Advanced Cooling Technologies, Inc.",Aerospace & Defense,One stop,8.14 %,SF + 4.50 %,2033-05,418.0,417.0,416.0,0.0,0,0
+Debt investments,"Advanced Cooling Technologies, Inc.",Aerospace & Defense,One stop,N/A,,2033-05,0.0,0.0,0.0,0.0,0,0
+Debt investments,"API Holdings III, LLC",Aerospace & Defense,One stop,N/A,,2033-06,0.0,0.0,0.0,0.0,0,0
+Debt investments,"API Holdings III, LLC",Aerospace & Defense,One stop,N/A,,2033-06,0.0,0.0,0.0,0.0,0,0
+Debt investments,"API Holdings III, LLC",Aerospace & Defense,One stop,9.15 %,SF + 5.50 %,2033-06,391.0,389.0,389.0,0.0,0,0
+Debt investments,"Jeppesen Holdings, LLC",Aerospace & Defense,One stop,8.41 %,SF + 4.75 %,2032-11,2377.0,2366.0,2329.0,0.1,0,0
+Debt investments,"Jeppesen Holdings, LLC",Aerospace & Defense,One stop,N/A,,2032-11,0.0,-1.0,-2.0,0.0,0,0
+Debt investments,"PPW Aero Buyer, Inc.",Aerospace & Defense,One stop,8.73 %,SF + 5.00 %,2031-09,33766.0,33462.0,33615.0,0.9,0,0
+Debt investments,"PPW Aero Buyer, Inc.",Aerospace & Defense,One stop,8.73 %,SF + 5.00 %,2031-09,11712.0,11609.0,11660.0,0.3,0,0
+Debt investments,"PPW Aero Buyer, Inc.",Aerospace & Defense,One stop,8.73 %,SF + 5.00 %,2031-09,443.0,439.0,441.0,0.0,0,0
+Debt investments,"PPW Aero Buyer, Inc.",Aerospace & Defense,One stop,9.09 %,SF + 5.00 %,2031-09,109.0,107.0,108.0,0.0,0,0
+Debt investments,"PPW Aero Buyer, Inc.",Aerospace & Defense,One stop,8.73 %,SF + 5.00 %,2031-09,6384.0,6334.0,6355.0,0.2,0,0
+Debt investments,"PPW Aero Buyer, Inc.",Aerospace & Defense,One stop,8.73 %,SF + 5.00 %,2031-09,186.0,185.0,185.0,0.0,0,0
+Debt investments,"PPW Aero Buyer, Inc.",Aerospace & Defense,One stop,8.73 %,SF + 5.00 %,2031-09,68.0,65.0,65.0,0.0,0,0
+Debt investments,Titan BW Borrower L.P.,Aerospace & Defense,One stop,6.14 % cash/ 2.88 % PIK,SF + 5.38 %,2032-07,2022.0,2004.0,1998.0,0.1,0,1
+Debt investments,Titan BW Borrower L.P.,Aerospace & Defense,One stop,N/A,,2032-07,0.0,-3.0,-3.0,0.0,0,0
+Debt investments,Titan BW Borrower L.P.,Aerospace & Defense,One stop,8.41 %,SF + 4.75 %,2032-07,101.0,100.0,99.0,0.0,0,0
+Debt investments,"RJW Group Holdings, Inc.",Air Freight & Logistics,One stop,8.73 %,SF + 5.00 %,2031-11,46415.0,45650.0,46001.0,1.2,0,0
+Debt investments,"RJW Group Holdings, Inc.",Air Freight & Logistics,One stop,8.67 %,SF + 5.00 %,2031-11,2931.0,2878.0,2901.0,0.1,0,0
+Debt investments,"RJW Group Holdings, Inc.",Air Freight & Logistics,One stop,8.73 %,SF + 5.00 %,2031-11,1710.0,1695.0,1695.0,0.0,0,0
+Debt investments,"RJW Group Holdings, Inc.",Air Freight & Logistics,One stop,N/A,,2031-11,0.0,-1.0,-3.0,0.0,0,0
+Debt investments,"Arnott, LLC",Auto Components,One stop,8.49 %,SF + 4.75 %,2030-11,4700.0,4666.0,4540.0,0.1,0,0
+Debt investments,"Arnott, LLC",Auto Components,One stop,8.39 %,SF + 4.75 %,2030-11,590.0,585.0,563.0,0.0,0,0
+Debt investments,"Collision SP Subco, LLC",Auto Components,One stop,8.41 %,SF + 4.75 %,2030-01,2183.0,2166.0,2183.0,0.1,0,0
+Debt investments,"Collision SP Subco, LLC",Auto Components,One stop,8.48 %,SF + 4.75 %,2030-01,1274.0,1265.0,1274.0,0.0,0,0
+Debt investments,"Collision SP Subco, LLC",Auto Components,One stop,N/A,,2030-01,0.0,-2.0,0.0,0.0,0,0
+Debt investments,"Collision SP Subco, LLC",Auto Components,One stop,8.41 %,SF + 4.75 %,2030-01,243.0,241.0,243.0,0.0,0,0
+Debt investments,"Collision SP Subco, LLC",Auto Components,One stop,8.48 %,SF + 4.75 %,2030-01,615.0,593.0,615.0,0.0,0,0
+Debt investments,"Covercraft Parent III, Inc.",Auto Components,Senior secured,5.32 % cash/ 3.50 % PIK,SF + 5.00 %,2029-08,6821.0,6517.0,4979.0,0.2,1,1
+Debt investments,"Covercraft Parent III, Inc.",Auto Components,Senior secured,5.38 % cash/ 3.50 % PIK,SF + 5.00 %,2029-08,1392.0,1315.0,1016.0,0.0,1,1

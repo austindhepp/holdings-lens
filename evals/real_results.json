@@ -1,0 +1,31 @@
+{
+  "note": "Real SEC filings, checked against each filing's own inline XBRL tags (no hand-made answer key). Field-level accuracy for non-tagged fields still needs a hand-checked sample.",
+  "filings": [
+    {
+      "fund": "Golub Capital BDC, Inc. (GBDC)",
+      "form": "10-Q",
+      "period": "2026-03-31",
+      "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm",
+      "holdings": 1797,
+      "xbrl_rows_matched": 1681,
+      "xbrl_rows_linked": 1681,
+      "coverage": 1.0,
+      "totals_match": true,
+      "filing_total_usd": 8317245000.0,
+      "extracted_total_usd": 8317245000.0
+    },
+    {
+      "fund": "Golub Capital BDC, Inc. (GBDC)",
+      "form": "10-Q",
+      "period": "2026-06-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm",
+      "holdings": 1814,
+      "xbrl_rows_matched": 1683,
+      "xbrl_rows_linked": 1683,
+      "coverage": 1.0,
+      "totals_match": true,
+      "filing_total_usd": 8196353000.0,
+      "extracted_total_usd": 8196353000.0
+    }
+  ]
+}

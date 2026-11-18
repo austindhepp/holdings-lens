@@ -1,0 +1,6 @@
+data/
+outreach/out/
+web/dist/
+.venv/
+**/__pycache__/
+.pytest_cache/

@@ -1,0 +1,18 @@
+data/
+web/dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+# private: real people's names and emails, and generated drafts
+outreach/contacts.csv
+outreach/out/
+# never commit secrets
+.env
+
+# Personal job-search material: stays on this laptop, never public
+outreach/
+OUTREACH.md
+COFFEE_PLAYBOOK.md
+outreach_plan.csv
+tests/test_outreach.py

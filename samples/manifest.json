@@ -1,0 +1,32 @@
+[
+  {
+    "slug": "lakeshore_2026q2",
+    "fund": "Lakeshore Example Capital Corp",
+    "period": "2026-06-30",
+    "form": "10-Q",
+    "path": "samples/lakeshore_2026q2.html",
+    "gold": "evals/gold/lakeshore_2026q2.csv",
+    "layout": "A",
+    "rows": 18
+  },
+  {
+    "slug": "lakeshore_2026q3",
+    "fund": "Lakeshore Example Capital Corp",
+    "period": "2026-09-30",
+    "form": "10-Q",
+    "path": "samples/lakeshore_2026q3.html",
+    "gold": "evals/gold/lakeshore_2026q3.csv",
+    "layout": "A",
+    "rows": 18
+  },
+  {
+    "slug": "wacker_2026q3",
+    "fund": "Wacker Street Credit Fund",
+    "period": "2026-09-30",
+    "form": "10-Q",
+    "path": "samples/wacker_2026q3.html",
+    "gold": "evals/gold/wacker_2026q3.csv",
+    "layout": "B",
+    "rows": 10
+  }
+]

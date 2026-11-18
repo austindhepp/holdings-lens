@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "holdings-lens"
+version = "0.2.0"
+description = "AI agent that extracts BDC holdings from SEC filings, reconciles them with inline XBRL, and answers questions with verified citations."
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Austin Hepp"}]
+dependencies = ["requests>=2.31", "beautifulsoup4>=4.12", "lxml>=5.0", "python-dateutil>=2.8"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+holdings-lens = "holdings_lens.__main__:main"
+
+[tool.setuptools]
+packages = ["holdings_lens"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,12 @@
+[
+  {
+    "slug": "GBDC_2026-06-30_10-Q",
+    "fund": "GOLUB CAPITAL BDC, Inc.",
+    "period": "2026-06-30",
+    "form": "10-Q",
+    "path": "data\\filings\\GBDC_2026-06-30_10-Q.html",
+    "gold": "evals\\gold\\GBDC_2026-06-30_10-Q.csv",
+    "layout": "real",
+    "rows": 30
+  }
+]

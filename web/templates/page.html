@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holdings Lens{{TITLE_SUFFIX}}</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { --ink:#15202b; --muted:#5d6872; --faint:#8a949c; --line:#e4e7ea; --bg:#fbfaf7; --card:#ffffff;
+          --accent:#1d6b58; --accent-2:#2f8f76; --accent-soft:#e5f1ec; --warn:#9a5b00; --warn-soft:#fff3d9;
+          --bad:#b4372f; --bad-soft:#fbe7e5; --blue:#2c5d8f; }
+  @media (prefers-color-scheme: dark) { :root { --ink:#e7ebee; --muted:#9ba6af; --faint:#77828b; --line:#29323a; --bg:#10161b;
+          --card:#172028; --accent:#5cc3a3; --accent-2:#7fd4b9; --accent-soft:#16302a; --warn:#f0c46a; --warn-soft:#30280f;
+          --bad:#ef8a80; --bad-soft:#3a1d1b; --blue:#8bb8e8; } }
+  * { box-sizing: border-box; }
+  body { margin:0; font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:var(--ink); background:var(--bg); }
+  main { max-width: 920px; margin: 0 auto; padding: 44px 20px 80px; }
+  .eyebrow { font-size: 12.5px; letter-spacing: .09em; text-transform: uppercase; color: var(--accent); font-weight: 650; }
+  h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.14; margin: 8px 0 14px; letter-spacing: -.015em; }
+  h2 { font-size: 21px; margin: 56px 0 6px; letter-spacing: -.01em; }
+  h3 { font-size: 15px; margin: 0 0 10px; }
+  .sub { color: var(--muted); margin: 0 0 16px; max-width: 680px; }
+  p.lede { font-size: 18px; color: var(--muted); max-width: 680px; }
+  .note { background: var(--card); border-left: 3px solid var(--accent); padding: 14px 18px; border-radius: 6px; margin: 20px 0; }
+  .grid { display:grid; gap: 12px; }
+  .g4 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
+  .kpi .num { font-size: clamp(22px, 5vw, 27px); font-weight: 720; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+  .kpi .lbl { font-size: 13px; color: var(--muted); }
+  .kpi .num.good { color: var(--accent); }
+  .steps .card b { display:block; margin-bottom: 4px; }
+  .muted { color: var(--muted); font-size: 14px; }
+  .tiny { color: var(--faint); font-size: 12.5px; }
+  .tabs { display:flex; gap:6px; flex-wrap:wrap; margin: 14px 0; }
+  .tab { border:1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 14px; cursor:pointer; }
+  .tab[aria-selected="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .sample { display:inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); margin-left: 6px; vertical-align: middle; }
+  svg text { fill: var(--ink); font-size: 12px; font-family: inherit; }
+  svg .lab { fill: var(--muted); }
+  .tablewrap { overflow-x:auto; border:1px solid var(--line); border-radius: 12px; background: var(--card); }
+  table { border-collapse: collapse; width:100%; font-size: 13.5px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align:left; white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  th { color: var(--muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; }
+  td.n { text-align:right; font-variant-numeric: tabular-nums; }
+  .pill { display:inline-block; font-size: 11.5px; padding: 1px 7px; border-radius: 999px; margin-left: 4px; font-weight: 600; }
+  .pill.na { background: var(--bad-soft); color: var(--bad); } .pill.pik { background: var(--warn-soft); color: var(--warn); }
+  .chg { display:grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 14px; }
+  .down { color: var(--bad); font-weight: 650; font-variant-numeric: tabular-nums; } .up { color: var(--accent); font-weight: 650; }
+  .chips { display:flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .chip { border:1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 13.5px; cursor:pointer; text-align:left; }
+  .chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .answer { white-space: pre-wrap; }
+  .cite { background: var(--accent-soft); color: var(--accent); border-radius: 4px; padding: 0 4px; font-weight: 650; font-size: 12.5px; }
+  .src { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 10px; overflow-wrap: anywhere; }
+  .banner { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin-bottom: 12px; }
+  .check { color: var(--accent); font-weight: 700; } .x { color: var(--bad); font-weight: 700; }
+  ul.design li { margin: 7px 0; }
+  .cta { display:flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+  .btn { display:inline-block; padding: 12px 18px; border-radius: 9px; text-decoration: none; font-weight: 650; }
+  .btn.primary { background: var(--accent); color: #fff; } .btn.ghost { border:1px solid var(--line); color: var(--ink); background: var(--card); }
+  footer { margin-top: 56px; font-size: 13px; color: var(--muted); }
+  code { font-size: 13px; }
+  a { color: var(--accent); }
+  .askrow { display:flex; gap:8px; margin: 4px 0 6px; }
+  .askrow input { flex:1; min-width:0; font: inherit; padding: 11px 14px; border-radius: 10px; border:1px solid var(--line); background: var(--card); color: var(--ink); }
+  .askrow input:focus { outline: 2px solid var(--accent-soft); border-color: var(--accent); }
+  .askrow button { font: inherit; font-weight: 650; padding: 11px 16px; border-radius: 10px; border: none; background: var(--accent); color:#fff; cursor:pointer; }
+  .askrow button:disabled { opacity: .55; cursor: default; }
+  .spin { display:inline-block; width:14px; height:14px; border:2px solid var(--line); border-top-color: var(--accent); border-radius:50%; animation: sp 0.9s linear infinite; vertical-align: -2px; margin-right: 8px; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Holdings Lens · built by {{NAME}}</div>
+  <h1>{{HEADLINE}}</h1>
+  <p class="lede">An AI agent for private-credit data. It extracts every holding from the schedule-of-investments tables BDCs file with the SEC, checks each number against the filing's own XBRL tags, and answers analyst questions with a verified citation for every figure.</p>
+  {{NOTE_BLOCK}}
+  <div class="grid g4" id="kpis"></div>
+  <div id="realbox"></div>
+
+  <h2>How it works</h2>
+  <div class="grid g4 steps">
+    <div class="card"><b>1. Extract</b><span class="muted">Parses messy EDGAR tables (split pages, "$" cells, footnotes, carried-down names) into one clean row per holding.</span></div>
+    <div class="card"><b>2. Cross-check</b><span class="muted">Reconciles every row, the coverage and the totals against the filing's inline XBRL. Two independent sources must agree.</span></div>
+    <div class="card"><b>3. Analyze</b><span class="muted">Derives spreads, marks, non-accruals and PIK, then tracks changes by quarter and compares lenders.</span></div>
+    <div class="card"><b>4. Answer</b><span class="muted">An agent with read-only tools answers questions; a citation only counts if the agent actually retrieved that row.</span></div>
+  </div>
+
+  <h2>Analyst view <span class="sample">fictional sample funds</span></h2>
+  <p class="sub">What the analytics produce from three bundled filings: two fictional funds, two quarters, two different table layouts.</p>
+  <div class="tabs" id="fundtabs" role="tablist"></div>
+  <div class="grid g4" id="fundkpis"></div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card"><h3>Industry mix (% of fair value)</h3><div id="industry"></div></div>
+    <div class="card"><h3>Debt by mark (fair value ÷ cost)</h3><div id="marks"></div></div>
+    <div class="card"><h3>Maturity wall (debt fair value, $M)</h3><div id="wall"></div></div>
+    <div class="card"><h3>Watchlist</h3><div id="watch"></div></div>
+  </div>
+
+  <h2>What changed this quarter</h2>
+  <p class="sub" id="chg-sub"></p>
+  <div class="grid g2">
+    <div class="card"><h3>Re-marked positions</h3><div id="remarked"></div></div>
+    <div class="card"><h3>New, exited, resized</h3><div id="moves"></div></div>
+  </div>
+
+  <h2>Same borrower, different marks</h2>
+  <p class="sub">Matching borrowers across funds (despite different spellings) shows where lenders disagree on value, a useful early signal.</p>
+  <div class="card"><div id="dispersion"></div></div>
+
+  <h2>Ask the agent</h2>
+  <div id="demo"></div>
+
+  <h2>Why you can trust the numbers</h2>
+  <p class="sub">Measured on every bundled filing, against hand-checked answer keys and against the filings' own XBRL tags.</p>
+  <div class="tablewrap"><table id="trust"></table></div>
+  <p class="tiny" id="trust-note"></p>
+
+  <h2>Design choices</h2>
+  <ul class="design">
+    <li><b>Two independent sources:</b> parsed tables are reconciled with inline XBRL. Missed rows, wrong column mappings and unit mistakes show up without any answer key.</li>
+    <li><b>Grounded by construction:</b> the model never sees raw filings; it queries a read-only database through narrow tools.</li>
+    <li><b>Citations are verified, not trusted:</b> a cited row the agent never retrieved counts as unsupported.</li>
+    <li><b>No per-filer code:</b> one extractor handles every layout in the stress-test suite (reordered columns, split headers, &lt;th&gt; headers, footnotes, millions vs thousands).</li>
+    <li><b>Traceable:</b> every holding keeps its table, row, original text and XBRL context.</li>
+  </ul>
+
+  <h2>Let's talk</h2>
+  <p>{{CTA_TEXT}}</p>
+  <div class="cta">
+    <a class="btn primary" href="{{MAILTO}}">Grab 15 minutes for coffee</a>
+    <a class="btn ghost" href="{{GITHUB}}">Code on GitHub</a>
+    {{RESUME_LINK}}
+  </div>
+  <footer>Demo data: {{DATA_LABEL}}. All funds, companies and figures shown are fictional. Not affiliated with any company named on this page.</footer>
+</main>
+<script>
+const D = {{DATA_JSON}};
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pct0 = v => v == null ? "–" : Math.round(v * 100) + "%";
+const usdM = v => v == null ? "–" : "$" + (v / 1e6).toLocaleString("en-US", {maximumFractionDigits: 1}) + "M";
+const kpi = (n, l, cls="") => `<div class="card kpi"><div class="num ${cls}">${n}</div><div class="lbl">${l}</div></div>`;
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+function hbars(items, {fmt = v => v.toFixed(1) + "%", max, color = "--accent", labelW = 150} = {}) {
+  const W = 380, rowH = 24, H = items.length * rowH + 4, m = max ?? Math.max(...items.map(i => i.v), 1);
+  const bars = items.map((it, i) => {
+    const w = Math.max(2, (W - labelW - 50) * it.v / m), y = i * rowH + 3;
+    return `<text class="lab" x="${labelW - 8}" y="${y + 13}" text-anchor="end">${esc(it.label)}</text>
+            <rect x="${labelW}" y="${y + 2}" width="${w}" height="15" rx="3" fill="${css(it.color || color)}"/>
+            <text x="${labelW + w + 6}" y="${y + 14}">${fmt(it.v)}</text>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${bars}</svg>`;
+}
+
+function vbars(items) {
+  const W = 380, H = 170, pad = 26, m = Math.max(...items.map(i => i.v), 1), bw = (W - pad * 2) / items.length;
+  const bars = items.map((it, i) => {
+    const h = (H - 50) * it.v / m, x = pad + i * bw + bw * 0.18, y = H - 24 - h;
+    return `<rect x="${x}" y="${y}" width="${bw * 0.64}" height="${h}" rx="3" fill="${css("--blue")}"/>
+            <text x="${x + bw * 0.32}" y="${y - 5}" text-anchor="middle">${(it.v / 1e6).toFixed(1)}</text>
+            <text class="lab" x="${x + bw * 0.32}" y="${H - 7}" text-anchor="middle">${esc(it.label)}</text>`;
+  }).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${bars}</svg>`;
+}
+
+function renderReal() {
+  const R = D.real && D.real.filings && D.real.filings.length ? D.real.filings : null;
+  if (!R) return;
+  const f = R[R.length - 1];
+  $("realbox").innerHTML = `<div class="card" style="margin-top:12px;border-color:var(--accent)">
+    <div class="eyebrow" style="margin-bottom:6px">Tested on a real SEC filing</div>
+    <div style="font-size:17px"><b>${esc(f.fund)}</b>, ${esc(f.form)} for ${esc(f.period)}: <b>${f.holdings.toLocaleString()}</b> holdings extracted;
+    <b>${f.xbrl_rows_matched.toLocaleString()} of ${f.xbrl_rows_linked.toLocaleString()}</b> XBRL-tagged rows match;
+    ${pct0(f.coverage)} of tagged investments found; total ${f.totals_match ? "ties to the dollar" : "differs"} at <b>${usdM(f.filing_total_usd)}</b>.</div>
+    <div class="tiny" style="margin-top:6px">${R.length > 1 ? `Prior quarter (${esc(R[0].period)}): ${R[0].xbrl_rows_matched.toLocaleString()}/${R[0].xbrl_rows_linked.toLocaleString()} rows match, total ties. ` : ""}<a href="${esc(f.url)}">Source filing on EDGAR</a></div></div>`;
+}
+
+function renderTop() {
+  const s = D.scorecard;
+  $("kpis").innerHTML = kpi(pct0(s.cell_accuracy), `sample-filing accuracy (${s.cells} cells vs answer keys)`, "good")
+    + kpi(s.xbrl_match_rate == null ? "–" : pct0(s.xbrl_match_rate), "rows reconciled with XBRL", "good")
+    + kpi(String(s.layouts), "table layouts in the stress tests")
+    + (s.qa_accuracy != null ? kpi(pct0(s.qa_accuracy), `agent answers correct (${s.questions} questions)`, "good")
+                             : kpi(String(s.tests), "automated tests passing"));
+}
+
+let current = 0;
+function renderFund(i) {
+  current = i;
+  const s = D.report.summaries[i];
+  document.querySelectorAll(".tab").forEach((b, j) => b.setAttribute("aria-selected", j === i));
+  $("fundkpis").innerHTML = kpi(usdM(s.fair_value_usd), `fair value · ${s.holdings} holdings, ${s.companies} borrowers`)
+    + kpi((s.weighted_avg_spread_bps ?? 0).toFixed(0) + " bps", "weighted avg spread (debt)")
+    + kpi((s.non_accrual.pct_of_fv ?? 0).toFixed(1) + "%", `on non-accrual (${s.non_accrual.count})`, s.non_accrual.count ? "" : "good")
+    + kpi((s.top10_concentration_pct ?? 0).toFixed(0) + "%", "top-10 borrower concentration");
+  $("industry").innerHTML = hbars(s.industry_mix.slice(0, 7).map(x => ({label: x.industry, v: x.pct})));
+  const mc = {"100%+": "--accent", "97–100%": "--accent-2", "90–97%": "--blue", "80–90%": "--warn", "<80%": "--bad"};
+  $("marks").innerHTML = hbars(s.mark_distribution.map(b => ({label: b.bucket, v: b.pct_of_debt || 0, color: mc[b.bucket]})), {max: 100, labelW: 80});
+  $("wall").innerHTML = vbars(s.maturity_wall.map(w => ({label: w.year, v: w.fair_value_usd})));
+  $("watch").innerHTML = s.watchlist.length ? `<table>${s.watchlist.map(w => `<tr><td>${esc(w.company)}<div class="tiny">${esc(w.instrument)}</div></td>
+      <td class="n"><span class="${w.mark < .8 ? "down" : ""}">${pct0(w.mark)}</span><div class="tiny">of cost</div></td>
+      <td>${w.non_accrual ? '<span class="pill na">non-accrual</span>' : ""}${w.pik ? '<span class="pill pik">PIK</span>' : ""}</td></tr>`).join("")}</table>`
+    : `<p class="muted">No debt below 90% of cost and no non-accruals.</p>`;
+}
+
+function renderTabs() {
+  $("fundtabs").innerHTML = D.report.summaries.map((s, i) =>
+    `<button class="tab" role="tab" data-i="${i}">${esc(s.filing.fund.replace(/ (Corp|Fund)$/,""))} · ${esc(s.filing.period.slice(0,7))}</button>`).join("");
+  $("fundtabs").addEventListener("click", e => { const b = e.target.closest(".tab"); if (b) renderFund(+b.dataset.i); });
+  const latest = D.report.summaries.findIndex(s => s.filing.period === D.report.summaries.map(x => x.filing.period).sort().at(-1));
+  renderFund(latest < 0 ? 0 : latest);
+}
+
+function renderChanges() {
+  const c = D.report.changes[0];
+  if (!c) { $("chg-sub").textContent = "Needs two filings from the same fund."; return; }
+  $("chg-sub").textContent = `${c.to.fund}, ${c.from.period} → ${c.to.period}: fair value ${usdM(c.fair_value_usd.from)} → ${usdM(c.fair_value_usd.to)}.`;
+  $("remarked").innerHTML = `<div class="chg">` + c.remarked.map(r => `<div>${esc(r.company)} <span class="tiny">${esc(r.instrument)}</span>
+      <div class="tiny">${pct0(r.prior_mark)} → ${pct0(r.mark)} of cost</div></div>
+      <div class="${r.change_pts < 0 ? "down" : "up"}">${r.change_pts > 0 ? "+" : ""}${r.change_pts.toFixed(1)} pts</div>`).join("") + `</div>`;
+  const line = (tag, p, extra = "") => `<div style="margin:6px 0"><span class="pill ${tag === "Exited" ? "na" : "pik"}" style="margin:0 6px 0 0">${tag}</span>${esc(p.company)} <span class="tiny">${esc(p.instrument)} ${extra}</span></div>`;
+  $("moves").innerHTML = c.new_positions.map(p => line("New", p, usdM(p.fair_value_usd))).join("")
+    + c.exited_positions.map(p => line("Exited", p, usdM(p.fair_value_usd))).join("")
+    + c.resized.map(p => line("Resized", p, `${usdM(p.prior_principal_usd)} → ${usdM(p.principal_usd)} principal`)).join("");
+}
+
+function renderDispersion() {
+  const rows = D.report.overlap.shared_borrowers;
+  if (!rows.length) { $("dispersion").innerHTML = `<p class="muted">No shared borrowers.</p>`; return; }
+  const funds = [...new Set(rows.flatMap(r => r.funds.map(f => f.fund)))];
+  const colors = [css("--accent"), css("--blue"), css("--warn")];
+  const W = 640, labelW = 190, rowH = 34, H = rows.length * rowH + 40, lo = 0.7, hi = 1.05;
+  const X = m => labelW + (W - labelW - 20) * (Math.min(Math.max(m, lo), hi) - lo) / (hi - lo);
+  let svg = "";
+  for (let t = 0.7; t <= 1.051; t += 0.05) {
+    const x = X(t);
+    svg += `<line x1="${x}" y1="18" x2="${x}" y2="${H - 18}" stroke="${css("--line")}"/><text class="lab" x="${x}" y="12" text-anchor="middle">${Math.round(t * 100)}%</text>`;
+  }
+  rows.forEach((r, i) => {
+    const y = 34 + i * rowH, ms = r.funds.map(f => f.mark);
+    svg += `<text x="${labelW - 10}" y="${y + 4}" text-anchor="end">${esc(r.borrower)}</text>
+            <line x1="${X(Math.min(...ms))}" y1="${y}" x2="${X(Math.max(...ms))}" y2="${y}" stroke="${css("--faint")}" stroke-width="2"/>`;
+    r.funds.forEach(f => { svg += `<circle cx="${X(f.mark)}" cy="${y}" r="6" fill="${colors[funds.indexOf(f.fund)]}"><title>${esc(f.fund)}: ${pct0(f.mark)}</title></circle>`; });
+    svg += `<text class="lab" x="${W - 4}" y="${y + 4}" text-anchor="end">${r.mark_dispersion_pts.toFixed(1)} pts</text>`;
+  });
+  const legend = funds.map((f, i) => `<span style="margin-right:14px"><svg width="10" height="10"><circle cx="5" cy="5" r="5" fill="${colors[i]}"/></svg> ${esc(f)}</span>`).join("");
+  $("dispersion").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${svg}</svg><div class="tiny">${legend} · each dot is one fund's debt valued as % of cost</div>`;
+}
+
+function renderAnswer(e) {
+  const body = esc(e.answer).replace(/\[H(\d+)\]/g, '<span class="cite">H$1</span>').replace(/\[F(\d+)\]/g, '<span class="cite">F$1</span>');
+  const badge = e.grounded === false
+    ? `<div class="tiny x">⚠ Not fully grounded${(e.unsupported || []).length ? ": " + e.unsupported.map(i => "H" + i).join(", ") + " cited without being retrieved" : ""}. The citation check flags this automatically.</div>`
+    : `<div class="tiny check">✓ every citation retrieved by the agent</div>`;
+  return `<div class="answer">${body}</div>${badge}` + (e.sources || []).slice(0, 4).map(s => `<div class="src">H${s.id} · ${esc(s.fund)} ${esc(s.period || "")} · "${esc(s.raw)}"</div>`).join("");
+}
+
+function renderLive() {
+  if (!D.ask_url) return "";
+  return `<div class="card" style="margin-bottom:14px">
+    <h3 style="margin-bottom:4px">Ask your own question <span class="tiny">live · includes Golub Capital BDC's real 10-Qs</span></h3>
+    <form class="askrow" id="askform"><input id="askq" maxlength="300" placeholder="e.g. Which Golub positions went on non-accrual this quarter?" aria-label="Your question">
+    <button id="askbtn" type="submit">Ask</button></form>
+    <div class="tiny">Answers come from the extracted data only, with a citation for every number. Usually 10–40 seconds. Limited to a few questions per visitor.</div>
+    <div id="liveans" style="margin-top:10px"></div></div>`;
+}
+
+async function askLive(ev) {
+  ev.preventDefault();
+  const q = $("askq").value.trim(), out = $("liveans"), btn = $("askbtn");
+  if (!q) return;
+  btn.disabled = true;
+  out.innerHTML = `<div class="muted"><span class="spin"></span>The agent is querying the data…</div>`;
+  try {
+    const r = await fetch(D.ask_url, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({question: q})});
+    const j = await r.json().catch(() => ({error: "Unexpected response."}));
+    out.innerHTML = r.ok ? renderAnswer(j) : `<div class="banner">${esc(j.error || "Something went wrong.")}</div>`;
+  } catch (e) {
+    out.innerHTML = `<div class="banner">The live demo isn't reachable from here${location.protocol === "file:" ? " (it only works on the published site)" : ""}. The saved examples below still work.</div>`;
+  } finally { btn.disabled = false; }
+}
+
+function renderDemo() {
+  const ex = D.demo.examples || [];
+  let html = renderLive();
+  html += D.demo.placeholder ? `<div class="banner">Preview: the agent hasn't been run for this page yet, so answers aren't shown. Everything else on this page is real output.</div>` : "";
+  if (D.ask_url) html += `<div class="tiny" style="margin:4px 0 8px">Or browse answers saved from the test set:</div>`;
+  html += `<div class="chips">` + ex.map((e, i) => `<button class="chip" data-i="${i}" aria-pressed="${i === 0}">${esc(e.question)}</button>`).join("") + `</div><div class="card" id="ans"></div>`;
+  $("demo").innerHTML = html;
+  const show = i => {
+    document.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", b.dataset.i == i));
+    const e = ex[i], a = $("ans");
+    if (!e) { a.textContent = "No examples yet."; return; }
+    if (!e.answer) { a.innerHTML = `<span class="muted">The answer appears here after running <code>python -m holdings_lens demo</code>.${e.expected ? " Expected answer mentions: " + esc(e.expected) + "." : ""}</span>`; return; }
+    a.innerHTML = renderAnswer(e);
+  };
+  $("demo").addEventListener("click", ev => { const b = ev.target.closest(".chip"); if (b) show(+b.dataset.i); });
+  if ($("askform")) $("askform").addEventListener("submit", askLive);
+  show(0);
+}
+
+function renderTrust() {
+  const ok = b => b ? `<span class="check">✓</span>` : `<span class="x">✗</span>`;
+  $("trust").innerHTML = `<thead><tr><th>Filing</th><th>Layout</th><th class="n">Rows</th><th class="n">Cells correct</th><th class="n">XBRL rows</th><th class="n">XBRL coverage</th><th>Totals tie</th></tr></thead><tbody>` +
+    D.trust.map(t => `<tr><td>${esc(t.fund)} <span class="tiny">${esc(t.period)}</span></td><td>${esc(t.layout)}</td>
+      <td class="n">${t.rows_matched}/${t.rows_expected}</td><td class="n">${(t.cell_accuracy * 100).toFixed(1)}%</td>
+      <td class="n">${t.xbrl_matched}/${t.xbrl_linked}</td><td class="n">${t.coverage == null ? "–" : pct0(t.coverage)}</td><td>${ok(t.totals_match)}</td></tr>`).join("") + `</tbody>`;
+  const R = (D.real && D.real.filings) || [];
+  if (R.length) {
+    $("trust").innerHTML += `<tbody>` + R.map(f => `<tr><td>${esc(f.fund)} <span class="tiny">${esc(f.period)} · real</span></td><td>EDGAR</td>
+      <td class="n">${f.holdings.toLocaleString()}</td><td class="n">–</td><td class="n">${f.xbrl_rows_matched.toLocaleString()}/${f.xbrl_rows_linked.toLocaleString()}</td>
+      <td class="n">${pct0(f.coverage)}</td><td>${ok(f.totals_match)}</td></tr>`).join("") + `</tbody>`;
+  }
+  $("trust-note").textContent = D.trust_note + (R.length ? " Real filings are checked against their own XBRL tags; field-level accuracy on them is measured with a hand-checked sample." : "");
+}
+
+renderTop(); renderReal(); renderTabs(); renderChanges(); renderDispersion(); renderDemo(); renderTrust();
+</script>
+</body>
+</html>

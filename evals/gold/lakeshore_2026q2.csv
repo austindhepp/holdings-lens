@@ -1,0 +1,19 @@
+investment_type,company,industry,instrument,interest_rate,spread,maturity,principal,cost,fair_value,pct_net_assets,non_accrual,pik
+First Lien Senior Secured Debt,"Prairie Analytics, LLC",Software,Term Loan,9.85%,S + 5.50%,2029-03-15,24500,24112,24255,3.1,0,0
+First Lien Senior Secured Debt,"Prairie Analytics, LLC",Software,Revolver,9.85%,S + 5.50%,2029-03-15,1200,1180,1188,0.2,0,0
+First Lien Senior Secured Debt,"Calumet Health Partners, Inc.",Health Care Services,Term Loan,10.40%,S + 6.00%,2028-11,18750,18501,17813,2.3,0,0
+First Lien Senior Secured Debt,Lakefront Logistics Holdings,Transportation,Term Loan,9.60%,S + 5.25%,2030-06-01,32000,31544,31680,4.0,0,0
+First Lien Senior Secured Debt,Lakefront Logistics Holdings,Transportation,Delayed Draw Term Loan,9.60%,S + 5.25%,2030-06-01,4000,3940,3960,0.5,0,0
+First Lien Senior Secured Debt,Wabash Dental Group,Health Care Services,Term Loan,11.10%,S + 6.75%,2027-09,12300,12260,11760,1.5,0,0
+First Lien Senior Secured Debt,"Kinzie Cloud Systems, Inc.",Software,Term Loan,9.35%,S + 5.00%,2031-01-31,35000,34460,35070,4.5,0,0
+First Lien Senior Secured Debt,Fulton Market Foods Co.,Food Products,Term Loan,10.15%,S + 5.75%,2029-08-15,15600,15420,15210,1.9,0,0
+First Lien Senior Secured Debt,Pilsen Industrial Supply,Distribution,Term Loan,9.95%,S + 5.50%,2028-04,21000,20790,20895,2.6,0,0
+First Lien Senior Secured Debt,Cicero Packaging Co.,Containers & Packaging,Term Loan,10.05%,S + 5.75%,2028-10-31,14000,13860,13930,1.8,0,0
+First Lien Senior Secured Debt,Hyde Park Insurance Services,Insurance,Term Loan,9.70%,S + 5.25%,2030-02-28,27500,27088,27363,3.5,0,0
+First Lien Senior Secured Debt,Ravenswood Security Software,Software,Term Loan,10.20%,S + 5.75%,2029-05,19000,18715,18810,2.4,0,0
+Second Lien Senior Secured Debt,"Calumet Health Partners, Inc.",Health Care Services,Second Lien Term Loan,13.40%,S + 9.00%,2029-11-30,8000,7880,7720,1.0,0,0
+Second Lien Senior Secured Debt,Midway Aerostructures Corp.,Aerospace Components,Second Lien Term Loan,12.85%,S + 8.50%,2030-07-15,11000,10835,10945,1.4,0,0
+Second Lien Senior Secured Debt,"Kinzie Cloud Systems, Inc.",Software,Second Lien Term Loan,12.60%,S + 8.25%,2031-07,6500,6402,6532,0.8,0,0
+Equity Investments,"Prairie Analytics, LLC",Software,Class A Units,,,,1500,1500,2310,0.3,0,0
+Equity Investments,Wabash Dental Group,Health Care Services,Preferred Equity,,,,2000,2000,1450,0.2,0,0
+Equity Investments,Fulton Market Foods Co.,Food Products,Common Stock,,,,350,350,525,0.1,0,0
