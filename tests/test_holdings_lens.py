@@ -200,3 +200,11 @@ def test_aliased_id_columns_count_as_retrieved(dbpath):
                                "ON a.company_key = b.company_key AND a.filing_id = 1 AND b.filing_id = 2 LIMIT 3"))
     got = {r["old_id"] for r in out["rows"]} | {r["new_id"] for r in out["rows"]}
     assert got <= t.seen_ids and 1 not in t.seen_ids - got  # filing_id values are not counted
+
+
+def test_grouped_and_range_citations_are_all_checked():
+    from holdings_lens.agent import cited_ids
+    text = ("Top: [H6663, H6664, H6665] and [H6770–H6774], also [H12-14], [H5 and H7], single [H99]; "
+            "typo range [H1–H90000] counts only its endpoints. Filing [F2] is not a holding.")
+    ids = cited_ids(text)
+    assert {6663, 6664, 6665, 6770, 6771, 6772, 6773, 6774, 12, 13, 14, 5, 7, 99, 1, 90000} == ids

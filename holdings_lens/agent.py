@@ -90,7 +90,32 @@ TOOLS = [
     },
 ]
 
-CITE_RE = re.compile(r"\[H(\d+)\]")
+CITE_RE = re.compile(r"\[H(\d+)\]")  # single citation, kept for callers that want the simple form
+# A bracket of holding citations in any form the model writes: [H12], [H12, H13], [H12–H15], [H12-15], [H12 and H13]
+CITE_GROUP_RE = re.compile(r"\[(H\d+(?:\s*(?:,|;|–|—|-|and|&)\s*H?\d+)*)\]")
+MAX_RANGE = 50  # a range wider than this is treated as its two endpoints, so a typo can't "cite" thousands of rows
+
+
+def cited_ids(text: str) -> set[int]:
+    """Every holding id an answer cites, expanding grouped citations and ranges."""
+    ids: set[int] = set()
+    for group in CITE_GROUP_RE.findall(text or ""):
+        tokens = re.findall(r"\d+|–|—|-", group)
+        i = 0
+        while i < len(tokens):
+            a = int(tokens[i])
+            if i + 2 < len(tokens) and tokens[i + 1] in "–—-" and tokens[i + 2].isdigit():
+                b = int(tokens[i + 2])
+                if 0 <= b - a <= MAX_RANGE:
+                    ids.update(range(a, b + 1))
+                else:
+                    ids.update({a, b})
+                i += 3
+            else:
+                if tokens[i].isdigit():
+                    ids.add(a)
+                i += 1
+    return ids
 ID_COL = re.compile(r"(^|_)id($|_)", re.I)
 
 
@@ -180,7 +205,7 @@ def _post(payload: dict) -> dict:
 
 
 def check_citations(answer: str, tools: Tools) -> dict:
-    cited = {int(x) for x in CITE_RE.findall(answer)}
+    cited = cited_ids(answer)
     existing = set()
     if cited:
         q = f"SELECT id FROM holdings WHERE id IN ({','.join('?' * len(cited))})"

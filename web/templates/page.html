@@ -254,7 +254,12 @@ function renderDispersion() {
 }
 
 function renderAnswer(e) {
-  const body = esc(e.answer).replace(/\[H(\d+)\]/g, '<span class="cite">H$1</span>').replace(/\[F(\d+)\]/g, '<span class="cite">F$1</span>');
+  const chips = (g, p) => g.split(/\s*(?:,|;|and|&)\s*/).filter(Boolean)
+    .map(t => { const [a, b] = t.replace(new RegExp(p, "g"), "").split(/\s*[–—-]\s*/);
+      return `<span class="cite">${p}${a}${b ? "–" + p + b : ""}</span>`; }).join("");
+  const body = esc(e.answer)
+    .replace(/\[(H\d+(?:\s*(?:,|;|–|—|-|and|&amp;)\s*H?\d+)*)\]/g, (_, g) => chips(g.replace(/&amp;/g, "&"), "H"))
+    .replace(/\[(F\d+(?:\s*(?:,|;|and)\s*F?\d+)*)\]/g, (_, g) => chips(g, "F"));
   const badge = e.grounded === false
     ? `<div class="tiny x">⚠ Not fully grounded${(e.unsupported || []).length ? ": " + e.unsupported.map(i => "H" + i).join(", ") + " cited without being retrieved" : ""}. The citation check flags this automatically.</div>`
     : e.grounded === true || e.grounded === undefined
