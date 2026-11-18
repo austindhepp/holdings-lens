@@ -111,7 +111,8 @@
       <label>Break down by <select id="selDim">
         <option value="industry">Industry</option><option value="loan_type">Loan type</option>
         <option value="maturity_year">Maturity year (debt)</option><option value="debt_mark">Debt value as % of cost</option>
-        <option value="base_rate">Base rate (debt)</option></select></label>
+        <option value="base_rate">Base rate (debt)</option>
+        <option value="sector" id="optSector">Sector (consistent across lenders, AI)</option></select></label>
       <label>Measure <select id="selMeasure">
         <option value="pct">% of portfolio</option><option value="fv">Fair value</option><option value="cost">Cost</option>
         <option value="principal">Principal</option><option value="n">Number of holdings</option></select></label>
@@ -119,6 +120,15 @@
     </div>
     <div id="builder"></div>
     <div class="tiny" id="builder-note"></div>
+  </div>
+
+  <div class="card" style="margin-top:12px" id="softwrap" hidden>
+    <h3>Software exposure: each lender's own labels vs. one consistent classification</h3>
+    <p class="muted" style="margin:0 0 10px">Lenders label the same business differently, and software loans often sit under other
+      industries. Every borrower was also placed in one shared sector list by the AI, from the filings' own evidence: names,
+      each lender's label and business descriptions. Each call records its basis and confidence.</p>
+    <div id="softbars"></div>
+    <div class="grid g2" style="margin-top:10px" id="softlists"></div>
   </div>
 
   <div class="grid g2" style="margin-top:12px" id="watchwrap"></div>
@@ -270,6 +280,7 @@ function initExplorer() {
   $("data-badge").style.background = real ? "var(--accent-soft)" : "";
   $("data-badge").style.color = real ? "var(--accent)" : "";
   if (real) $("explore-sub").textContent = `Pick a filing from ${E.funds.join(" or ")}, add a second one to compare, and choose how to slice it. Every number comes from the extracted holdings.`;
+  if (!E.has_sectors) $("optSector").remove();
   const opts = E.filings.map(f => `<option value="${f.id}">${esc(f.label)}</option>`).join("");
   $("selA").innerHTML = opts;
   $("selB").innerHTML = `<option value="">(nothing)</option>` + opts;
@@ -299,6 +310,7 @@ function renderExplorer() {
     return `<div class="card kpi"><div class="lbl">${label}</div><div class="num" style="font-size:22px">${fmt(va)}</div>${cmp}</div>`;
   }).join("");
   renderBuilder();
+  renderSoftware();
   const watch = (fid) => {
     const w = E.by_filing[fid].watch;
     return `<div class="card"><h3>Watchlist · ${esc(F(fid).label)}</h3>` + (w.length ? `<table class="watch">${w.map(x => `<tr><td>${esc(x.company)}<div class="tiny">${esc(x.instrument || "")}</div></td>
@@ -307,6 +319,37 @@ function renderExplorer() {
       : `<p class="muted">No debt below 90% of cost and no non-accruals.</p>`) + `<div class="tiny">Debt valued below 90% of cost or on non-accrual, lowest first.</div></div>`;
   };
   $("watchwrap").innerHTML = watch(state.a) + (B ? watch(state.b) : "");
+}
+
+function renderSoftware() {
+  const ids = [state.a].concat(state.b && state.b !== state.a ? [state.b] : []);
+  if (!E.has_sectors || !E.by_filing[state.a].software) { $("softwrap").hidden = true; return; }
+  $("softwrap").hidden = false;
+  const colors = slotColors(ids), pc = v => v.toFixed(1) + "%";
+  const W = 640, labelW = 200, rows = [["Lender's own \"software\" label", "label_pct"], ["Consistent classification", "ai_pct"]];
+  const max = Math.max(1, ...ids.flatMap(id => rows.map(r => E.by_filing[id].software[r[1]])));
+  let svg = "", y = 4;
+  rows.forEach(([lab, k]) => {
+    svg += `<text class="lab" x="${labelW - 8}" y="${y + (ids.length * 15) / 2 + 3}" text-anchor="end">${lab}</text>`;
+    ids.forEach((id, j) => {
+      const v = E.by_filing[id].software[k], w = Math.max(2, (W - labelW - 60) * v / max);
+      svg += `<rect x="${labelW}" y="${y}" width="${w}" height="13" rx="3" fill="${colors[j]}"><title>${esc(F(id).label)}: ${pc(v)}</title></rect>
+              <text x="${labelW + w + 5}" y="${y + 11}" style="font-size:11px">${pc(v)}</text>`;
+      y += 15;
+    });
+    y += 12;
+  });
+  $("softbars").innerHTML = `<div class="legend">${ids.map((id, j) => `<i style="background:${colors[j]}"></i>${esc(F(id).label)}`).join("")} · % of portfolio fair value</div>
+    <svg viewBox="0 0 ${W} ${y}" width="100%" role="img">${svg}</svg>`;
+  const conf = c => `<span class="tiny" title="basis: how the call was made">${esc(c.confidence)} confidence · ${esc(c.basis)}</span>`;
+  $("softlists").innerHTML = ids.map(id => {
+    const sw = E.by_filing[id].software;
+    return `<div><h3 style="font-size:14px">Software filed under other labels · ${esc(F(id).label)}</h3>
+      <div class="tiny" style="margin-bottom:6px">${sw.hidden_n} borrowers, ${fmtUsd(sw.hidden_fv)} of fair value. Largest:</div>
+      ${sw.hidden.length ? sw.hidden.map(h => `<div class="warn"><b>${esc(h.b)}</b> ${fmtUsd(h.fv)}
+        <div class="tiny" style="color:var(--muted)">Lender's label: <b>${esc(h.label)}</b> · ${esc(h.reason)}</div>${conf(h)}</div>`).join("")
+        : `<p class="muted">None found.</p>`}</div>`;
+  }).join("");
 }
 
 function renderBuilder() {
@@ -320,8 +363,9 @@ function renderBuilder() {
   let keys = [...new Set(series.flatMap(s => Object.keys(s)))];
   if (dim === "maturity_year") keys.sort();
   else if (dim === "debt_mark") keys = MARK_ORDER.filter(k => keys.includes(k));
+  if (dim === "sector") keys.sort((x, y) => (x === "Not yet classified") - (y === "Not yet classified") || Math.max(...series.map(s => s[y] || 0)) - Math.max(...series.map(s => s[x] || 0)));
   else keys.sort((x, y) => Math.max(...series.map(s => s[y] || 0)) - Math.max(...series.map(s => s[x] || 0)));
-  const shown = (dim === "industry" || dim === "base_rate") ? keys.slice(0, +state.top) : keys;
+  const shown = (dim === "industry" || dim === "base_rate" || dim === "sector") ? keys.slice(0, +state.top) : keys;
   const fmt = m === "pct" ? v => v.toFixed(1) + "%" : m === "n" ? v => Math.round(v).toLocaleString() : v => fmtUsd(v);
   const colors = slotColors(ids);
   const W = 640, labelW = 200, barH = 13, gap = ids.length > 1 ? 2 : 0, rowH = ids.length * barH + gap + 10;
@@ -341,7 +385,8 @@ function renderBuilder() {
   const hidden = keys.length - shown.length;
   const notes = [];
   if (hidden > 0) notes.push(`${hidden} more not shown`);
-  if (dim === "industry" && ids.length > 1) notes.push("each lender uses its own industry names, so some categories won't line up");
+  if (dim === "industry" && ids.length > 1) notes.push("each lender uses its own industry names, so some categories won't line up" + (E.has_sectors ? ' (try "Sector" for a consistent comparison)' : ""));
+  if (dim === "sector") notes.push("one AI-assigned sector per borrower, the same for every lender");
   if (["maturity_year", "debt_mark", "base_rate"].includes(dim)) notes.push("debt only");
   if (m === "pct") notes.push("% of each filing's total fair value");
   $("builder-note").textContent = notes.length ? notes.join(" · ") + "." : "";

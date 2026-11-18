@@ -39,6 +39,11 @@ Database (SQLite):
            fair_value, mark, pct_net_assets, non_accrual, pik, non_income, units, footnotes, notes,
            xbrl_fair_value)
   v_holdings = holdings + fund, period, fair_value_usd, cost_usd, principal_usd (whole dollars)
+  sectors(company_key, sector, is_software, basis, confidence, reason) [if present]: ONE consistent sector per
+             borrower across lenders (AI-assigned from names, lenders' labels and business descriptions). Lenders'
+             own `industry` labels differ (e.g. "Software" vs "Software and Services", software filed under
+             "Insurance"); for cross-lender industry comparisons or "how much software", LEFT JOIN sectors ON
+             company_key and say the sector is a consistent AI classification. Mention low-confidence cases.
   v_latest   = v_holdings limited to each fund's most recent filing
   - Prefer v_holdings / v_latest and the *_usd columns; say amounts in dollars.
   - lien is one of first_lien, second_lien, unitranche, subordinated, equity, other, cash.
@@ -51,6 +56,13 @@ Database (SQLite):
     the footnotes column. Before interpreting a flag, read that text instead of assuming: e.g. some
     filers put preferred equity on non-accrual for unpaid non-cash dividends.
   - A small negative fair_value on a zero-cost row is usually an unfunded commitment valued below par.
+  - Non-accrual rate, when comparing lenders: use the standard definition lenders report themselves,
+    non-accrual DEBT at cost / total investments at cost (and the same at fair value). Lead with that; mention
+    equity flags (some filers flag preferred stock for unpaid non-cash dividends) separately, never mixed in.
+  - filings.reconciliation is the XBRL cross-check: rows_matched/rows_linked = extracted rows whose values match
+    their XBRL tag; coverage = share of the filing's tagged investments that were found (1.0 = all found);
+    totals_match = the extracted total ties to the filing's total. tagged_investments counts distinct XBRL tags,
+    which include company-level tags, so it is larger than the number of holdings: that is NOT missing rows.
 
 Tools: run_sql for anything; portfolio_summary, compare_filings, shared_borrowers and early_warnings return
 precomputed analytics (with holding ids to cite); get_sources returns original filing rows.

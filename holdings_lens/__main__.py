@@ -8,6 +8,7 @@
   eval [--qa] [--dry-run]     Scorecard: extraction vs gold + XBRL, and optionally agent answers
   export-gold FILING_ID [--rows N]
                               Write a filing's extracted rows as a gold CSV to correct by hand
+  classify [--dry-run]        AI sector for every borrower, consistent across lenders (cached)
   export-live-db              Copy the database (read-only use) to api/holdings.db for the live ask box
   demo                        Run the test questions and save web/demo_run.json for the landing pages
 """
@@ -75,6 +76,9 @@ def main(argv=None):
     v.add_argument("--manifest", default=MANIFEST); v.add_argument("--questions", default=QA)
     v.add_argument("--use-main-db", action="store_true", help="ask the test questions against --db instead of a fresh sample database")
     g = sub.add_parser("export-gold"); g.add_argument("filing_id", type=int); g.add_argument("--rows", type=int, default=30)
+    k = sub.add_parser("classify", help="AI sector for every borrower (cached in evals/sectors.json)")
+    k.add_argument("--batch", type=int, default=40); k.add_argument("--limit", type=int)
+    k.add_argument("--dry-run", action="store_true", help="show what would be sent, without calling the API")
     x = sub.add_parser("export-live-db")
     x.add_argument("--include-samples", action="store_true", help="also keep the bundled fictional funds")
     d = sub.add_parser("demo"); d.add_argument("--questions", default=None)
@@ -153,6 +157,24 @@ def main(argv=None):
         print("  python -m holdings_lens eval --manifest evals/real_manifest.json")
         print("Note: the scorer compares only the rows in this file, so it measures accuracy, not missed rows; "
               "the XBRL coverage check covers missed rows.")
+    elif args.cmd == "classify":
+        from . import sectors
+        from .agent import MODEL, _post
+        cache_path = os.path.join(ROOT, "evals", "sectors.json")
+        con = db.connect(args.db)
+        if args.dry_run:
+            ev = sectors.gather(con)
+            todo = [e for e in ev if e["key"] not in sectors.load_cache(cache_path)]
+            print(f"{len(ev)} borrowers, {len(todo)} not yet classified ({-(-len(todo) // args.batch)} API calls). First two:")
+            print(json.dumps(todo[:2], indent=1))
+            return 0
+        res = sectors.classify(con, _post, cache_path, MODEL, batch=args.batch, limit=args.limit)
+        sectors.load_into_db(con, sectors.load_cache(cache_path))
+        con.close()
+        u = res["usage"]
+        print(f"Classified {res['classified']} borrowers ({res['missed']} missed; rerun to retry them). "
+              f"{res['total_cached']} in evals/sectors.json. Tokens: {u['input_tokens']:,} in, {u['output_tokens']:,} out.")
+        print("Next: python -m holdings_lens export-live-db")
     elif args.cmd == "export-live-db":
         import sqlite3
         src = db.connect(args.db)
@@ -174,6 +196,9 @@ def main(argv=None):
                 dst.execute(f"DELETE FROM holdings WHERE filing_id IN ({marks})", sample_ids)
                 dst.execute(f"DELETE FROM filings WHERE id IN ({marks})", sample_ids)
                 dst.commit()
+        from . import sectors as _sectors
+        cache = _sectors.load_cache(os.path.join(ROOT, "evals", "sectors.json"))
+        n_sec = _sectors.load_into_db(dst, cache) if cache else 0
         n = dst.execute("SELECT COUNT(*) FROM holdings").fetchone()[0]
         funds = [r[0] for r in dst.execute("SELECT fund || ' ' || period FROM filings ORDER BY fund, period")]
         dst.execute("VACUUM")
@@ -185,6 +210,8 @@ def main(argv=None):
         print(f"Wrote {out} ({os.path.getsize(out) / 1e6:.1f} MB, {n} holdings) with: " + "; ".join(funds))
         if dropped:
             print("Left out the fictional sample funds: " + ", ".join(dropped))
+        print(f"Sector classifications included: {n_sec}" if n_sec else
+              "No sector classifications yet (optional): python -m holdings_lens classify")
         print("Commit it so the live ask box can read it. Re-run after you extract new filings.")
     elif args.cmd == "demo":
         from .evals import eval_manifest, eval_qa
@@ -210,7 +237,8 @@ def main(argv=None):
                           "xbrl_match_rate": ex["xbrl_match_rate"], "qa_accuracy": qa["accuracy"],
                           "grounded_rate": qa["grounded_rate"], "avg_tokens": qa["avg_tokens"], "questions": qa["questions"]},
             "examples": [{"question": i["question"], "answer": i["run"]["answer"], "sources": i["run"]["sources"],
-                          "correct": i["correct"], "grounded": i["grounded"], "unsupported": i["bad_citations"],
+                          "correct": i["correct"], "grounded": i["grounded"], "filing_level": i.get("filing_level", False),
+                          "unsupported": i["bad_citations"],
                           "tools_used": [t["tool"] for t in i["run"]["trace"]]} for i in qa["items"]],
         }
         path = os.path.join(ROOT, "web", "demo_run.json")

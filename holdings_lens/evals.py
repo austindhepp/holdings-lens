@@ -160,7 +160,10 @@ def eval_qa(qa_json: str, db_path: str = DEFAULT_DB, dry_run: bool = False, post
         results.append({
             "question": it["question"], "truth": truth, "answer": r["answer"],
             "correct": answer_ok(r["answer"], it, truth),
-            "grounded": r["citations"]["grounded"],
+            # an answer that cites no holding (a filing-level total, or "the data can't answer that") is not a
+            # grounding failure: None, shown as a neutral note and left out of the grounded rate
+            "grounded": r["citations"]["grounded"] if r["citations"]["cited"] else None,
+            "filing_level": bool(re.search(r"\[F\d+\]", r["answer"] or "")),
             "bad_citations": r["citations"]["nonexistent"] + r["citations"]["not_retrieved"],
             "tokens": r["usage"]["input_tokens"] + r["usage"]["output_tokens"],
             "seconds": round(time.time() - t0, 1), "run": r,
@@ -171,7 +174,8 @@ def eval_qa(qa_json: str, db_path: str = DEFAULT_DB, dry_run: bool = False, post
     return {
         "questions": len(results),
         "accuracy": sum(r["correct"] for r in results) / n,
-        "grounded_rate": sum(r["grounded"] for r in results) / n,
+        "grounded_rate": (sum(bool(r["grounded"]) for r in results if r["grounded"] is not None)
+                          / max(1, sum(r["grounded"] is not None for r in results))),
         "unsupported_citation_count": sum(len(r["bad_citations"]) for r in results),
         "avg_tokens": sum(r["tokens"] for r in results) / n,
         "avg_seconds": sum(r["seconds"] for r in results) / n,

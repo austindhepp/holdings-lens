@@ -66,14 +66,19 @@ def explorer_data(con) -> dict:
     lender, and the shared-borrower comparison for every pair of filings from different lenders."""
     from collections import defaultdict
     from holdings_lens.analytics import summary, changes, overlap, MARK_BUCKETS, DEBT
+    from holdings_lens.sectors import has_sectors
     filings = [dict(r) for r in con.execute("SELECT id, fund, period FROM filings ORDER BY fund, period")]
     out = {"filings": [], "by_filing": {}, "changes": [], "overlap": {}}
+    sec = {}
+    if has_sectors(con):
+        sec = {r["company_key"]: dict(r) for r in con.execute("SELECT * FROM sectors")}
+    out["has_sectors"] = bool(sec)
     for f in filings:
         fid = f["id"]
         s = summary(con, fid)
         rows = [dict(r) for r in con.execute("SELECT * FROM v_holdings WHERE filing_id = ? AND lien != 'cash'", (fid,))]
         dims = {d: defaultdict(lambda: {"fv": 0.0, "cost": 0.0, "principal": 0.0, "n": 0})
-                for d in ("industry", "loan_type", "maturity_year", "debt_mark", "base_rate")}
+                for d in ("industry", "loan_type", "maturity_year", "debt_mark", "base_rate") + (("sector",) if sec else ())}
 
         def add(dim, key, r):
             a = dims[dim][key]
@@ -82,8 +87,22 @@ def explorer_data(con) -> dict:
             a["principal"] += r["principal_usd"] or 0
             a["n"] += 1
 
+        soft = {"label": 0.0, "ai": 0.0, "hidden": defaultdict(lambda: {"fv": 0.0}), "not": defaultdict(lambda: {"fv": 0.0})}
         for r in rows:
             add("industry", r["industry"] or "Unclassified", r)
+            if sec:
+                c = sec.get(r["company_key"])
+                add("sector", c["sector"] if c else "Not yet classified", r)
+                labelled = "software" in (r["industry"] or "").lower()
+                is_sw = bool(c and c["is_software"])
+                fv = r["fair_value_usd"] or 0
+                soft["label"] += fv if labelled else 0
+                soft["ai"] += fv if is_sw else 0
+                if is_sw != labelled and c:
+                    g = soft["hidden" if is_sw else "not"][r["company_key"]]
+                    g["fv"] += fv
+                    g.update(b=r["company"], label=r["industry"] or "(none)", sector=c["sector"], reason=c["reason"],
+                             confidence=c["confidence"], basis=c["basis"])
             add("loan_type", LOAN_TYPE.get(r["lien"], r["lien"]), r)
             if r["lien"] in DEBT:
                 add("maturity_year", (r["maturity"] or "")[:4] or "No date", r)
@@ -105,6 +124,14 @@ def explorer_data(con) -> dict:
                       for w in s["watchlist"][:10]],
             "largest": s["largest_positions"],
         }
+        if sec:
+            top = lambda d, n: sorted((v for v in d.values() if v["fv"] > 0), key=lambda v: -v["fv"])[:n]
+            out["by_filing"][fid]["software"] = {
+                "label_pct": round(100 * soft["label"] / s["fair_value_usd"], 1),
+                "ai_pct": round(100 * soft["ai"] / s["fair_value_usd"], 1),
+                "hidden_n": sum(1 for v in soft["hidden"].values() if v["fv"] > 0),
+                "hidden_fv": sum(v["fv"] for v in soft["hidden"].values() if v["fv"] > 0),
+                "hidden": top(soft["hidden"], 10), "not": top(soft["not"], 5)}
     by_fund = defaultdict(list)
     for f in filings:
         by_fund[f["fund"]].append(f["id"])

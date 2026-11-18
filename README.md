@@ -68,6 +68,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the pipeline diagram and the trade-of
 | Weighted average spread (bps) and rate | Fair value change | Each fund's mark on the same borrower, and the dispersion between them |
 | Non-accruals (% of fair value and of cost), PIK | Early warning: positions that fell from 95%+ to 90% or less of cost in one quarter | Early warning: one lender near full value while another has cut the same borrower, or only one has it on non-accrual |
 | Mark distribution, watchlist, maturity wall | | |
+| One consistent sector per borrower (AI, from names, lender labels and business descriptions, with basis and confidence) | | Software exposure by lender label vs. the consistent sector, and software filed under other labels |
 
 ## Quick start
 
@@ -97,9 +98,10 @@ python -m holdings_lens demo           # cache answers for the landing pages
 | `holdings_lens/analytics.py` | Portfolio summary, quarter-over-quarter changes, cross-fund dispersion |
 | `holdings_lens/agent.py` | Tool-using agent over the Messages API, with citation verification |
 | `holdings_lens/evals.py` | Scorecard |
+| `holdings_lens/sectors.py` | AI sector classification: batched, cached in `evals/sectors.json`, loaded into a `sectors` table the agent can join |
 | `holdings_lens/fetch.py` · `db.py` | EDGAR downloader, SQLite schema and views |
 | `samples/` · `tools/make_samples.py` | **Fictional** filings (2 funds, 2 quarters, 2 layouts) with XBRL tags |
-| `tests/` | 56 tests, a few seconds, no network (API calls mocked) |
+| `tests/` | 59 tests, a few seconds, no network (API calls mocked) |
 | `web/` | Personalized landing pages with an interactive explorer (pick filings, compare lenders, build charts) |
 | `api/ask.py` · `vercel.json` | Live ask box: serverless endpoint with rate limits and a token cap |
 
