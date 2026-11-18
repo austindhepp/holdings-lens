@@ -81,7 +81,7 @@ TOOLS = [
     },
     {
         "name": "shared_borrowers",
-        "description": "Borrowers held by more than one fund (latest filings), with each fund's mark and the dispersion between them.",
+        "description": "Borrowers held by more than one fund (each fund's latest filing), with each fund's debt mark (fair value / cost over its loans to that borrower, equity excluded) and the gap between them, widest first.",
         "input_schema": {"type": "object", "properties": {}},
     },
     {
@@ -199,6 +199,7 @@ class Tools:
                 o = analytics.overlap(self.con)
                 shared = o["shared_borrowers"]  # already sorted by how far apart the lenders' marks are
                 o = dict(o, total_shared=len(shared), shared_borrowers=shared[:SHARED_LIMIT],
+                         basis="Debt positions only (loans and notes); equity stakes are excluded from these marks.",
                          note=f"Showing the {min(SHARED_LIMIT, len(shared))} borrowers with the widest mark gaps of "
                               f"{len(shared)} shared. Use run_sql for others.")
                 return self._analytics(o)
