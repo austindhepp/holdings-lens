@@ -77,8 +77,10 @@ def main(argv=None):
     g = sub.add_parser("export-gold"); g.add_argument("filing_id", type=int); g.add_argument("--rows", type=int, default=30)
     x = sub.add_parser("export-live-db")
     x.add_argument("--include-samples", action="store_true", help="also keep the bundled fictional funds")
-    d = sub.add_parser("demo"); d.add_argument("--questions", default=QA)
-    d.add_argument("--label", default="Bundled sample filings (fictional funds)")
+    d = sub.add_parser("demo"); d.add_argument("--questions", default=None)
+    d.add_argument("--real", action="store_true",
+                   help="ask real-filing questions (evals/qa_real.json) against the live database, in the live box's answer style")
+    d.add_argument("--label", default=None)
     args = ap.parse_args(argv)
 
     if args.cmd == "sample":
@@ -187,9 +189,23 @@ def main(argv=None):
     elif args.cmd == "demo":
         from .evals import eval_manifest, eval_qa
         ex = eval_manifest(MANIFEST, ROOT)
-        qa = eval_qa(args.questions, db_path=sample_db())
+        if args.real:
+            live_db = os.path.join(ROOT, "api", "holdings.db")
+            if not os.path.exists(live_db):
+                raise SystemExit("No api/holdings.db yet: run export-live-db first.")
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("live_ask", os.path.join(ROOT, "api", "ask.py"))
+            live = importlib.util.module_from_spec(spec)
+            os.environ.setdefault("LIVE_DB", live_db)
+            spec.loader.exec_module(live)
+            qa = eval_qa(args.questions or os.path.join(ROOT, "evals", "qa_real.json"), db_path=live_db,
+                         style=live.LIVE_STYLE + live.data_scope())
+            label = args.label or "Real SEC filings (saved answers from the live agent)"
+        else:
+            qa = eval_qa(args.questions or QA, db_path=sample_db())
+            label = args.label or "Bundled sample filings (fictional funds)"
         out = {
-            "placeholder": False, "label": args.label,
+            "placeholder": False, "label": label, "real": bool(args.real),
             "scorecard": {"cell_accuracy": ex["cell_accuracy"], "row_recall": ex["row_recall"],
                           "xbrl_match_rate": ex["xbrl_match_rate"], "qa_accuracy": qa["accuracy"],
                           "grounded_rate": qa["grounded_rate"], "avg_tokens": qa["avg_tokens"], "questions": qa["questions"]},

@@ -53,5 +53,11 @@
       "filing_total_usd": 29213000000.0,
       "extracted_total_usd": 29212600000.0
     }
-  ]
+  ],
+  "hand_check": {
+    "filing": "Golub Capital BDC 10-Q, June 30, 2026",
+    "rows": 30,
+    "cells": 390,
+    "correct": 390
+  }
 }

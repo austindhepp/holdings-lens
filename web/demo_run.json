@@ -1,795 +1,723 @@
 {
   "placeholder": false,
-  "label": "Bundled sample filings (fictional funds)",
+  "label": "Real SEC filings (saved answers from the live agent)",
+  "real": true,
   "scorecard": {
     "cell_accuracy": 1.0,
     "row_recall": 1.0,
     "xbrl_match_rate": 1.0,
-    "qa_accuracy": 1.0,
-    "grounded_rate": 0.9,
-    "avg_tokens": 12088.8,
-    "questions": 10
+    "qa_accuracy": 0.875,
+    "grounded_rate": 0.5,
+    "avg_tokens": 25920.0,
+    "questions": 8
   },
   "examples": [
     {
-      "question": "What is the total fair value of Lakeshore Example Capital Corp's first lien debt as of September 30, 2026?",
-      "answer": "**Lakeshore Example Capital Corp's first lien debt had a total fair value of $222,340,000 as of September 30, 2026.** This is computed from 12 holdings in [F2], the 10-Q for that period.\n\n- The 12 first lien positions are [H19], [H20], [H21], [H22], [H23], [H24], [H25], [H26], [H27], [H28], [H29] and [H30].\n- That is about 88.8% of the filing's $250,332,000 total. The rest is second lien debt ([H31], [H32], [H33]) and equity ([H34], [H35], [H36]).\n- The filing's extracted rows reconcile to its reported total with no difference, and every row's fair value matches its XBRL value.\n- I counted only holdings with lien = first_lien. The filing has no unitranche positions, so there is nothing else that could count as first lien.",
+      "question": "Which borrowers do Golub and Ares both lend to, and where do they disagree most on value?",
+      "answer": "**Golub and Ares share 73 borrowers. The widest gap in debt marks is on WebPT, where Golub values its loan at 70% of cost and Ares values its position at 100%.** The two positions are very different in size and type, so that gap overstates the real disagreement.\n\n- **WebPT:** Golub's non-accrual unitranche loan is marked at 0.70 of cost [H32814]. Ares holds two small first-lien positions of $100,000 each at par [H34935][H34936]. Ares' maturity is 2028-01 and Golub's is 2030-01, so they are probably different tranches.\n- **Pluralsight:** This is the largest like-for-like disagreement. Ares marks its first-lien debt at 0.42 of cost ($18.1M fair value, non-accrual) [H34875]. Golub's blended mark is 0.57, with the unitranche piece at 0.25 (non-accrual) [H32731] and the other pieces near 0.95\u20130.97 [H32732][H32733].\n- **Huskies Parent:** Ares marks it at 0.83 ($173.9M) [H34810], and Golub marks it at 0.97 ($1.9M) [H32320]. That is a 13.4-point gap.\n- **Marcone Yellowstone:** Golub marks it at 0.95 on $55.0M [H32899], and Ares marks it at 0.83 on a small $0.5M position [H35637]. That is an 11.4-point gap.\n- **Revalize:** Ares marks it at 0.82 and Golub at 0.91, a 9.4-point gap [H34886][H32359].\n\nCaveat: the comparison uses Golub's June 30, 2026 10-Q and Ares' September 30, 2026 10-Q. Part of each gap may come from the three-month difference in dates.\n\nI can pull the Ares vs. Golub tranche detail for Pluralsight or Huskies Parent if you want it.",
       "sources": [
         {
-          "id": 19,
-          "company": "Prairie Analytics, LLC",
-          "raw": "Prairie Analytics, LLC | Software | Term Loan | 9.85% | S + 5.50% | 3/15/2029 | 24,500 | 24,112 | 24,255 | 3.1",
-          "table_idx": 0,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 20,
-          "company": "Prairie Analytics, LLC",
-          "raw": "Revolver | 9.85% | S + 5.50% | Mar. 15, 2029 | 1,200 | 1,180 | 1,188 | 0.2",
-          "table_idx": 0,
-          "row_idx": 3,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 21,
-          "company": "Calumet Health Partners, Inc.",
-          "raw": "Calumet Health Partners, Inc. | Health Care Services | Term Loan | 10.40% | S + 6.00% | 11/2028 | 18,750 | 18,501 | 17,813 | 2.3",
-          "table_idx": 0,
-          "row_idx": 4,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 22,
-          "company": "Lakefront Logistics Holdings",
-          "raw": "Lakefront Logistics Holdings | Transportation | Term Loan | 9.60% | S + 5.25% | 6/1/2030 | 32,000 | 31,544 | 31,680 | 4.0",
-          "table_idx": 0,
-          "row_idx": 5,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 23,
-          "company": "Lakefront Logistics Holdings",
-          "raw": "Delayed Draw Term Loan | 9.60% | S + 5.25% | Jun. 1, 2030 | 4,000 | 3,940 | 3,960 | 0.5",
-          "table_idx": 0,
-          "row_idx": 6,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 24,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group (5) | Health Care Services | Term Loan | 11.10% (incl. 2.00% PIK) | S + 6.75% | 09/2027 | 12,300 | 12,245 | 10,455 | 1.3",
-          "table_idx": 0,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 25,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | Software | Term Loan | 9.35% | S + 5.00% | 1/31/2031 | 41,000 | 40,385 | 41,205 | 5.2",
-          "table_idx": 0,
-          "row_idx": 8,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 26,
-          "company": "Fulton Market Foods Co.",
-          "raw": "Fulton Market Foods Co. | Food Products | Term Loan | 10.15% | S + 5.75% | Aug. 15, 2029 | 15,600 | 15,420 | 15,210 | 1.9",
-          "table_idx": 0,
-          "row_idx": 9,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 27,
-          "company": "Pilsen Industrial Supply",
-          "raw": "Pilsen Industrial Supply | Distribution | Term Loan | 9.95% | S + 5.50% | 04/2028 | 21,000 | 20,790 | 20,895 | 2.6",
-          "table_idx": 0,
-          "row_idx": 10,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 28,
-          "company": "Bronzeville Learning, LLC",
-          "raw": "Bronzeville Learning, LLC | Education | Term Loan | 10.65% | S + 6.25% | 12/15/2029 | 9,800 | 9,702 | 9,506 | 1.2",
-          "table_idx": 1,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 29,
-          "company": "Hyde Park Insurance Services",
-          "raw": "Hyde Park Insurance Services | Insurance | Term Loan | 9.70% | S + 5.25% | Feb. 28, 2030 | 27,500 | 27,088 | 27,363 | 3.5",
-          "table_idx": 1,
-          "row_idx": 3,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 30,
-          "company": "Ravenswood Security Software",
-          "raw": "Ravenswood Security Software | Software | Term Loan | 10.20% | S + 5.75% | 05/2029 | 19,000 | 18,715 | 18,810 | 2.4",
-          "table_idx": 1,
-          "row_idx": 4,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 31,
-          "company": "Calumet Health Partners, Inc.",
-          "raw": "Calumet Health Partners, Inc. | Health Care Services | Second Lien Term Loan | 13.40% | S + 9.00% | 11/30/2029 | 8,000 | 7,880 | 7,040 | 0.9",
-          "table_idx": 1,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 32,
-          "company": "Midway Aerostructures Corp.",
-          "raw": "Midway Aerostructures Corp. | Aerospace Components | Second Lien Term Loan | 12.85% | S + 8.50% | Jul. 15, 2030 | 11,000 | 10,835 | 10,945 | 1.4",
-          "table_idx": 1,
-          "row_idx": 8,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 33,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | Software | Second Lien Term Loan | 12.60% | S + 8.25% | 07/2031 | 6,500 | 6,402 | 6,532 | 0.8",
-          "table_idx": 1,
-          "row_idx": 9,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 34,
-          "company": "Prairie Analytics, LLC",
-          "raw": "Prairie Analytics, LLC | Software | Class A Units | 1,500 | 1,500 | 2,310 | 0.3",
-          "table_idx": 1,
-          "row_idx": 12,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 35,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group | Health Care Services | Preferred Equity | 2,000 | 2,000 | 640 | 0.1",
-          "table_idx": 1,
-          "row_idx": 13,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 36,
-          "company": "Fulton Market Foods Co.",
-          "raw": "Fulton Market Foods Co. | Food Products | Common Stock | 350 | 350 | 525 | 0.1",
-          "table_idx": 1,
+          "id": 32320,
+          "company": "Huskies Parent, Inc.",
+          "raw": "Huskies Parent, Inc.+ | One stop | SF + | 6.00 % | (i) | 9.74 % | 11/2029 | 1,995 | 1,979 | 0.1 | 1,915",
+          "table_idx": 33,
           "row_idx": 14,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        }
-      ],
-      "correct": true,
-      "grounded": true
-    },
-    {
-      "question": "Which positions did Lakeshore exit between June 30 and September 30, 2026?",
-      "answer": "Lakeshore exited one position between June 30 and September 30, 2026: the Cicero Packaging Co. Term Loan.\n\n- **Exited position:** Cicero Packaging Co. Term Loan [H10] in the June 30 filing [F1]. It has no matching holding in the September 30 filing [F2].\n- **Size at exit:** The last reported fair value was $13,930,000 against a cost of $13,860,000. That is a mark of about 1.005. The maturity was 2028-10-31.\n- **Check:** I compared the two filings by company and instrument. Cicero was the only June position with no September match. Cicero also has no other instrument in the September filing.\n- **Reason for the exit:** The database doesn't say whether it was repaid, sold or written off.\n- **New position:** Bronzeville Learning, LLC Term Loan [H28] is new in September, at a fair value of $9,506,000.",
-      "sources": [
-        {
-          "id": 10,
-          "company": "Cicero Packaging Co.",
-          "raw": "Cicero Packaging Co. | Containers & Packaging | Term Loan | 10.05% | S + 5.75% | 10/31/2028 | 14,000 | 13,860 | 13,930 | 1.8",
-          "table_idx": 1,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
+          "fund": "GOLUB CAPITAL BDC, Inc.",
           "period": "2026-06-30",
-          "url": null
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 28,
-          "company": "Bronzeville Learning, LLC",
-          "raw": "Bronzeville Learning, LLC | Education | Term Loan | 10.65% | S + 6.25% | 12/15/2029 | 9,800 | 9,702 | 9,506 | 1.2",
-          "table_idx": 1,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        }
-      ],
-      "correct": true,
-      "grounded": true
-    },
-    {
-      "question": "Which new positions did Lakeshore add in the September 2026 quarter?",
-      "answer": "Lakeshore added one new position in the September 2026 quarter: **Bronzeville Learning, LLC** [H28]. This compares [F2] (9/30/2026) with [F1] (6/30/2026).\n\n- **Instrument:** first-lien Term Loan maturing 2029-12-15 [H28].\n- **Size:** principal of $9,800,000, cost of $9,702,000 and fair value of $9,506,000. That is a mark of 0.9798, or about 98% of cost [H28].\n- **Exit in the same quarter:** Cicero Packaging Co. Term Loan, which had a fair value of $13,930,000 in the prior quarter [H10]. Bronzeville therefore did not replace it dollar for dollar.\n- **Add-on to an existing borrower:** Kinzie Cloud Systems' Term Loan principal rose from $35,000,000 to $41,000,000 [H25]. That is a larger position in an existing holding, not a new one.\n\nI checked the new-position result two ways: the quarter-over-quarter comparison tool, and a query for `company_key` values in [F2] that are missing from [F1]. Both returned only Bronzeville.",
-      "sources": [
-        {
-          "id": 10,
-          "company": "Cicero Packaging Co.",
-          "raw": "Cicero Packaging Co. | Containers & Packaging | Term Loan | 10.05% | S + 5.75% | 10/31/2028 | 14,000 | 13,860 | 13,930 | 1.8",
-          "table_idx": 1,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-06-30",
-          "url": null
-        },
-        {
-          "id": 25,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | Software | Term Loan | 9.35% | S + 5.00% | 1/31/2031 | 41,000 | 40,385 | 41,205 | 5.2",
-          "table_idx": 0,
-          "row_idx": 8,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 28,
-          "company": "Bronzeville Learning, LLC",
-          "raw": "Bronzeville Learning, LLC | Education | Term Loan | 10.65% | S + 6.25% | 12/15/2029 | 9,800 | 9,702 | 9,506 | 1.2",
-          "table_idx": 1,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        }
-      ],
-      "correct": true,
-      "grounded": true
-    },
-    {
-      "question": "Which of Lakeshore's loans were marked down by more than 5 points of cost quarter over quarter?",
-      "answer": "Two Lakeshore loans were marked down by more than 5 points of cost from Q2 2026 (6/30) to Q3 2026 (9/30). Both are term loans.\n\n- **Wabash Dental Group, Term Loan:** The mark fell from 95.92% to 85.38% of cost, a drop of about 10.5 points [H6] \u2192 [H24]. Fair value went from $11,760,000 to $10,455,000 on cost of about $12.25M. It is not on non-accrual.\n- **Calumet Health Partners, Second Lien Term Loan:** The mark fell from 97.97% to 89.34%, a drop of about 8.6 points [H13] \u2192 [H31]. Fair value went from $7,720,000 to $7,040,000 on cost of $7,880,000. It is not on non-accrual.\n\n- **Equity position (not a loan):** Wabash Dental Group's Preferred Equity fell from 72.5% to 32.0% of cost, a drop of about 40.5 points [H17] \u2192 [H35]. I left it out because it is equity.\n- **Other positions:** The other 15 matched positions in the Q3 filing were flat, apart from Kinzie Cloud Systems' term loan, which rose 0.26 points [H7] \u2192 [H25]. Bronzeville Learning was new in Q3 [H28], so it has no prior mark. Cicero Packaging's term loan was in Q2 but not Q3 [H10].\n\nI compared Lakeshore's two filings, [F1] (Q2) and [F2] (Q3). I matched positions by borrower and instrument, using all 18 holdings in [F2].",
-      "sources": [
-        {
-          "id": 6,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group | Health Care Services | Term Loan | 11.10% | S + 6.75% | 09/2027 | 12,300 | 12,260 | 11,760 | 1.5",
-          "table_idx": 0,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-06-30",
-          "url": null
-        },
-        {
-          "id": 7,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | Software | Term Loan | 9.35% | S + 5.00% | 1/31/2031 | 35,000 | 34,460 | 35,070 | 4.5",
-          "table_idx": 0,
-          "row_idx": 8,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-06-30",
-          "url": null
-        },
-        {
-          "id": 10,
-          "company": "Cicero Packaging Co.",
-          "raw": "Cicero Packaging Co. | Containers & Packaging | Term Loan | 10.05% | S + 5.75% | 10/31/2028 | 14,000 | 13,860 | 13,930 | 1.8",
-          "table_idx": 1,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-06-30",
-          "url": null
-        },
-        {
-          "id": 13,
-          "company": "Calumet Health Partners, Inc.",
-          "raw": "Calumet Health Partners, Inc. | Health Care Services | Second Lien Term Loan | 13.40% | S + 9.00% | 11/30/2029 | 8,000 | 7,880 | 7,720 | 1.0",
-          "table_idx": 1,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-06-30",
-          "url": null
-        },
-        {
-          "id": 17,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group | Health Care Services | Preferred Equity | 2,000 | 2,000 | 1,450 | 0.2",
-          "table_idx": 1,
-          "row_idx": 13,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-06-30",
-          "url": null
-        },
-        {
-          "id": 24,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group (5) | Health Care Services | Term Loan | 11.10% (incl. 2.00% PIK) | S + 6.75% | 09/2027 | 12,300 | 12,245 | 10,455 | 1.3",
-          "table_idx": 0,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 25,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | Software | Term Loan | 9.35% | S + 5.00% | 1/31/2031 | 41,000 | 40,385 | 41,205 | 5.2",
-          "table_idx": 0,
-          "row_idx": 8,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 28,
-          "company": "Bronzeville Learning, LLC",
-          "raw": "Bronzeville Learning, LLC | Education | Term Loan | 10.65% | S + 6.25% | 12/15/2029 | 9,800 | 9,702 | 9,506 | 1.2",
-          "table_idx": 1,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 31,
-          "company": "Calumet Health Partners, Inc.",
-          "raw": "Calumet Health Partners, Inc. | Health Care Services | Second Lien Term Loan | 13.40% | S + 9.00% | 11/30/2029 | 8,000 | 7,880 | 7,040 | 0.9",
-          "table_idx": 1,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 35,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group | Health Care Services | Preferred Equity | 2,000 | 2,000 | 640 | 0.1",
-          "table_idx": 1,
-          "row_idx": 13,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        }
-      ],
-      "correct": true,
-      "grounded": false
-    },
-    {
-      "question": "Which borrower held by both funds has the largest difference in how the two funds value it?",
-      "answer": "**Wabash Dental Group** has the largest valuation gap between the two funds, at about 7.0 percentage points of cost.\n\n- Lakeshore Example Capital Corp [F2] values it at 85.38% of cost. Fair value is $10,455,000 against cost of $12,245,000 [H24].\n- Wacker Street Credit Fund [F3] values it at 78.35% of cost. Fair value is $7,020,000 against cost of $8,960,000 [H38].\n- The two positions look alike. Both are first lien, both mature in 2027-09, and both pay a spread of 675 bps. Neither is on non-accrual. The difference is in the marks, not the terms.\n- The other three shared borrowers are marked within 0.4 points of each other:\n  - Prairie Analytics: 100.60% at Lakeshore [H19, H20] vs. 101.02% at Wacker [H37].\n  - Kinzie Cloud Systems: 102.03% at Lakeshore [H25, H33] vs. 102.33% at Wacker [H39].\n  - Lakefront Logistics: 100.44% at Lakeshore [H22, H23] vs. 100.41% at Wacker [H40].\n- This comparison uses marks (fair value as a share of cost), because the funds hold different position sizes. In dollars, the Lakeshore position is larger, but that mostly reflects position size.",
-      "sources": [
-        {
-          "id": 24,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group (5) | Health Care Services | Term Loan | 11.10% (incl. 2.00% PIK) | S + 6.75% | 09/2027 | 12,300 | 12,245 | 10,455 | 1.3",
-          "table_idx": 0,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 37,
-          "company": "Prairie Analytics LLC",
-          "raw": "Prairie Analytics LLC | First lien term loan | Software | SOFR + 550 | 9.90% | Mar. 15, 2029 | 18,000 | 17,730 | 17,910 | 4.4%",
-          "table_idx": 0,
-          "row_idx": 2,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 38,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group | First lien term loan (6) | Healthcare Providers | SOFR + 675 | 11.10% | 09/2027 | 9,000 | 8,960 | 7,020 | 1.7%",
-          "table_idx": 0,
-          "row_idx": 3,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 39,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | First lien term loan | Software | SOFR + 500 | 9.35% | 1/31/2031 | 22,000 | 21,670 | 22,175 | 5.4%",
-          "table_idx": 0,
-          "row_idx": 4,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 40,
-          "company": "Lakefront Logistics Holdings, LLC",
-          "raw": "Lakefront Logistics Holdings, LLC | First lien term loan | Transportation & Logistics | SOFR + 525 | 9.70% | Jun. 1, 2030 | 15,000 | 14,790 | 14,850 | 3.6%",
-          "table_idx": 0,
-          "row_idx": 5,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        }
-      ],
-      "correct": true,
-      "grounded": true
-    },
-    {
-      "question": "What percentage of Wacker Street Credit Fund's total fair value is on non-accrual?",
-      "answer": "**4.42% of Wacker Street Credit Fund's total fair value is on non-accrual.** That is $4,725,000 of $106,863,000, computed from 10 holdings in [F3] (10-Q, period 2026-09-30).\n\n- Only one position is flagged non-accrual: Logan Square Media, Inc. first lien senior secured debt [H41]. It is marked at 0.459 of cost, with fair value of $4,725,000 against cost of $10,290,000.\n- The $106,863,000 total matches the filing total, and the extracted and reported figures reconcile with no difference [F3].\n- Logan Square Media also has an equity position [H45] at $0 fair value and $750,000 cost. It is not flagged non-accrual, so it adds nothing to the numerator. Counting it would not change the percentage, because its fair value is zero.\n- On a cost basis the figure would be higher. The non-accrual position is $10,290,000 of cost, and I did not compute the total cost.",
-      "sources": [
-        {
-          "id": 41,
-          "company": "Logan Square Media, Inc.",
-          "raw": "Logan Square Media, Inc. | First lien term loan (7) | Media | SOFR + 800 | 12.40% | 03/2027 | 10,500 | 10,290 | 4,725 | 1.2%",
-          "table_idx": 0,
+          "id": 32359,
+          "company": "Revalize, Inc.",
+          "raw": "Revalize, Inc.+(25) | One stop | SF + | 6.50 % | (j) | 8.63 % | cash/ | 1.75 % | PIK | 04/2029 | 20,682 | 20,539 | 0.5 | 18,615",
+          "table_idx": 34,
           "row_idx": 6,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 45,
-          "company": "Logan Square Media, Inc.",
-          "raw": "Logan Square Media, Inc. | Common equity (8) | Media | 750 | 750 | 0.0%",
-          "table_idx": 0,
-          "row_idx": 11,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        }
-      ],
-      "correct": true,
-      "grounded": true
-    },
-    {
-      "question": "What is the fair-value-weighted average spread, in basis points, on Lakeshore's first lien loans as of September 30, 2026?",
-      "answer": "The fair-value-weighted average spread on Lakeshore's first lien loans was **about 551 bps (550.6 bps)** over SOFR as of September 30, 2026. This is computed from 12 first lien holdings in [F2], Lakeshore Example Capital Corp's 10-Q for that period. Those holdings total $222,340,000 of fair value.\n\n- **Holdings used:** [H19], [H20], [H21], [H22], [H23], [H24], [H25], [H26], [H27], [H28], [H29], [H30]. All 12 are floating rate, SOFR-based, and none is on non-accrual.\n- **Spread range:** The spreads run from 500 bps (Kinzie Cloud, [H25]) to 675 bps (Wabash Dental, [H24]).\n- **Largest positions:** Kinzie Cloud ([H25], $41.2M, 500 bps) and Lakefront Logistics ([H22], $31.7M, 525 bps) are the biggest holdings. Their low spreads pull the weighted average below the simple average of the 12 spreads.\n- **Exclusions:** The second lien and equity rows ([H31]\u2013[H36]) are left out. The filing's extracted total matches the reported total, so nothing is missing.\n- **PIK:** The 675 bps for [H24] is the cash spread. Its 11.10% rate includes 2.00% PIK, and I did not adjust for that.",
-      "sources": [
+          "id": 32731,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(7)(25) | One stop | SF + | 7.50 % | (i) | 11.14 % | PIK | 08/2029 | 7,417 | 6,764 | 0.1 | 1,706",
+          "table_idx": 43,
+          "row_idx": 49,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
         {
-          "id": 19,
-          "company": "Prairie Analytics, LLC",
-          "raw": "Prairie Analytics, LLC | Software | Term Loan | 9.85% | S + 5.50% | 3/15/2029 | 24,500 | 24,112 | 24,255 | 3.1",
-          "table_idx": 0,
+          "id": 32732,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 4,049 | 3,975 | 0.1 | 3,847",
+          "table_idx": 43,
+          "row_idx": 50,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32733,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 2,025 | 2,025 | 0.1 | 1,923",
+          "table_idx": 43,
+          "row_idx": 51,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32814,
+          "company": "WebPT, Inc.",
+          "raw": "WebPT, Inc.+(7)(25) | One stop | SF + | 6.26 % | (k) | 7.08 % | cash/ | 3.13 % | PIK | 01/2030 | 949 | 920 | 646",
+          "table_idx": 45,
+          "row_idx": 30,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32899,
+          "company": "Marcone Yellowstone Buyer, Inc.",
+          "raw": "Marcone Yellowstone Buyer, Inc.+(25) | One stop | SF + | 7.00 % | (j) | 7.58 % | cash/ | 3.25 % | PIK | 06/2028 | 21,087 | 20,917 | 0.5 | 19,610",
+          "table_idx": 48,
+          "row_idx": 27,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 34810,
+          "company": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP",
+          "raw": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP (13) | Insurance software provider | First lien senior secured revolving loan | 9.47 % | SOFR (Q) | 5.50 % | 11/2021 | 11/2029 | 0.8 | 0.8 | 0.7 | (2)(9)",
+          "table_idx": 14,
+          "row_idx": 26,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 34875,
+          "company": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC",
+          "raw": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC (4) | Online education learning platform | First lien senior secured loan | 08/2024 | 08/2029 | 46.2 | 43.1 | 18.1 | (2)(8)",
+          "table_idx": 18,
           "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
+          "fund": "ARES CAPITAL CORP",
           "period": "2026-09-30",
-          "url": null
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 20,
-          "company": "Prairie Analytics, LLC",
-          "raw": "Revolver | 9.85% | S + 5.50% | Mar. 15, 2029 | 1,200 | 1,180 | 1,188 | 0.2",
-          "table_idx": 0,
-          "row_idx": 3,
-          "fund": "Lakeshore Example Capital Corp",
+          "id": 34886,
+          "company": "Revalize, Inc.",
+          "raw": "Revalize, Inc. (13) | Developer and operator of software providing configuration, price and quote capabilities | First lien senior secured revolving loan | 10.47 % | SOFR (Q) | 6.25 % | 05/2022 | 04/2029 | 0.4 | 0.4 | 0.3 | (2)(9)",
+          "table_idx": 18,
+          "row_idx": 17,
+          "fund": "ARES CAPITAL CORP",
           "period": "2026-09-30",
-          "url": null
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 21,
-          "company": "Calumet Health Partners, Inc.",
-          "raw": "Calumet Health Partners, Inc. | Health Care Services | Term Loan | 10.40% | S + 6.00% | 11/2028 | 18,750 | 18,501 | 17,813 | 2.3",
-          "table_idx": 0,
-          "row_idx": 4,
-          "fund": "Lakeshore Example Capital Corp",
+          "id": 34935,
+          "company": "WebPT, Inc. and WPT Intermediate Holdco, Inc.",
+          "raw": "WebPT, Inc. and WPT Intermediate Holdco, Inc. (13) | Electronic medical record software provider | First lien senior secured revolving loan | 10.56 % | SOFR (S) | 6.25 % | 08/2019 | 01/2028 | 0.1 | 0.1 | 0.1 | (2)(9)",
+          "table_idx": 20,
+          "row_idx": 27,
+          "fund": "ARES CAPITAL CORP",
           "period": "2026-09-30",
-          "url": null
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 22,
-          "company": "Lakefront Logistics Holdings",
-          "raw": "Lakefront Logistics Holdings | Transportation | Term Loan | 9.60% | S + 5.25% | 6/1/2030 | 32,000 | 31,544 | 31,680 | 4.0",
-          "table_idx": 0,
-          "row_idx": 5,
-          "fund": "Lakeshore Example Capital Corp",
+          "id": 34936,
+          "company": "WebPT, Inc. and WPT Intermediate Holdco, Inc.",
+          "raw": "First lien senior secured loan | 10.20 % ( 3.13 % PIK) | SOFR (Q) | 6.25 % | 08/2019 | 01/2028 | 0.1 | 0.1 | 0.1 | (2)(9)",
+          "table_idx": 20,
+          "row_idx": 28,
+          "fund": "ARES CAPITAL CORP",
           "period": "2026-09-30",
-          "url": null
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 23,
-          "company": "Lakefront Logistics Holdings",
-          "raw": "Delayed Draw Term Loan | 9.60% | S + 5.25% | Jun. 1, 2030 | 4,000 | 3,940 | 3,960 | 0.5",
-          "table_idx": 0,
-          "row_idx": 6,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 24,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group (5) | Health Care Services | Term Loan | 11.10% (incl. 2.00% PIK) | S + 6.75% | 09/2027 | 12,300 | 12,245 | 10,455 | 1.3",
-          "table_idx": 0,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 25,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | Software | Term Loan | 9.35% | S + 5.00% | 1/31/2031 | 41,000 | 40,385 | 41,205 | 5.2",
-          "table_idx": 0,
-          "row_idx": 8,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 26,
-          "company": "Fulton Market Foods Co.",
-          "raw": "Fulton Market Foods Co. | Food Products | Term Loan | 10.15% | S + 5.75% | Aug. 15, 2029 | 15,600 | 15,420 | 15,210 | 1.9",
-          "table_idx": 0,
-          "row_idx": 9,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 27,
-          "company": "Pilsen Industrial Supply",
-          "raw": "Pilsen Industrial Supply | Distribution | Term Loan | 9.95% | S + 5.50% | 04/2028 | 21,000 | 20,790 | 20,895 | 2.6",
-          "table_idx": 0,
-          "row_idx": 10,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 28,
-          "company": "Bronzeville Learning, LLC",
-          "raw": "Bronzeville Learning, LLC | Education | Term Loan | 10.65% | S + 6.25% | 12/15/2029 | 9,800 | 9,702 | 9,506 | 1.2",
-          "table_idx": 1,
-          "row_idx": 2,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 29,
-          "company": "Hyde Park Insurance Services",
-          "raw": "Hyde Park Insurance Services | Insurance | Term Loan | 9.70% | S + 5.25% | Feb. 28, 2030 | 27,500 | 27,088 | 27,363 | 3.5",
-          "table_idx": 1,
-          "row_idx": 3,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 30,
-          "company": "Ravenswood Security Software",
-          "raw": "Ravenswood Security Software | Software | Term Loan | 10.20% | S + 5.75% | 05/2029 | 19,000 | 18,715 | 18,810 | 2.4",
-          "table_idx": 1,
-          "row_idx": 4,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 31,
-          "company": "Calumet Health Partners, Inc.",
-          "raw": "Calumet Health Partners, Inc. | Health Care Services | Second Lien Term Loan | 13.40% | S + 9.00% | 11/30/2029 | 8,000 | 7,880 | 7,040 | 0.9",
-          "table_idx": 1,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 36,
-          "company": "Fulton Market Foods Co.",
-          "raw": "Fulton Market Foods Co. | Food Products | Common Stock | 350 | 350 | 525 | 0.1",
-          "table_idx": 1,
-          "row_idx": 14,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
-        }
-      ],
-      "correct": true,
-      "grounded": true
-    },
-    {
-      "question": "How many distinct borrowers does Wacker Street Credit Fund hold?",
-      "answer": "Wacker Street Credit Fund holds **8 distinct borrowers**. The count is computed from 10 holdings in [F3], its only filing, which is the 10-Q for the period ending 2026-09-30.\n\n- Two borrowers have two positions each, a first-lien loan plus an equity stake:\n  - Logan Square Media, Inc. has the loan [H41] and equity [H45].\n  - Evanston Robotics Corp. has the loan [H42] and equity [H46].\n- The other six borrowers have one position each:\n  - Prairie Analytics [H37]\n  - Wabash Dental Group [H38]\n  - Kinzie Cloud Systems [H39]\n  - Lakefront Logistics [H40]\n  - Oak Lawn Medical Billing [H43]\n  - Andersonville Pet Health [H44]\n- The filing's reconciliation shows the extracted total matches the filing total at $106,863,000. Nine investments are tagged against the 10 extracted rows. The tool output doesn't explain the difference, but all 10 rows belong to one of the 8 borrowers.",
-      "sources": [
-        {
-          "id": 37,
-          "company": "Prairie Analytics LLC",
-          "raw": "Prairie Analytics LLC | First lien term loan | Software | SOFR + 550 | 9.90% | Mar. 15, 2029 | 18,000 | 17,730 | 17,910 | 4.4%",
-          "table_idx": 0,
-          "row_idx": 2,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 38,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group | First lien term loan (6) | Healthcare Providers | SOFR + 675 | 11.10% | 09/2027 | 9,000 | 8,960 | 7,020 | 1.7%",
-          "table_idx": 0,
-          "row_idx": 3,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 39,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | First lien term loan | Software | SOFR + 500 | 9.35% | 1/31/2031 | 22,000 | 21,670 | 22,175 | 5.4%",
-          "table_idx": 0,
-          "row_idx": 4,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 40,
-          "company": "Lakefront Logistics Holdings, LLC",
-          "raw": "Lakefront Logistics Holdings, LLC | First lien term loan | Transportation & Logistics | SOFR + 525 | 9.70% | Jun. 1, 2030 | 15,000 | 14,790 | 14,850 | 3.6%",
-          "table_idx": 0,
-          "row_idx": 5,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 41,
-          "company": "Logan Square Media, Inc.",
-          "raw": "Logan Square Media, Inc. | First lien term loan (7) | Media | SOFR + 800 | 12.40% | 03/2027 | 10,500 | 10,290 | 4,725 | 1.2%",
-          "table_idx": 0,
-          "row_idx": 6,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 42,
-          "company": "Evanston Robotics Corp.",
-          "raw": "Evanston Robotics Corp. | First lien term loan | Industrial Machinery | SOFR + 575 | 10.25% | 11/30/2030 | 16,500 | 16,253 | 16,335 | 4.0%",
-          "table_idx": 0,
-          "row_idx": 7,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 43,
-          "company": "Oak Lawn Medical Billing, LLC",
-          "raw": "Oak Lawn Medical Billing, LLC | Unitranche term loan (6) | Health Care Technology | SOFR + 700 | 12.00% (incl. 3.00% PIK) | Jun. 30, 2029 | 13,000 | 12,805 | 12,350 | 3.0%",
-          "table_idx": 0,
-          "row_idx": 8,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 44,
-          "company": "Andersonville Pet Health",
-          "raw": "Andersonville Pet Health | First lien term loan | Veterinary Services | SOFR + 600 | 10.60% | 09/2029 | 11,200 | 11,032 | 11,088 | 2.7%",
-          "table_idx": 0,
-          "row_idx": 9,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 45,
-          "company": "Logan Square Media, Inc.",
-          "raw": "Logan Square Media, Inc. | Common equity (8) | Media | 750 | 750 | 0.0%",
-          "table_idx": 0,
-          "row_idx": 11,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
-        },
-        {
-          "id": 46,
-          "company": "Evanston Robotics Corp.",
-          "raw": "Evanston Robotics Corp. | Warrants (8) | Industrial Machinery | 120 | 410 | 0.1%",
-          "table_idx": 0,
+          "id": 35637,
+          "company": "Marcone Yellowstone Buyer Inc. and Marcone Yellowstone Holdings, LLC",
+          "raw": "Marcone Yellowstone Buyer Inc. and Marcone Yellowstone Holdings, LLC | Distributor of OEM appliance aftermarket parts | First lien senior secured loan | 7.63 % | SOFR (Q) | 3.75 % | 06/2021 | 06/2028 | 0.4 | 0.4 | 0.3 | (2)(9)",
+          "table_idx": 52,
           "row_idx": 12,
-          "fund": "Wacker Street Credit Fund",
+          "fund": "ARES CAPITAL CORP",
           "period": "2026-09-30",
-          "url": null
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         }
       ],
       "correct": true,
-      "grounded": true
+      "grounded": true,
+      "unsupported": [],
+      "tools_used": [
+        "shared_borrowers",
+        "run_sql"
+      ]
     },
     {
-      "question": "Which debt investments in the latest filings pay part of their interest in kind (PIK)?",
-      "answer": "Three debt investments in the latest filings pay part of their interest in kind. They are two loans to Wabash Dental Group, one in each fund, and one loan to Oak Lawn Medical Billing. I flagged a holding if its PIK field was set or its rate, footnote, notes or instrument text mentioned PIK or \"in kind\".\n\n| Fund | Borrower | Rate | Principal | Fair value | Mark |\n|---|---|---|---|---|---|\n| Lakeshore Example Capital Corp [F2] | Wabash Dental Group, first lien term loan [H24] | 11.10% (incl. 2.00% PIK) | $12,300,000 | $10,455,000 | 0.854 |\n| Wacker Street Credit Fund [F3] | Wabash Dental Group, first lien term loan [H38] | 11.10% | $9,000,000 | $7,020,000 | 0.784 |\n| Wacker Street Credit Fund [F3] | Oak Lawn Medical Billing, LLC, unitranche term loan [H43] | 12.00% (incl. 3.00% PIK) | $13,000,000 | $12,350,000 | 0.965 |\n\n- **Wacker's Wabash loan:** The filing footnote says the interest \"includes a payment-in-kind (PIK) component\" [H38]. The rate field doesn't give the PIK portion. Lakeshore's loan to the same borrower has the same 11.10% rate and 675 bps spread, with 2.00% of it PIK [H24], but I can't confirm Wacker's split is also 2.00%.\n- **Mark gap on Wabash:** Lakeshore marks its loan at about 85% of cost and Wacker marks its loan at about 78% [H24][H38]. Both loans mature in 2027-09 and neither is on non-accrual.\n- **Oak Lawn:** The loan matures 2029-06-30 and is not on non-accrual [H43].\n- **Coverage:** The latest filings are Lakeshore for the period ending 2026-09-30 [F2] and Wacker Street for the same period [F3]. Both reconcile fully to the filing totals.",
+      "question": "How do Golub and Ares compare on non-accruals as a share of cost?",
+      "answer": "**Golub has the higher non-accrual share on total cost (2.94% vs 2.39%) at June 30, 2026. Ares is higher on debt only (3.03% vs 1.65%).**\n\n- **Total cost, June 30, 2026:** Golub has $246.3M on non-accrual out of $8.377B, which is 2.94%. It is computed from 1,812 holdings in the Golub 10-Q [F2]. Ares has $707.6M out of $29.675B, which is 2.38%. It is computed from 1,439 holdings in the Ares 10-Q [F7].\n- **Debt only, June 30, 2026:** Golub has $127.7M out of $7.749B, which is 1.65%. Ares has $707.6M out of $23.328B, which is 3.03%.\n- **Why the two views differ:** Ten Golub equity positions carry $118.6M of non-accrual cost, for example [H32949]. Their footnote says non-accrual covers non-cash dividends. Every Ares non-accrual is a loan, for example [H34875].\n- **Latest Ares filing (Sept 30, 2026):** Non-accruals are $711.1M out of $29.478B, which is 2.41% of total cost and 3.11% of debt cost. That is computed from 1,422 holdings in the Ares 10-Q [F6].\n- **Marks:** On the Sept 30 Ares filing, non-accrual debt is carried at $426.1M, or 60% of cost. On the Golub filing, it is $73.3M, or 57%.\n\nI compared June 30 for both funds, because Golub has no later filing.",
       "sources": [
         {
-          "id": 24,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group (5) | Health Care Services | Term Loan | 11.10% (incl. 2.00% PIK) | S + 6.75% | 09/2027 | 12,300 | 12,245 | 10,455 | 1.3",
-          "table_idx": 0,
-          "row_idx": 7,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
+          "id": 32949,
+          "company": "Cobepa BlueSky Aggregator, SCSp",
+          "raw": "Cobepa BlueSky Aggregator, SCSp+(7)(24) | Preferred stock | N/A | 15.00 % | Non-Cash | 04/2024 | N/A | 5 | 61 | 35",
+          "table_idx": 50,
+          "row_idx": 39,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 38,
-          "company": "Wabash Dental Group",
-          "raw": "Wabash Dental Group | First lien term loan (6) | Healthcare Providers | SOFR + 675 | 11.10% | 09/2027 | 9,000 | 8,960 | 7,020 | 1.7%",
-          "table_idx": 0,
+          "id": 34875,
+          "company": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC",
+          "raw": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC (4) | Online education learning platform | First lien senior secured loan | 08/2024 | 08/2029 | 46.2 | 43.1 | 18.1 | (2)(8)",
+          "table_idx": 18,
+          "row_idx": 2,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        }
+      ],
+      "correct": false,
+      "grounded": false,
+      "unsupported": [
+        32949
+      ],
+      "tools_used": [
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql"
+      ]
+    },
+    {
+      "question": "What are Golub's five largest borrowers by fair value as of June 30, 2026?",
+      "answer": "**Golub's largest borrower at June 30, 2026 is GS Acquisitionco, Inc., at $165.7 million fair value.** The top five are below, computed from 1,812 non-cash holdings in the Golub June 30, 2026 10-Q [F2].\n\n- GS Acquisitionco, Inc.: $165,712,000 [H32647, H32648, H32649, H33137\u2013H33140]\n- Bayshore Intermediate #2, L.P.: $131,466,000 [H32576, H32577, H33121]\n- TWAS Holdings, LLC: $110,699,000 [H31550, H31551, H31552]\n- Chestnut Optical Midco, Inc.: $107,169,000 [H33224, H33225, H33226, H33245]\n- Liminex, Inc.: $93,775,000 [H31760\u2013H31763, H32972]\n\nLiminex's lead over the sixth-place borrower, PHM NL SP Bidco B.V. at $91,840,000, is only about $1.9 million.\n\nCaveat: each total adds all of a borrower's rows, including equity and any unfunded commitments marked below par. I did not test whether the ranking changes if you count only debt.",
+      "sources": [
+        {
+          "id": 31550,
+          "company": "TWAS Holdings, LLC",
+          "raw": "TWAS Holdings, LLC*+ | One stop | SF + | 4.75 % | (i) | 8.39 % | 12/2029 | 111,263 | 110,195 | 3.0 | 110,707",
+          "table_idx": 12,
+          "row_idx": 20,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31551,
+          "company": "TWAS Holdings, LLC",
+          "raw": "TWAS Holdings, LLC+(5) | One stop | N/A(6) | 12/2029 | ( 3 ) | ( 4 )",
+          "table_idx": 12,
+          "row_idx": 21,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31552,
+          "company": "TWAS Holdings, LLC",
+          "raw": "TWAS Holdings, LLC+(5) | One stop | N/A(6) | 12/2029 | ( 9 ) | ( 4 )",
+          "table_idx": 12,
+          "row_idx": 22,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31760,
+          "company": "Liminex, Inc.",
+          "raw": "Liminex, Inc.+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 35,115 | 34,788 | 1.0 | 34,939",
+          "table_idx": 18,
+          "row_idx": 43,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31761,
+          "company": "Liminex, Inc.",
+          "raw": "Liminex, Inc.*+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 23,163 | 22,939 | 0.6 | 23,048",
+          "table_idx": 18,
+          "row_idx": 44,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31762,
+          "company": "Liminex, Inc.",
+          "raw": "Liminex, Inc.+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 15,713 | 15,536 | 0.4 | 15,635",
+          "table_idx": 18,
+          "row_idx": 45,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31763,
+          "company": "Liminex, Inc.",
+          "raw": "Liminex, Inc.+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 20,016 | 19,898 | 0.6 | 19,916",
+          "table_idx": 18,
+          "row_idx": 46,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32576,
+          "company": "Bayshore Intermediate #2, L.P.",
+          "raw": "Bayshore Intermediate #2, L.P.+ | One stop | SF + | 5.00 % | (j) | 8.68 % | 10/2027 | 187 | 188 | 184",
+          "table_idx": 40,
+          "row_idx": 26,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32577,
+          "company": "Bayshore Intermediate #2, L.P.",
+          "raw": "Bayshore Intermediate #2, L.P.+(25) | One stop | SF + | 5.50 % | (j) | 6.17 % | cash/ | 3.00 % | PIK | 10/2028 | 127,037 | 126,992 | 3.4 | 125,131",
+          "table_idx": 40,
+          "row_idx": 27,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32647,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.*+ | One stop | SF + | 5.25 % | (j) | 8.98 % | 05/2028 | 120,493 | 120,687 | 3.1 | 113,565",
+          "table_idx": 42,
+          "row_idx": 18,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32648,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+ | One stop | SF + | 5.25 % | (j) | 8.98 % | 05/2028 | 539 | 539 | 508",
+          "table_idx": 42,
+          "row_idx": 19,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32649,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+ | One stop | SF + | 5.25 % | (j) | 8.98 % | 05/2028 | 122 | 121 | 115",
+          "table_idx": 42,
+          "row_idx": 20,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32972,
+          "company": "Liminex, Inc.",
+          "raw": "Liminex, Inc.+ | Common stock | N/A | N/A | 11/2020 | N/A | 17 | 633 | 237",
+          "table_idx": 51,
+          "row_idx": 28,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33121,
+          "company": "Bayshore Intermediate #2, L.P.",
+          "raw": "Bayshore Intermediate #2, L.P.+ | LP interest | N/A | N/A | 10/2021 | N/A | 5,841 | 5,890 | 0.2 | 6,151",
+          "table_idx": 56,
+          "row_idx": 25,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33137,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | N/A | 11.00 % | Non-Cash | 04/2021 | N/A | 35 | 53,678 | 1.2 | 45,719",
+          "table_idx": 56,
+          "row_idx": 41,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33138,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | N/A | 11.00 % | Non-Cash | 11/2021 | N/A | 5 | 6,830 | 0.2 | 5,681",
+          "table_idx": 56,
+          "row_idx": 42,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33139,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+ | LP interest | N/A | N/A | 09/2021 | N/A | 1 | 363",
+          "table_idx": 56,
+          "row_idx": 43,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33140,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | SF + | 10.50 % | (j) | 14.23 % | Non-Cash | 08/2023 | N/A | 149 | 124",
+          "table_idx": 56,
+          "row_idx": 44,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33224,
+          "company": "Chestnut Optical Midco, Inc.",
+          "raw": "Chestnut Optical Midco, Inc.+ | One stop | SF + | 1.00 % | (j) | 4.73 % | 06/2029 | 45,064 | 42,367 | 1.1 | 41,008",
+          "table_idx": 59,
+          "row_idx": 53,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33225,
+          "company": "Chestnut Optical Midco, Inc.",
+          "raw": "Chestnut Optical Midco, Inc.+(5) | One stop | N/A(6) | 06/2029 | ( 253 )",
+          "table_idx": 60,
+          "row_idx": 2,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33226,
+          "company": "Chestnut Optical Midco, Inc.",
+          "raw": "Chestnut Optical Midco, Inc.+ | One stop | SF + | 1.00 % | (j) | 4.73 % | 06/2029 | 7,511 | 7,511 | 0.2 | 6,159",
+          "table_idx": 60,
           "row_idx": 3,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 43,
-          "company": "Oak Lawn Medical Billing, LLC",
-          "raw": "Oak Lawn Medical Billing, LLC | Unitranche term loan (6) | Health Care Technology | SOFR + 700 | 12.00% (incl. 3.00% PIK) | Jun. 30, 2029 | 13,000 | 12,805 | 12,350 | 3.0%",
-          "table_idx": 0,
-          "row_idx": 8,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
+          "id": 33245,
+          "company": "Chestnut Optical Midco, Inc.",
+          "raw": "Chestnut Optical Midco, Inc.+ | LLC interest | N/A | N/A | 06/2024 | N/A | 189 | 53,763 | 1.6 | 60,255",
+          "table_idx": 61,
+          "row_idx": 38,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         }
       ],
       "correct": true,
-      "grounded": true
+      "grounded": true,
+      "unsupported": [],
+      "tools_used": [
+        "run_sql",
+        "run_sql",
+        "run_sql"
+      ]
     },
     {
-      "question": "What is the single largest holding by fair value across the funds' latest filings?",
-      "answer": "**The largest holding is Kinzie Cloud Systems, Inc., a first lien senior secured debt position held by Lakeshore Example Capital Corp. Its fair value is $41,205,000 [H25] in the 2026-09-30 filing [F2].**\n\n- Its cost is $40,385,000, so it is marked at about 1.02\u00d7 cost. The XBRL fair value matches at $41,205,000 [H25].\n- The next largest is Lakefront Logistics Holdings at $31,680,000 [H22], also in Lakeshore [F2].\n- Wacker Street Credit Fund also holds Kinzie Cloud Systems, but its position is $22,175,000 [H39] in [F3]. That is the largest in Wacker's portfolio and about 54% of Lakeshore's position.\n- I compared the 10 largest holdings across the latest filings, which are [F2] for Lakeshore and [F3] for Wacker. The extracted totals for both filings match their reported totals.",
+      "question": "Which Golub loans went on non-accrual for the first time between March and June 2026?",
+      "answer": "**Two Golub borrowers appear on non-accrual in the June 30, 2026 10-Q but not in the March 31, 2026 10-Q: Wineshipping.com and WebPT, with about $8.97 million of fair value combined.**\n\n- **Wineshipping.com, LLC:** four unitranche lines, all flagged non-accrual in June and none in March. The June fair value is $8.33 million (net of a \u2013$175,000 unfunded line) on $11.58 million of cost [H31857] [H31858] [H31859] [H31860]. The March lines [H30058] [H30059] [H30060] [H30061] were marked about 71\u201373% of cost.\n- **WebPT, Inc.:** one unitranche loan, flagged non-accrual in June, with a fair value of $646,000 on $920,000 of cost (a 70.2% mark) [H32814]. In March it was accruing, at 79.4% of cost [H31000].\n- Every other June non-accrual debt borrower already carried the flag in March. That includes Titan Fitness, Plasma Buyer, Pluralsight and Elite Dental. Several of them were re-marked sharply lower in June, but that isn't a new non-accrual.\n\nCaveat: the database holds only these two Golub quarters, so \"first time\" means \"not flagged in March\". I can't see earlier history. Equity positions were left out because you asked about loans.",
       "sources": [
         {
-          "id": 22,
-          "company": "Lakefront Logistics Holdings",
-          "raw": "Lakefront Logistics Holdings | Transportation | Term Loan | 9.60% | S + 5.25% | 6/1/2030 | 32,000 | 31,544 | 31,680 | 4.0",
-          "table_idx": 0,
-          "row_idx": 5,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
+          "id": 30058,
+          "company": "Wineshipping.com LLC",
+          "raw": "Wineshipping.com LLC+(25) | One stop | SF + | 6.25 % | (j) | 4.85 % | cash/ | 5.25 % | PIK | 12/2028 | 242 | 238 | 170",
+          "table_idx": 19,
+          "row_idx": 42,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
         },
         {
-          "id": 25,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | Software | Term Loan | 9.35% | S + 5.00% | 1/31/2031 | 41,000 | 40,385 | 41,205 | 5.2",
-          "table_idx": 0,
-          "row_idx": 8,
-          "fund": "Lakeshore Example Capital Corp",
-          "period": "2026-09-30",
-          "url": null
+          "id": 30059,
+          "company": "Wineshipping.com LLC",
+          "raw": "Wineshipping.com LLC+(25) | One stop | SF + | 6.25 % | (j) | 4.85 % | cash/ | 5.25 % | PIK | 12/2028 | 11,140 | 11,001 | 0.2 | 8,021",
+          "table_idx": 19,
+          "row_idx": 43,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
         },
         {
-          "id": 39,
-          "company": "Kinzie Cloud Systems, Inc.",
-          "raw": "Kinzie Cloud Systems, Inc. | First lien term loan | Software | SOFR + 500 | 9.35% | 1/31/2031 | 22,000 | 21,670 | 22,175 | 5.4%",
-          "table_idx": 0,
-          "row_idx": 4,
-          "fund": "Wacker Street Credit Fund",
-          "period": "2026-09-30",
-          "url": null
+          "id": 30060,
+          "company": "Wineshipping.com LLC",
+          "raw": "Wineshipping.com LLC+(25) | One stop | SF + | 6.25 % | (j) | 4.85 % | cash/ | 5.25 % | PIK | 12/2028 | 301 | 296 | 217",
+          "table_idx": 19,
+          "row_idx": 44,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 30061,
+          "company": "Wineshipping.com LLC",
+          "raw": "Wineshipping.com LLC+(5) | One stop | N/A(6) | 12/2028 | ( 209 )",
+          "table_idx": 19,
+          "row_idx": 45,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 31000,
+          "company": "WebPT, Inc.",
+          "raw": "WebPT, Inc.+(25) | One stop | SF + | 6.26 % | (j) | 6.93 % | cash/ | 3.13 % | PIK | 01/2030 | 942 | 937 | 744",
+          "table_idx": 44,
+          "row_idx": 29,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 31857,
+          "company": "Wineshipping.com, LLC",
+          "raw": "Wineshipping.com, LLC+(7)(25) | One stop | SF + | 6.25 % | (j) | 4.88 % | cash/ | 5.25 % | PIK | 12/2028 | 261 | 253 | 181",
+          "table_idx": 20,
+          "row_idx": 46,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31858,
+          "company": "Wineshipping.com, LLC",
+          "raw": "Wineshipping.com, LLC+(7)(25) | One stop | SF + | 6.25 % | (j) | 4.88 % | cash/ | 5.25 % | PIK | 12/2028 | 11,412 | 11,033 | 0.2 | 8,102",
+          "table_idx": 20,
+          "row_idx": 47,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31859,
+          "company": "Wineshipping.com, LLC",
+          "raw": "Wineshipping.com, LLC+(7)(25) | One stop | SF + | 6.25 % | (j) | 4.88 % | cash/ | 5.25 % | PIK | 12/2028 | 308 | 297 | 219",
+          "table_idx": 20,
+          "row_idx": 48,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 31860,
+          "company": "Wineshipping.com, LLC",
+          "raw": "Wineshipping.com, LLC+(5)(7) | One stop | N/A(6) | 12/2028 | ( 175 )",
+          "table_idx": 20,
+          "row_idx": 49,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32814,
+          "company": "WebPT, Inc.",
+          "raw": "WebPT, Inc.+(7)(25) | One stop | SF + | 6.26 % | (k) | 7.08 % | cash/ | 3.13 % | PIK | 01/2030 | 949 | 920 | 646",
+          "table_idx": 45,
+          "row_idx": 30,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         }
       ],
       "correct": true,
-      "grounded": true
+      "grounded": true,
+      "unsupported": [],
+      "tools_used": [
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql"
+      ]
+    },
+    {
+      "question": "What is the total fair value of Ares Capital's investments as of September 30, 2026?",
+      "answer": "**Ares Capital's investments had a total fair value of about $29.21 billion ($29,212,600,000) as of September 30, 2026.**\n\n- This is computed from 1,422 holdings in the September 30, 2026 10-Q [F6]. I excluded cash-type rows, though this filing has none.\n- The filing's reported total is $29,213,000,000. My figure is $400,000 lower, a difference of about 0.001%, so the totals match.\n- The June 30, 2026 10-Q showed $29,349,300,000 [F7]. That is about $136.7 million higher than the September figure.",
+      "sources": [],
+      "correct": true,
+      "grounded": false,
+      "unsupported": [],
+      "tools_used": [
+        "run_sql",
+        "run_sql"
+      ]
+    },
+    {
+      "question": "What does Golub hold in Pluralsight, and how has its value changed since March?",
+      "answer": "**Golub's Pluralsight position was worth $7,302,000 at June 30, 2026, down $161,000 (2.2%) from $7,463,000 at March 31.** That is net debt fair value, and the equity is marked at zero.\n\n- **Non-accrual tranche:** fair value fell from $1,875,000 [H30918] to $1,706,000 [H32731]. That is a $169,000 drop, and its mark went from 27.7% to 25.2% of cost. Principal rose from $7,212,000 to $7,417,000 through capitalized interest (PIK), while cost stayed at $6,764,000.\n- **Two performing tranches:** these are roughly flat. One is $3,841,000 [H30919] to $3,847,000 [H32732]. The other is $1,921,000 [H30920] to $1,923,000 [H32733].\n- **Unfunded commitments:** both are unchanged at -$50,000 [H30921] [H32734] and -$124,000 [H30922] [H32735].\n- **Equity:** the LLC interest has $3,663,000 of cost and is marked at $0 in both quarters [H31347] [H33157].\n- **Overall:** all debt is first-lien-style \"One stop\" unitranche, maturing August 2029. Across the funded debt, fair value is about 57% of cost at June 30 ($12,764,000 cost), down from about 59% at March 31 ($12,749,000 cost).\n\nThese totals come from the 12 Pluralsight rows in the March 31, 2026 and June 30, 2026 Golub 10-Qs [F1] [F2].",
+      "sources": [
+        {
+          "id": 30918,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(7)(25) | One stop | SF + | 7.50 % | (i) | 11.17 % | PIK | 08/2029 | 7,212 | 6,764 | 0.1 | 1,875",
+          "table_idx": 42,
+          "row_idx": 47,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 30919,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.67 % | cash/ | 1.50 % | PIK | 08/2029 | 4,043 | 3,963 | 0.1 | 3,841",
+          "table_idx": 42,
+          "row_idx": 48,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 30920,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.67 % | cash/ | 1.50 % | PIK | 08/2029 | 2,022 | 2,022 | 0.1 | 1,921",
+          "table_idx": 42,
+          "row_idx": 49,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 30921,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 50 )",
+          "table_idx": 42,
+          "row_idx": 50,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 30922,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 124 )",
+          "table_idx": 43,
+          "row_idx": 2,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 31347,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+ | LLC interest | N/A | N/A | 08/2024 | N/A | 1,988 | 3,663",
+          "table_idx": 56,
+          "row_idx": 13,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-03-31",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
+        },
+        {
+          "id": 32731,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(7)(25) | One stop | SF + | 7.50 % | (i) | 11.14 % | PIK | 08/2029 | 7,417 | 6,764 | 0.1 | 1,706",
+          "table_idx": 43,
+          "row_idx": 49,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32732,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 4,049 | 3,975 | 0.1 | 3,847",
+          "table_idx": 43,
+          "row_idx": 50,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32733,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 2,025 | 2,025 | 0.1 | 1,923",
+          "table_idx": 43,
+          "row_idx": 51,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32734,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 50 )",
+          "table_idx": 43,
+          "row_idx": 52,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 32735,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 124 )",
+          "table_idx": 44,
+          "row_idx": 2,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 33157,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+ | LLC interest | N/A | N/A | 08/2024 | N/A | 1,988 | 3,663",
+          "table_idx": 57,
+          "row_idx": 16,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        }
+      ],
+      "correct": true,
+      "grounded": true,
+      "unsupported": [],
+      "tools_used": [
+        "run_sql",
+        "run_sql"
+      ]
+    },
+    {
+      "question": "Which year has the most Golub debt coming due?",
+      "answer": "**2028 has the most Golub debt coming due: about $2.10 billion of principal, or $2.06 billion at fair value.** This is computed from 303 holdings maturing in 2028 in the June 30, 2026 10-Q [F2].\n\nPrincipal by maturity year, from the 1,522 debt holdings with maturity dates in that filing:\n- 2029: $1.57 billion\n- 2031: $1.39 billion\n- 2027: $1.22 billion\n- 2030: $889 million\n- 2032: $474 million\n- 2026: $135 million (27 holdings), the smallest of the main years\n- 2033 and 2034 are small: $63 million and $0.4 million.\n\nEquity positions have no maturity, so I left them out. The \"other\" lien category (35 holdings) is included, and it may hold some non-standard instruments. Maturity dates assume each loan is repaid on its stated date, with no early prepayment or extension.",
+      "sources": [],
+      "correct": true,
+      "grounded": false,
+      "unsupported": [],
+      "tools_used": [
+        "run_sql",
+        "run_sql"
+      ]
+    },
+    {
+      "question": "What share of Golub's portfolio is in software?",
+      "answer": "**Software is 26.0% of Golub's portfolio by fair value.** That is $2,133,337,000 of $8,196,353,000 in total investments, from the June 30, 2026 10-Q [F2].\n\n- This is computed from 1,812 holdings in the filing, including 331 Software positions. Money-market (cash) lines are excluded.\n- Software is the largest industry. The next largest, Healthcare Providers & Services, is 7.78% ($638,065,000).\n- Healthcare Technology (4.41%) and IT Services (3.56%) are classified separately and are not in the 26.0%.\n\nCaveat: this uses the filing's own industry labels and fair value, not cost. The 1,812 holdings include 204 rows with negative fair values, which are probably unfunded commitments marked below par.",
+      "sources": [],
+      "correct": true,
+      "grounded": false,
+      "unsupported": [],
+      "tools_used": [
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "portfolio_summary"
+      ]
     }
   ]
 }

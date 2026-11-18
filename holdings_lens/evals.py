@@ -146,7 +146,7 @@ def answer_ok(answer: str, item: dict, truth) -> bool:
     raise ValueError(item["check"])
 
 
-def eval_qa(qa_json: str, db_path: str = DEFAULT_DB, dry_run: bool = False, post=None) -> dict:
+def eval_qa(qa_json: str, db_path: str = DEFAULT_DB, dry_run: bool = False, post=None, style: str = "") -> dict:
     items = json.load(open(qa_json))
     con = connect_readonly(db_path)
     results = []
@@ -156,7 +156,7 @@ def eval_qa(qa_json: str, db_path: str = DEFAULT_DB, dry_run: bool = False, post
             results.append({"question": it["question"], "truth": truth})
             continue
         t0 = time.time()
-        r = ask(it["question"], db_path=db_path, **({"post": post} if post else {}))
+        r = ask(it["question"], db_path=db_path, style=style, **({"post": post} if post else {}))
         results.append({
             "question": it["question"], "truth": truth, "answer": r["answer"],
             "correct": answer_ok(r["answer"], it, truth),

@@ -99,7 +99,7 @@ python -m holdings_lens demo           # cache answers for the landing pages
 | `holdings_lens/fetch.py` · `db.py` | EDGAR downloader, SQLite schema and views |
 | `samples/` · `tools/make_samples.py` | **Fictional** filings (2 funds, 2 quarters, 2 layouts) with XBRL tags |
 | `tests/` | 54 tests, a few seconds, no network (API calls mocked) |
-| `web/` | Personalized landing pages with charts |
+| `web/` | Personalized landing pages with an interactive explorer (pick filings, compare lenders, build charts) |
 | `api/ask.py` · `vercel.json` | Live ask box: serverless endpoint with rate limits and a token cap |
 
 ## Honest limitations

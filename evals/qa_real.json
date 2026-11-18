@@ -1,0 +1,43 @@
+[
+  {
+    "question": "Which borrowers do Golub and Ares both lend to, and where do they disagree most on value?",
+    "check": "contains",
+    "expected": ["WebPT"]
+  },
+  {
+    "question": "How do Golub and Ares compare on non-accruals as a share of cost?",
+    "check": "contains",
+    "expected": ["2.4", "1.5"]
+  },
+  {
+    "question": "What are Golub's five largest borrowers by fair value as of June 30, 2026?",
+    "check": "contains",
+    "expected": ["GS Acquisitionco", "Bayshore"]
+  },
+  {
+    "question": "Which Golub loans went on non-accrual for the first time between March and June 2026?",
+    "check": "contains",
+    "expected": ["Wineshipping", "WebPT"]
+  },
+  {
+    "question": "What is the total fair value of Ares Capital's investments as of September 30, 2026?",
+    "check": "number",
+    "sql": "SELECT SUM(fair_value_usd) FROM v_holdings WHERE fund = 'ARES CAPITAL CORP' AND period = '2026-09-30' AND lien != 'cash'",
+    "tolerance": 0.005
+  },
+  {
+    "question": "What does Golub hold in Pluralsight, and how has its value changed since March?",
+    "check": "contains",
+    "expected": ["Pluralsight", "161"]
+  },
+  {
+    "question": "Which year has the most Golub debt coming due?",
+    "check": "contains",
+    "expected": ["2028"]
+  },
+  {
+    "question": "What share of Golub's portfolio is in software?",
+    "check": "contains",
+    "expected": ["26"]
+  }
+]

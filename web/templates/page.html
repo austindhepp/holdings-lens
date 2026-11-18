@@ -25,6 +25,12 @@
   .grid { display:grid; gap: 12px; }
   .g4 { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
   .g2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+  .g3 { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+  .controls { display:flex; flex-wrap:wrap; gap: 10px 16px; align-items:center; margin: 12px 0; font-size: 14px; color: var(--muted); }
+  .controls select, .controls input { font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; margin-left: 6px; }
+  .kpi .cmp { font-size: 13px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+  table.watch td:first-child { white-space: normal; width: 100%; }
+  .legend { font-size: 12.5px; color: var(--muted); margin: 2px 0 8px; } .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin: 0 5px 0 12px; vertical-align: -1px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
   .kpi .num { font-size: clamp(22px, 5vw, 27px); font-weight: 720; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
   .kpi .lbl { font-size: 13px; color: var(--muted); }
@@ -90,33 +96,54 @@
     <div class="card"><b>4. Answer</b><span class="muted">An agent with read-only tools answers questions; a citation only counts if the agent actually retrieved that row.</span></div>
   </div>
 
-  <h2>Analyst view <span class="sample">fictional sample funds</span></h2>
-  <p class="sub">What the analytics produce from three bundled filings: two fictional funds, two quarters, two different table layouts.</p>
-  <div class="tabs" id="fundtabs" role="tablist"></div>
-  <div class="grid g4" id="fundkpis"></div>
-  <div class="grid g2" style="margin-top:12px">
-    <div class="card"><h3>Industry mix (% of fair value)</h3><div id="industry"></div></div>
-    <div class="card"><h3>Debt by mark (fair value ÷ cost)</h3><div id="marks"></div></div>
-    <div class="card"><h3>Maturity wall (debt fair value, $M)</h3><div id="wall"></div></div>
-    <div class="card"><h3>Watchlist</h3><div id="watch"></div></div>
+  <h2>Explore the portfolios <span class="sample" id="data-badge"></span></h2>
+  <p class="sub" id="explore-sub">Pick a filing, add a second one to compare, and choose how to slice it. Every number comes from the extracted holdings.</p>
+  <div class="controls">
+    <label>Filing <select id="selA"></select></label>
+    <label>Compare with <select id="selB"></select></label>
+  </div>
+  <div class="grid g3" id="fundkpis"></div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="controls" style="margin-top:0">
+      <label>Break down by <select id="selDim">
+        <option value="industry">Industry</option><option value="loan_type">Loan type</option>
+        <option value="maturity_year">Maturity year (debt)</option><option value="debt_mark">Debt value as % of cost</option>
+        <option value="base_rate">Base rate (debt)</option></select></label>
+      <label>Measure <select id="selMeasure">
+        <option value="pct">% of portfolio</option><option value="fv">Fair value</option><option value="cost">Cost</option>
+        <option value="principal">Principal</option><option value="n">Number of holdings</option></select></label>
+      <label>Show <select id="selTop"><option value="10">Top 10</option><option value="20">Top 20</option><option value="999">All</option></select></label>
+    </div>
+    <div id="builder"></div>
+    <div class="tiny" id="builder-note"></div>
   </div>
 
+  <div class="grid g2" style="margin-top:12px" id="watchwrap"></div>
+
   <h2>What changed this quarter</h2>
+  <div class="controls"><label>Lender <select id="selChg"></select></label></div>
   <p class="sub" id="chg-sub"></p>
   <div class="grid g2">
-    <div class="card"><h3>Re-marked positions</h3><div id="remarked"></div></div>
-    <div class="card"><h3>New, exited, resized</h3><div id="moves"></div></div>
+    <div class="card"><h3>Biggest re-marks (debt, % of cost)</h3><div id="remarked"></div></div>
+    <div class="card"><h3>New, exited, resized, newly non-accrual</h3><div id="moves"></div></div>
   </div>
 
   <h2>Same borrower, different marks</h2>
-  <p class="sub">Matching borrowers across funds (despite different spellings) shows where lenders disagree on value, a useful early signal.</p>
+  <p class="sub">Borrowers both lenders hold (matched despite different spellings), with each lender's debt valued as % of cost. Big gaps are where lenders disagree on value, a useful early signal.</p>
+  <div class="controls" id="ovctl">
+    <span id="ovpick"></span>
+    <label>Sort <select id="ovSort"><option value="gap">Widest gap</option><option value="size">Largest combined exposure</option></select></label>
+    <label>Min. position <select id="ovMin"><option value="0">Any size</option><option value="1e6">$1M+ each</option><option value="10e6">$10M+ each</option></select></label>
+    <label>Search <input id="ovSearch" placeholder="borrower name" size="16"></label>
+  </div>
   <div class="card"><div id="dispersion"></div></div>
 
   <h2>Ask the agent</h2>
   <div id="demo"></div>
 
   <h2>Why you can trust the numbers</h2>
-  <p class="sub">Measured on every bundled filing, against hand-checked answer keys and against the filings' own XBRL tags.</p>
+  <p class="sub">Every real filing is reconciled against its own XBRL tags; a sample was hand-checked field by field. Synthetic filings with exact answer keys stress unusual layouts in the test suite.</p>
   <div class="tablewrap"><table id="trust"></table></div>
   <p class="tiny" id="trust-note"></p>
 
@@ -185,75 +212,198 @@ function renderReal() {
 }
 
 function renderTop() {
-  const s = D.scorecard;
+  const R = (D.real && D.real.filings) || [], s = D.scorecard, hc = D.real && D.real.hand_check;
+  if (R.length) {
+    const linked = R.reduce((a, f) => a + f.xbrl_rows_linked, 0), matched = R.reduce((a, f) => a + f.xbrl_rows_matched, 0);
+    const lenders = new Set(R.map(f => f.fund)).size;
+    $("kpis").innerHTML = kpi(pct0(matched / linked), `of ${linked.toLocaleString()} XBRL-tagged rows match across ${R.length} real SEC filings`, "good")
+      + kpi(R.reduce((a, f) => a + f.holdings, 0).toLocaleString(), `holdings extracted from ${lenders} lenders, totals tie to each filing`)
+      + (hc ? kpi(`${hc.correct}/${hc.cells}`, `hand-checked fields correct (${esc(hc.filing)})`, "good") : "")
+      + (s.qa_accuracy != null && D.demo.real ? kpi(pct0(s.qa_accuracy), `agent answers correct (${s.questions} real questions)`, "good")
+                                               : kpi(String(s.tests), "automated tests passing"));
+    return;
+  }
   $("kpis").innerHTML = kpi(pct0(s.cell_accuracy), `sample-filing accuracy (${s.cells} cells vs answer keys)`, "good")
     + kpi(s.xbrl_match_rate == null ? "–" : pct0(s.xbrl_match_rate), "rows reconciled with XBRL", "good")
-    + kpi(String(s.layouts), "table layouts in the stress tests")
-    + (s.qa_accuracy != null ? kpi(pct0(s.qa_accuracy), `agent answers correct (${s.questions} questions)`, "good")
-                             : kpi(String(s.tests), "automated tests passing"));
+    + kpi(String(s.layouts), "table layouts in the stress tests") + kpi(String(s.tests), "automated tests passing");
 }
 
-let current = 0;
-function renderFund(i) {
-  current = i;
-  const s = D.report.summaries[i];
-  document.querySelectorAll(".tab").forEach((b, j) => b.setAttribute("aria-selected", j === i));
-  $("fundkpis").innerHTML = kpi(usdM(s.fair_value_usd), `fair value · ${s.holdings} holdings, ${s.companies} borrowers`)
-    + kpi((s.weighted_avg_spread_bps ?? 0).toFixed(0) + " bps", "weighted avg spread (debt)")
-    + kpi((s.non_accrual.pct_of_fv ?? 0).toFixed(1) + "%", `on non-accrual (${s.non_accrual.count})`, s.non_accrual.count ? "" : "good")
-    + kpi((s.top10_concentration_pct ?? 0).toFixed(0) + "%", "top-10 borrower concentration");
-  $("industry").innerHTML = hbars(s.industry_mix.slice(0, 7).map(x => ({label: x.industry, v: x.pct})));
-  const mc = {"100%+": "--accent", "97–100%": "--accent-2", "90–97%": "--blue", "80–90%": "--warn", "<80%": "--bad"};
-  $("marks").innerHTML = hbars(s.mark_distribution.map(b => ({label: b.bucket, v: b.pct_of_debt || 0, color: mc[b.bucket]})), {max: 100, labelW: 80});
-  $("wall").innerHTML = vbars(s.maturity_wall.map(w => ({label: w.year, v: w.fair_value_usd})));
-  $("watch").innerHTML = s.watchlist.length ? `<table>${s.watchlist.map(w => `<tr><td>${esc(w.company)}<div class="tiny">${esc(w.instrument)}</div></td>
-      <td class="n"><span class="${w.mark < .8 ? "down" : ""}">${pct0(w.mark)}</span><div class="tiny">of cost</div></td>
-      <td>${w.non_accrual ? '<span class="pill na">non-accrual</span>' : ""}${w.pik ? '<span class="pill pik">PIK</span>' : ""}</td></tr>`).join("")}</table>`
-    : `<p class="muted">No debt below 90% of cost and no non-accruals.</p>`;
+/* ---------- explorer ---------- */
+const E = D.explorer;
+const F = id => E.filings.find(f => String(f.id) === String(id));
+const fmtUsd = v => v == null ? "–" : Math.abs(v) >= 1e9 ? "$" + (v / 1e9).toFixed(2) + "B" : "$" + (v / 1e6).toFixed(1) + "M";
+const MARK_ORDER = ["100%+", "97–100%", "90–97%", "80–90%", "<80%"];
+const KPIS = [
+  ["fair_value", "Fair value", fmtUsd, null],
+  ["borrowers", "Borrowers", v => v.toLocaleString(), null],
+  ["spread_bps", "Wtd. avg spread (debt)", v => v == null ? "–" : v.toFixed(0) + " bps", 0],
+  ["non_accrual_cost", "Non-accrual (% of cost)", v => v == null ? "–" : v.toFixed(2) + "%", -1],
+  ["pik_debt", "PIK (% of debt value)", v => v == null ? "–" : v.toFixed(1) + "%", -1],
+  ["top10", "Top-10 borrower concentration", v => v == null ? "–" : v.toFixed(1) + "%", -1],
+  ["fv_to_cost", "Portfolio value vs cost", v => v == null ? "–" : v.toFixed(1) + "%", 1],
+  ["debt_share", "Debt share of portfolio", v => v == null ? "–" : v.toFixed(1) + "%", 0],
+];
+const state = {a: null, b: "", dim: "industry", measure: "pct", top: 10};
+const FUNDCOL = {};  // each lender keeps one colour everywhere (comparing two quarters of one lender uses both)
+function slotColors(ids) {
+  const fs = ids.map(id => F(id).fund);
+  if (fs.length > 1 && fs[0] === fs[1]) return [css("--accent"), css("--blue")];
+  return fs.map(f => FUNDCOL[f] || css("--warn"));
 }
 
-function renderTabs() {
-  $("fundtabs").innerHTML = D.report.summaries.map((s, i) =>
-    `<button class="tab" role="tab" data-i="${i}">${esc(s.filing.fund.replace(/ (Corp|Fund)$/,""))} · ${esc(s.filing.period.slice(0,7))}</button>`).join("");
-  $("fundtabs").addEventListener("click", e => { const b = e.target.closest(".tab"); if (b) renderFund(+b.dataset.i); });
-  const latest = D.report.summaries.findIndex(s => s.filing.period === D.report.summaries.map(x => x.filing.period).sort().at(-1));
-  renderFund(latest < 0 ? 0 : latest);
+function initExplorer() {
+  if (!E || !E.filings.length) return;
+  const real = D.explorer_is_real;
+  $("data-badge").textContent = real ? "real SEC filings" : "fictional sample funds";
+  $("data-badge").style.background = real ? "var(--accent-soft)" : "";
+  $("data-badge").style.color = real ? "var(--accent)" : "";
+  if (real) $("explore-sub").textContent = `Pick a filing from ${E.funds.join(" or ")}, add a second one to compare, and choose how to slice it. Every number comes from the extracted holdings.`;
+  const opts = E.filings.map(f => `<option value="${f.id}">${esc(f.label)}</option>`).join("");
+  $("selA").innerHTML = opts;
+  $("selB").innerHTML = `<option value="">(nothing)</option>` + opts;
+  const latest = {};  // default: newest filing of the first lender vs newest of the second
+  E.filings.forEach(f => { if (!latest[f.fund] || f.period > latest[f.fund].period) latest[f.fund] = f; });
+  const L = Object.values(latest);
+  state.a = String((L.find(f => /golub/i.test(f.fund)) || L[0]).id);
+  const palette = [css("--accent"), css("--blue"), css("--warn")];
+  [F(state.a).fund, ...E.funds.filter(f => f !== F(state.a).fund)].forEach((f, i) => FUNDCOL[f] = palette[i] || palette[2]);
+  state.b = L.length > 1 ? String(L.find(f => String(f.id) !== state.a).id) : "";
+  $("selA").value = state.a; $("selB").value = state.b;
+  const on = (id, key, fn) => $(id).addEventListener("change", e => { state[key] = e.target.value; fn(); });
+  on("selA", "a", renderExplorer); on("selB", "b", renderExplorer);
+  on("selDim", "dim", renderBuilder); on("selMeasure", "measure", renderBuilder); on("selTop", "top", renderBuilder);
+  renderExplorer();
 }
 
-function renderChanges() {
-  const c = D.report.changes[0];
-  if (!c) { $("chg-sub").textContent = "Needs two filings from the same fund."; return; }
-  $("chg-sub").textContent = `${c.to.fund}, ${c.from.period} → ${c.to.period}: fair value ${usdM(c.fair_value_usd.from)} → ${usdM(c.fair_value_usd.to)}.`;
-  $("remarked").innerHTML = `<div class="chg">` + c.remarked.map(r => `<div>${esc(r.company)} <span class="tiny">${esc(r.instrument)}</span>
+function renderExplorer() {
+  const A = E.by_filing[state.a], B = state.b && state.b !== state.a ? E.by_filing[state.b] : null;
+  $("fundkpis").innerHTML = KPIS.map(([k, label, fmt, dir]) => {
+    const va = A.kpis[k];
+    let cmp = "";
+    if (B) {
+      const vb = B.kpis[k], d = va != null && vb != null ? va - vb : null;
+      cmp = `<div class="cmp">vs ${fmt(vb)} <span class="tiny">${esc(F(state.b).fund)}</span></div>`;
+    }
+    return `<div class="card kpi"><div class="lbl">${label}</div><div class="num" style="font-size:22px">${fmt(va)}</div>${cmp}</div>`;
+  }).join("");
+  renderBuilder();
+  const watch = (fid) => {
+    const w = E.by_filing[fid].watch;
+    return `<div class="card"><h3>Watchlist · ${esc(F(fid).label)}</h3>` + (w.length ? `<table class="watch">${w.map(x => `<tr><td>${esc(x.company)}<div class="tiny">${esc(x.instrument || "")}</div></td>
+      <td class="n"><span class="${x.mark < .8 ? "down" : ""}">${x.mark == null ? "–" : pct0(x.mark)}</span><div class="tiny">of cost</div></td>
+      <td>${x.non_accrual ? '<span class="pill na">non-accrual</span>' : ""}${x.pik ? '<span class="pill pik">PIK</span>' : ""}</td></tr>`).join("")}</table>`
+      : `<p class="muted">No debt below 90% of cost and no non-accruals.</p>`) + `<div class="tiny">Debt valued below 90% of cost or on non-accrual, lowest first.</div></div>`;
+  };
+  $("watchwrap").innerHTML = watch(state.a) + (B ? watch(state.b) : "");
+}
+
+function renderBuilder() {
+  const ids = [state.a].concat(state.b && state.b !== state.a ? [state.b] : []);
+  const m = state.measure, dim = state.dim;
+  const series = ids.map(fid => {
+    const fil = E.by_filing[fid], tot = fil.kpis.fair_value, map = {};
+    fil.dims[dim].forEach(r => map[r.k] = m === "pct" ? 100 * r.fv / tot : r[m]);
+    return map;
+  });
+  let keys = [...new Set(series.flatMap(s => Object.keys(s)))];
+  if (dim === "maturity_year") keys.sort();
+  else if (dim === "debt_mark") keys = MARK_ORDER.filter(k => keys.includes(k));
+  else keys.sort((x, y) => Math.max(...series.map(s => s[y] || 0)) - Math.max(...series.map(s => s[x] || 0)));
+  const shown = (dim === "industry" || dim === "base_rate") ? keys.slice(0, +state.top) : keys;
+  const fmt = m === "pct" ? v => v.toFixed(1) + "%" : m === "n" ? v => Math.round(v).toLocaleString() : v => fmtUsd(v);
+  const colors = slotColors(ids);
+  const W = 640, labelW = 200, barH = 13, gap = ids.length > 1 ? 2 : 0, rowH = ids.length * barH + gap + 10;
+  const max = Math.max(1e-9, ...shown.flatMap(k => series.map(s => s[k] || 0)));
+  let svg = "";
+  shown.forEach((k, i) => {
+    const y0 = i * rowH + 4;
+    svg += `<text class="lab" x="${labelW - 8}" y="${y0 + (ids.length * barH) / 2 + 4}" text-anchor="end">${esc(k.length > 30 ? k.slice(0, 29) + "…" : k)}<title>${esc(k)}</title></text>`;
+    series.forEach((s, j) => {
+      const v = s[k] || 0, w = Math.max(v > 0 ? 2 : 0, (W - labelW - 70) * v / max), y = y0 + j * (barH + gap);
+      svg += `<rect x="${labelW}" y="${y}" width="${w}" height="${barH}" rx="3" fill="${colors[j]}"><title>${esc(F(ids[j]).label)}: ${fmt(v)}</title></rect>
+              <text x="${labelW + w + 5}" y="${y + barH - 2}" style="font-size:11px">${v ? fmt(v) : "–"}</text>`;
+    });
+  });
+  const legend = ids.map((fid, j) => `<i style="background:${colors[j]}"></i>${esc(F(fid).label)}`).join("");
+  $("builder").innerHTML = `<div class="legend">${legend}</div><svg viewBox="0 0 ${W} ${shown.length * rowH + 8}" width="100%" role="img">${svg}</svg>`;
+  const hidden = keys.length - shown.length;
+  const notes = [];
+  if (hidden > 0) notes.push(`${hidden} more not shown`);
+  if (dim === "industry" && ids.length > 1) notes.push("each lender uses its own industry names, so some categories won't line up");
+  if (["maturity_year", "debt_mark", "base_rate"].includes(dim)) notes.push("debt only");
+  if (m === "pct") notes.push("% of each filing's total fair value");
+  $("builder-note").textContent = notes.length ? notes.join(" · ") + "." : "";
+}
+
+function initChanges() {
+  const C = E.changes || [];
+  if (!C.length) { $("chg-sub").textContent = "Needs two filings from the same lender."; return; }
+  $("selChg").innerHTML = C.map((c, i) => `<option value="${i}">${esc(c.fund)}: ${esc(c.from)} → ${esc(c.to)}</option>`).join("");
+  $("selChg").addEventListener("change", e => renderChanges(+e.target.value));
+  renderChanges(Math.max(0, C.findIndex(c => /golub/i.test(c.fund))));
+}
+
+function renderChanges(i) {
+  const c = E.changes[i], n = c.counts;
+  $("selChg").value = i;
+  $("chg-sub").textContent = `${c.fund}, ${c.from} → ${c.to}: fair value ${fmtUsd(c.fair_value.from)} → ${fmtUsd(c.fair_value.to)}. `
+    + `${n.new_positions} new, ${n.exited_positions} exited, ${n.remarked} re-marked, ${n.resized} resized, ${n.newly_non_accrual} newly on non-accrual.`;
+  $("remarked").innerHTML = c.remarked.length ? `<div class="chg">` + c.remarked.map(r => `<div>${esc(r.company)} <span class="tiny">${esc(r.instrument || "")}</span>
       <div class="tiny">${pct0(r.prior_mark)} → ${pct0(r.mark)} of cost</div></div>
-      <div class="${r.change_pts < 0 ? "down" : "up"}">${r.change_pts > 0 ? "+" : ""}${r.change_pts.toFixed(1)} pts</div>`).join("") + `</div>`;
-  const line = (tag, p, extra = "") => `<div style="margin:6px 0"><span class="pill ${tag === "Exited" ? "na" : "pik"}" style="margin:0 6px 0 0">${tag}</span>${esc(p.company)} <span class="tiny">${esc(p.instrument)} ${extra}</span></div>`;
-  $("moves").innerHTML = c.new_positions.map(p => line("New", p, usdM(p.fair_value_usd))).join("")
-    + c.exited_positions.map(p => line("Exited", p, usdM(p.fair_value_usd))).join("")
-    + c.resized.map(p => line("Resized", p, `${usdM(p.prior_principal_usd)} → ${usdM(p.principal_usd)} principal`)).join("");
+      <div class="${r.change_pts < 0 ? "down" : "up"}">${r.change_pts > 0 ? "+" : ""}${r.change_pts.toFixed(1)} pts</div>`).join("") + `</div>` : `<p class="muted">None.</p>`;
+  const line = (tag, cls, p, extra = "") => `<div style="margin:6px 0"><span class="pill ${cls}" style="margin:0 6px 0 0">${tag}</span>${esc(p.company)} <span class="tiny">${esc(p.instrument || "")} ${extra}</span></div>`;
+  $("moves").innerHTML = c.newly_non_accrual.map(p => line("Non-accrual", "na", p, fmtUsd(p.fair_value_usd))).join("")
+    + c.new_positions.slice(0, 6).map(p => line("New", "pik", p, fmtUsd(p.fair_value_usd))).join("")
+    + c.exited_positions.slice(0, 6).map(p => line("Exited", "na", p, fmtUsd(p.fair_value_usd))).join("")
+    + c.resized.slice(0, 6).map(p => line("Resized", "pik", p, `${fmtUsd(p.prior_principal_usd)} → ${fmtUsd(p.principal_usd)} principal`)).join("")
+    + `<div class="tiny" style="margin-top:6px">Largest of each kind shown.</div>`;
+}
+
+const ov = {pick: {}, sort: "gap", min: 0, q: ""};
+function initOverlap() {
+  const funds = E.funds || [];
+  if (funds.length < 2) { $("ovctl").style.display = "none"; $("dispersion").innerHTML = `<p class="muted">Needs filings from two lenders.</p>`; return; }
+  const [fa, fb] = Object.keys(FUNDCOL).length ? Object.keys(FUNDCOL) : funds;
+  ov.order = [fa, fb];
+  ov.pick[fa] = String(E.by_fund[fa].at(-1)); ov.pick[fb] = String(E.by_fund[fb].at(-1));
+  $("ovpick").innerHTML = [fa, fb].map(f => `<label>${esc(f)} <select data-fund="${esc(f)}">${E.by_fund[f].map(id => `<option value="${id}" ${String(id) === ov.pick[f] ? "selected" : ""}>${esc(F(id).period)}</option>`).join("")}</select></label>`).join(" ");
+  $("ovpick").addEventListener("change", e => { const sel = e.target.closest("select"); if (sel) { ov.pick[sel.dataset.fund] = sel.value; renderDispersion(); } });
+  $("ovSort").addEventListener("change", e => { ov.sort = e.target.value; renderDispersion(); });
+  $("ovMin").addEventListener("change", e => { ov.min = +e.target.value; renderDispersion(); });
+  $("ovSearch").addEventListener("input", e => { ov.q = e.target.value.trim().toLowerCase(); renderDispersion(); });
+  renderDispersion();
 }
 
 function renderDispersion() {
-  const rows = D.report.overlap.shared_borrowers;
-  if (!rows.length) { $("dispersion").innerHTML = `<p class="muted">No shared borrowers.</p>`; return; }
-  const funds = [...new Set(rows.flatMap(r => r.funds.map(f => f.fund)))];
-  const colors = [css("--accent"), css("--blue"), css("--warn")];
-  const W = 640, labelW = 190, rowH = 34, H = rows.length * rowH + 40, lo = 0.7, hi = 1.05;
-  const X = m => labelW + (W - labelW - 20) * (Math.min(Math.max(m, lo), hi) - lo) / (hi - lo);
+  const [fa, fb] = ov.order, ia = ov.pick[fa], ib = ov.pick[fb];
+  let rows = E.overlap[`${ia}-${ib}`] || E.overlap[`${ib}-${ia}`] || [];
+  const all = rows.length;
+  rows = rows.filter(r => r.gap != null && r.f.every(f => f.fv >= ov.min) && (!ov.q || r.b.toLowerCase().includes(ov.q)));
+  rows = rows.slice().sort((x, y) => ov.sort === "gap" ? y.gap - x.gap : (y.f.reduce((a, f) => a + f.fv, 0) - x.f.reduce((a, f) => a + f.fv, 0)));
+  const shown = rows.slice(0, 15);
+  if (!shown.length) { $("dispersion").innerHTML = `<p class="muted">No shared borrowers match these filters (${all} shared in total).</p>`; return; }
+  const colors = {[fa]: FUNDCOL[fa] || css("--accent"), [fb]: FUNDCOL[fb] || css("--blue")};
+  const marks = shown.flatMap(r => r.f.map(f => f.mark)).filter(v => v != null);
+  const lo = Math.max(0, Math.floor(Math.min(...marks, 0.8) * 20) / 20), hi = Math.min(1.5, Math.ceil(Math.max(...marks, 1.0) * 20) / 20);
+  const W = 680, labelW = 230, rowH = 30, H = shown.length * rowH + 40;
+  const X = m => labelW + (W - labelW - 70) * (Math.min(Math.max(m, lo), hi) - lo) / (hi - lo);
+  const step = (hi - lo) > 0.6 ? 0.2 : 0.1;
   let svg = "";
-  for (let t = 0.7; t <= 1.051; t += 0.05) {
+  for (let t = Math.ceil(lo / step) * step; t <= hi + 1e-9; t += step) {
     const x = X(t);
-    svg += `<line x1="${x}" y1="18" x2="${x}" y2="${H - 18}" stroke="${css("--line")}"/><text class="lab" x="${x}" y="12" text-anchor="middle">${Math.round(t * 100)}%</text>`;
+    svg += `<line x1="${x}" y1="18" x2="${x}" y2="${H - 14}" stroke="${css("--line")}"/><text class="lab" x="${x}" y="12" text-anchor="middle">${Math.round(t * 100)}%</text>`;
   }
-  rows.forEach((r, i) => {
-    const y = 34 + i * rowH, ms = r.funds.map(f => f.mark);
-    svg += `<text x="${labelW - 10}" y="${y + 4}" text-anchor="end">${esc(r.borrower)}</text>
+  shown.forEach((r, i) => {
+    const y = 34 + i * rowH, ms = r.f.map(f => f.mark).filter(v => v != null);
+    const name = r.b.length > 34 ? r.b.slice(0, 33) + "…" : r.b;
+    svg += `<text x="${labelW - 10}" y="${y + 4}" text-anchor="end">${esc(name)}<title>${esc(r.b)}</title></text>
             <line x1="${X(Math.min(...ms))}" y1="${y}" x2="${X(Math.max(...ms))}" y2="${y}" stroke="${css("--faint")}" stroke-width="2"/>`;
-    r.funds.forEach(f => { svg += `<circle cx="${X(f.mark)}" cy="${y}" r="6" fill="${colors[funds.indexOf(f.fund)]}"><title>${esc(f.fund)}: ${pct0(f.mark)}</title></circle>`; });
-    svg += `<text class="lab" x="${W - 4}" y="${y + 4}" text-anchor="end">${r.mark_dispersion_pts.toFixed(1)} pts</text>`;
+    r.f.forEach(f => { if (f.mark != null) svg += `<circle cx="${X(f.mark)}" cy="${y}" r="6" fill="${colors[f.fund] || css("--warn")}"><title>${esc(f.fund)}: ${pct0(f.mark)} of cost, ${fmtUsd(f.fv)}</title></circle>`; });
+    svg += `<text class="lab" x="${W - 4}" y="${y + 4}" text-anchor="end">${r.gap.toFixed(1)} pts</text>`;
   });
-  const legend = funds.map((f, i) => `<span style="margin-right:14px"><svg width="10" height="10"><circle cx="5" cy="5" r="5" fill="${colors[i]}"/></svg> ${esc(f)}</span>`).join("");
-  $("dispersion").innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${svg}</svg><div class="tiny">${legend} · each dot is one fund's debt valued as % of cost</div>`;
+  const legend = [fa, fb].map(f => `<i style="background:${colors[f]};border-radius:50%"></i>${esc(f)} (${esc(F(ov.pick[f]).period)})`).join("");
+  $("dispersion").innerHTML = `<div class="legend">${legend}</div><svg viewBox="0 0 ${W} ${H}" width="100%" role="img">${svg}</svg>
+    <div class="tiny">Showing ${shown.length} of ${rows.length} matching (${all} shared borrowers). Hover a dot for the position size. Filings from different dates can differ partly because of timing.</div>`;
 }
 
 function renderAnswer(e) {
@@ -305,7 +455,9 @@ function renderDemo() {
   const ex = D.demo.examples || [];
   let html = renderLive();
   html += D.demo.placeholder ? `<div class="banner">Preview: the agent hasn't been run for this page yet, so answers aren't shown. Everything else on this page is real output.</div>` : "";
-  if (D.ask_url) html += `<div class="tiny" style="margin:4px 0 8px">Or browse answers saved from the test set:</div>`;
+  if (D.ask_url) html += `<div class="tiny" style="margin:4px 0 8px">${D.demo.real
+      ? "Or click a saved example (real questions about Golub and Ares, answered earlier by the same agent):"
+      : "Or click a saved example (questions about the fictional sample funds):"}</div>`;
   html += `<div class="chips">` + ex.map((e, i) => `<button class="chip" data-i="${i}" aria-pressed="${i === 0}">${esc(e.question)}</button>`).join("") + `</div><div class="card" id="ans"></div>`;
   $("demo").innerHTML = html;
   const show = i => {
@@ -322,20 +474,23 @@ function renderDemo() {
 
 function renderTrust() {
   const ok = b => b ? `<span class="check">✓</span>` : `<span class="x">✗</span>`;
-  $("trust").innerHTML = `<thead><tr><th>Filing</th><th>Layout</th><th class="n">Rows</th><th class="n">Cells correct</th><th class="n">XBRL rows</th><th class="n">XBRL coverage</th><th>Totals tie</th></tr></thead><tbody>` +
-    D.trust.map(t => `<tr><td>${esc(t.fund)} <span class="tiny">${esc(t.period)}</span></td><td>${esc(t.layout)}</td>
-      <td class="n">${t.rows_matched}/${t.rows_expected}</td><td class="n">${(t.cell_accuracy * 100).toFixed(1)}%</td>
-      <td class="n">${t.xbrl_matched}/${t.xbrl_linked}</td><td class="n">${t.coverage == null ? "–" : pct0(t.coverage)}</td><td>${ok(t.totals_match)}</td></tr>`).join("") + `</tbody>`;
   const R = (D.real && D.real.filings) || [];
+  const sec = t => `<tr><td colspan="7" style="background:var(--bg);font-weight:650;font-size:12.5px;color:var(--muted)">${t}</td></tr>`;
+  let h = `<thead><tr><th>Filing</th><th>Source</th><th class="n">Holdings / rows</th><th class="n">Cells correct</th><th class="n">XBRL rows</th><th class="n">XBRL coverage</th><th>Totals tie</th></tr></thead><tbody>`;
   if (R.length) {
-    $("trust").innerHTML += `<tbody>` + R.map(f => `<tr><td>${esc(f.fund)} <span class="tiny">${esc(f.period)} · real</span></td><td>EDGAR</td>
-      <td class="n">${f.holdings.toLocaleString()}</td><td class="n">–</td><td class="n">${f.xbrl_rows_matched.toLocaleString()}/${f.xbrl_rows_linked.toLocaleString()}</td>
-      <td class="n">${pct0(f.coverage)}</td><td>${ok(f.totals_match)}</td></tr>`).join("") + `</tbody>`;
+    const hc = D.real.hand_check;
+    h += sec("Real SEC filings") + R.map(f => `<tr><td>${esc(f.fund)} <span class="tiny">${esc(f.period)}</span></td><td><a href="${esc(f.url)}">EDGAR</a></td>
+      <td class="n">${f.holdings.toLocaleString()}</td><td class="n">${hc && f.fund.startsWith("Golub") && f.period === "2026-06-30" ? `${hc.correct}/${hc.cells} sampled` : "–"}</td>
+      <td class="n">${f.xbrl_rows_matched.toLocaleString()}/${f.xbrl_rows_linked.toLocaleString()}</td><td class="n">${pct0(f.coverage)}</td><td>${ok(f.totals_match)}</td></tr>`).join("");
   }
-  $("trust-note").textContent = D.trust_note + (R.length ? " Real filings are checked against their own XBRL tags; field-level accuracy on them is measured with a hand-checked sample." : "");
+  h += sec("Synthetic stress tests (fictional filings with exact answer keys)") + D.trust.map(t => `<tr><td>${esc(t.fund)} <span class="tiny">${esc(t.period)}</span></td><td>${esc(t.layout)}</td>
+      <td class="n">${t.rows_matched}/${t.rows_expected}</td><td class="n">${(t.cell_accuracy * 100).toFixed(1)}%</td>
+      <td class="n">${t.xbrl_matched}/${t.xbrl_linked}</td><td class="n">${t.coverage == null ? "–" : pct0(t.coverage)}</td><td>${ok(t.totals_match)}</td></tr>`).join("");
+  $("trust").innerHTML = h + `</tbody>`;
+  $("trust-note").textContent = D.trust_note;
 }
 
-renderTop(); renderReal(); renderTabs(); renderChanges(); renderDispersion(); renderDemo(); renderTrust();
+renderTop(); renderReal(); initExplorer(); initChanges(); initOverlap(); renderDemo(); renderTrust();
 </script>
 </body>
 </html>
