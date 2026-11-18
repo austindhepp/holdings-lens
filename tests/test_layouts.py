@@ -98,3 +98,18 @@ def test_millions_and_negative_values():
 def test_non_schedule_tables_are_ignored():
     html = "<html><body><table><tr><td>Revenue</td><td>2026</td></tr><tr><td>Interest income</td><td>1,234</td></tr></table></body></html>"
     assert extract_holdings(html) == []
+
+
+def test_money_market_funds_are_cash_not_investments():
+    from holdings_lens.extract import Holding, is_cash_equivalent
+    import dataclasses
+    base = {f.name: None for f in dataclasses.fields(Holding) if f.default is dataclasses.MISSING and f.default_factory is dataclasses.MISSING}
+    mm = Holding(**dict(base, company="Morgan Stanley Institutional Liquidity Funds - Treasury Securities Portfolio"))
+    tagged = Holding(**dict(base, company="Some Fund"))
+    tagged.xbrl_concept = "MoneyMarketFundsFairValueDisclosure"
+    loan = Holding(**dict(base, company="Liquidity Funding Partners, LLC", maturity="2029-06"))
+    loan.spread_bps = 500
+    real = Holding(**dict(base, company="Acme Software, Inc."))
+    real.xbrl_concept = "InvestmentOwnedAtFairValue"
+    assert is_cash_equivalent(mm) and is_cash_equivalent(tagged)
+    assert not is_cash_equivalent(loan) and not is_cash_equivalent(real)

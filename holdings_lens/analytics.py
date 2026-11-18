@@ -31,7 +31,7 @@ def filing_info(con, fid):
 
 
 def summary(con, fid: int) -> dict:
-    rows = _rows(con, "SELECT * FROM v_holdings WHERE filing_id = ?", (fid,))
+    rows = _rows(con, "SELECT * FROM v_holdings WHERE filing_id = ? AND lien != 'cash'", (fid,))
     if not rows:
         return {"filing": filing_info(con, fid), "holdings": 0}
     tot = sum(r["fair_value_usd"] or 0 for r in rows)
@@ -105,7 +105,7 @@ def changes(con, old_id: int, new_id: int, mark_threshold: float = 0.02) -> dict
     tranches added together (funds often hold several tranches of the same loan)."""
     def positions(fid):
         out = {}
-        for r in _rows(con, "SELECT * FROM v_holdings WHERE filing_id = ?", (fid,)):
+        for r in _rows(con, "SELECT * FROM v_holdings WHERE filing_id = ? AND lien != 'cash'", (fid,)):
             k = (r["company_key"], r["lien"], _norm_inst(r["instrument"]))
             p = out.setdefault(k, {"ids": [], "company": r["company"], "instrument": r["instrument"], "lien": r["lien"],
                                    "fv": 0.0, "cost": 0.0, "principal": 0.0, "non_accrual": False})
@@ -149,7 +149,7 @@ def changes(con, old_id: int, new_id: int, mark_threshold: float = 0.02) -> dict
                         "fair_value_usd": new[k]["fv"]}
                        for k in new if new[k]["non_accrual"] and not (old.get(k) or {}).get("non_accrual")],
                       key=lambda r: -r["fair_value_usd"])
-    tot = lambda fid: con.execute("SELECT COALESCE(SUM(fair_value_usd),0) FROM v_holdings WHERE filing_id = ?", (fid,)).fetchone()[0]
+    tot = lambda fid: con.execute("SELECT COALESCE(SUM(fair_value_usd),0) FROM v_holdings WHERE filing_id = ? AND lien != 'cash'", (fid,)).fetchone()[0]
     return {
         "from": filing_info(con, old_id), "to": filing_info(con, new_id),
         "fair_value_usd": {"from": tot(old_id), "to": tot(new_id), "change": tot(new_id) - tot(old_id)},

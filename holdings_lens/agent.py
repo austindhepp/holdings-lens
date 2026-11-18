@@ -40,7 +40,9 @@ Database (SQLite):
   v_holdings = holdings + fund, period, fair_value_usd, cost_usd, principal_usd (whole dollars)
   v_latest   = v_holdings limited to each fund's most recent filing
   - Prefer v_holdings / v_latest and the *_usd columns; say amounts in dollars.
-  - lien is one of first_lien, second_lien, unitranche, subordinated, equity, other.
+  - lien is one of first_lien, second_lien, unitranche, subordinated, equity, other, cash.
+    lien = 'cash' marks money-market funds the filer lists with the schedule but excludes from
+    total investments: ALWAYS add lien != 'cash' when computing portfolio or debt totals and shares.
   - mark = fair_value / cost (0.85 means valued at 85% of cost). spread_bps is the margin over base_rate.
   - company_key is a normalized borrower name: use it to match the same company across funds/quarters.
   - maturity is ISO (YYYY-MM-DD) or YYYY-MM when the filing shows only month/year.

@@ -163,6 +163,17 @@ def company_key(name: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+CASH_NAME = re.compile(r"money market|liquidity funds?\b|treasury (securities )?portfolio|government (obligations|portfolio) fund", re.I)
+
+
+def is_cash_equivalent(h) -> bool:
+    """Money-market and similar funds listed with the schedule. Filers exclude them from 'Total
+    investments', so analytics must too. XBRL says so directly; the name is a fallback without XBRL."""
+    if h.xbrl_concept and h.xbrl_concept != xbrl.FAIR_VALUE and h.xbrl_concept in xbrl.FAIR_VALUE_LIKE:
+        return True
+    return bool(CASH_NAME.search(h.company or "")) and not h.spread_bps and not h.maturity
+
+
 def lien_of(investment_type: Optional[str], instrument: Optional[str]) -> str:
     t = f"{investment_type or ''} {instrument or ''}".lower()
     if "unitranche" in t or "one stop" in t or "one-stop" in t:
@@ -523,6 +534,9 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
                         periods_here.append(h.xbrl_period)
                     if h.xbrl_concept not in xbrl.FAIR_VALUE_LIKE:
                         h.notes.append(f"XBRL says this column is {h.xbrl_concept}, not fair value")
+            if is_cash_equivalent(h):
+                h.investment_type, h.lien = "Cash equivalents", "cash"
+                h.notes.append("cash equivalent: not part of total investments")
             holdings.append(h)
         table_periods[t_idx] = max(set(periods_here), key=periods_here.count) if periods_here else None
 
