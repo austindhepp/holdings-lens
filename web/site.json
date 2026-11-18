@@ -1,10 +1,10 @@
 {
   "name": "Austin Hepp",
   "email": "austindhepp@gmail.com",
-  "github": "",
+  "github": "https://github.com/austindhepp/holdings-lens",
   "resume_url": "",
   "cta_text": "I'm a 2026 Purdue CS grad in the Chicago area working on AI agents for document-heavy finance workflows. I'd love 15 minutes to hear how your team thinks about this kind of problem. Happy to come to you.",
-  "site_url": "https://YOUR_USERNAME.github.io/holdings-lens",
+  "site_url": "https://holdings-lens.vercel.app",
   "linkedin": "",
   "calendar_url": "",
   "latest_update": "",
