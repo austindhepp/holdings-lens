@@ -163,6 +163,27 @@ def company_key(name: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+_SUFFIX = r"(?:L\.?\s?L\.?\s?C\.?|Inc\.?|L\.?\s?P\.?|Ltd\.?|Corp\.?|Corporation|Company|LLP|S\.?A\.?|B\.?V\.?|GmbH|SCSp|plc|Limited|Co\.?|Holdco|Topco|Midco|Bidco|AB|AS|SAS|S\.?\s?a\.?\s?r\.?\s?l\.?|ULC|N\.?V\.?)"
+_SUFFIX_COMMA = re.compile(rf",\s*(?={_SUFFIX}(?:\W|$))")
+_ENTITY_END = re.compile(rf"\b{_SUFFIX}\s*(?:\([^)]*\))?$", re.I)
+
+
+def split_entities(name: str) -> list[str]:
+    """'Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC' -> its three entities.
+    Lenders often list a borrower with its holding companies. Names are only split when every part
+    looks like a legal entity, so 'Johnson and Johnson' or 'Food and Drug Co.' stay whole."""
+    protected = _SUFFIX_COMMA.sub(" ", name or "")
+    parts = [p.strip(" ,") for p in re.split(r",?\s+and\s+|,\s+(?=[A-Z0-9])", protected) if p.strip(" ,")]
+    if len(parts) >= 2 and all(_ENTITY_END.search(p) for p in parts):
+        return parts
+    return [name]
+
+
+def borrower_key(name: str) -> str:
+    """Match key for a borrower: the first listed entity (the operating company), normalized."""
+    return company_key(split_entities(name)[0])
+
+
 CASH_NAME = re.compile(r"money market|liquidity funds?\b|treasury (securities )?portfolio|government (obligations|portfolio) fund", re.I)
 
 
@@ -237,6 +258,20 @@ def is_header_row(texts: list[str]) -> bool:
     return hits >= 2 and not MONEY_RE.search(re.sub(r"\(\d+\)", "", joined))
 
 
+# Tables that carry fair value and cost columns but are NOT the schedule of investments:
+# affiliate roll-forwards (purchases, sales, income during the period, ending fair value; these repeat
+# holdings already in the schedule) and derivative tables (swaps, forwards on the fund's own debt).
+ACTIVITY_WORDS = ["purchases", "redemptions", "sales (cost)", "interest income", "dividend income",
+                  "realized gain", "unrealized gain", "transfers in", "transfers out", "fee income", "other income"]
+DERIVATIVE_WORDS = ["counterparty", "notional", "swap", "hedged item", "settlement date", "company receives", "company pays"]
+
+
+def not_a_schedule(header_grid: list[str]) -> bool:
+    text = " ".join(header_grid).lower()
+    activity = sum(w in text for w in ACTIVITY_WORDS)
+    return activity >= 2 or any(w in text for w in DERIVATIVE_WORDS)
+
+
 def map_columns(header_grid: list[str]) -> dict[str, list[int]]:
     cols: dict[str, list[int]] = {}
     for pos, label in enumerate(header_grid):
@@ -244,7 +279,7 @@ def map_columns(header_grid: list[str]) -> dict[str, list[int]]:
         if not lab:
             continue
         for fname, kws in FIELD_KEYWORDS:
-            if any(k in lab for k in kws):
+            if any((re.search(rf"\b{re.escape(k)}\b", lab) if len(k) <= 4 else k in lab) for k in kws):
                 cols.setdefault(fname, []).append(pos)
                 break
     return cols
@@ -434,7 +469,8 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
         if header_grid:
             cols = map_columns(header_grid)
             is_schedule = ("fair_value" in cols and ("cost" in cols or "principal" in cols)
-                           and any(k in cols for k in ("maturity", "spread", "interest_rate", "company")))
+                           and any(k in cols for k in ("maturity", "spread", "interest_rate", "company"))
+                           and not not_a_schedule(header_grid))
             if not is_schedule:
                 if "fair_value" in cols:
                     active = None  # a different kind of financial table: stop carrying the schedule layout
@@ -518,7 +554,7 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
             h.base_rate, h.spread_bps = parse_spread(spread, rate)
             h.rate_pct = parse_rate(rate)
             h.lien = lien_of(cur_type, instrument)
-            h.company_key = company_key(company)
+            h.company_key = borrower_key(company)
             if h.cost is not None and h.cost > 0 and fv >= 0:
                 h.mark = round(fv / h.cost, 4)
             if (h.cost or 0) <= 0 and fv <= 0 and h.lien != "equity":

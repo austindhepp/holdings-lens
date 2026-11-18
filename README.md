@@ -21,14 +21,16 @@ $ python -m holdings_lens report
 ```
 *(Output on the bundled fictional filings.)*
 
-## Results on a real filing
+## Results on real filings
 
-Golub Capital BDC (GBDC), a large private-credit fund, checked against each filing's own inline XBRL tags:
+Two large private-credit lenders with different table layouts, each checked against the filing's own inline XBRL tags:
 
 | Filing | Holdings extracted | XBRL-tagged rows matching | Tagged investments found | Total fair value |
 |---|---|---|---|---|
-| 10-Q, June 30, 2026 | 1,814 | 1,683 / 1,683 | 100% | $8,196,353,000, ties to the dollar |
-| 10-Q, March 31, 2026 | 1,797 | 1,681 / 1,681 | 100% | $8,317,245,000, ties to the dollar |
+| Golub Capital BDC (GBDC) 10-Q, June 30, 2026 | 1,814 | 1,683 / 1,683 | 100% | $8,196,353,000, ties to the dollar |
+| Golub Capital BDC (GBDC) 10-Q, March 31, 2026 | 1,797 | 1,681 / 1,681 | 100% | $8,317,245,000, ties to the dollar |
+| Ares Capital (ARCC) 10-Q, September 30, 2026 | 1,422 | 1,294 / 1,294 | 100% | $29,213M, ties (reported in millions) |
+| Ares Capital (ARCC) 10-Q, June 30, 2026 | 1,439 | 1,318 / 1,318 | 100% | $29,349M, ties (reported in millions) |
 
 Getting there meant handling what real EDGAR filings do and the synthetic samples didn't:
 - two schedules in one filing (current quarter plus prior year-end), separated using XBRL context dates
@@ -38,6 +40,8 @@ Getting there meant handling what real EDGAR filings do and the synthetic sample
 - units stated above each table
 - footnote numbers reused across the filing, resolved from the footnote block after the schedule
 - unlabeled numeric subtotals
+- (Ares) affiliate roll-forward tables and interest-rate-swap tables that also have "fair value" and "cost" columns but repeat or aren't investments: the first run over-counted by $5.3B and the totals check caught it
+- (Ares) XBRL members spelled as names (`arcc:ATIRestorationLLCMember`), including a filer typo and one tagged by business description
 
 The resulting report (`evals/real_report_gbdc.md`) flags 27 non-accruals ($8.2B portfolio, 0.89% of fair value), positions that newly went on non-accrual this quarter (largest $51.5M), debt re-marks, and borrowers renamed between quarters.
 
@@ -91,7 +95,7 @@ python -m holdings_lens demo           # cache answers for the landing pages
 | `holdings_lens/evals.py` | Scorecard |
 | `holdings_lens/fetch.py` · `db.py` | EDGAR downloader, SQLite schema and views |
 | `samples/` · `tools/make_samples.py` | **Fictional** filings (2 funds, 2 quarters, 2 layouts) with XBRL tags |
-| `tests/` | 46 tests, a few seconds, no network (API calls mocked) |
+| `tests/` | 49 tests, a few seconds, no network (API calls mocked) |
 | `web/` | Personalized landing pages with charts |
 | `api/ask.py` · `vercel.json` | Live ask box: serverless endpoint with rate limits and a token cap |
 

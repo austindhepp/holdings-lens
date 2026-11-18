@@ -113,3 +113,39 @@ def test_money_market_funds_are_cash_not_investments():
     real.xbrl_concept = "InvestmentOwnedAtFairValue"
     assert is_cash_equivalent(mm) and is_cash_equivalent(tagged)
     assert not is_cash_equivalent(loan) and not is_cash_equivalent(real)
+
+
+def test_rollforward_and_derivative_tables_are_not_schedules():
+    from holdings_lens.extract import not_a_schedule, map_columns
+    rollforward = ["(in millions) Company", "Purchases (cost)", "Redemptions (cost)", "Sales (cost)", "Interest income",
+                   "Dividend income", "Net realized gains (losses)", "Net unrealized gains (losses)", "Fair Value"]
+    swaps = ["Description", "Hedged Item", "Company Receives", "Company Pays", "Coupon", "Counterparty",
+             "Maturity Date", "Notional Amount", "Fair Value (a)"]
+    schedule = ["Company", "Business Description", "Investment", "Coupon", "Reference", "Spread",
+                "Acquisition Date", "Maturity Date", "Shares/Units", "Principal", "Amortized Cost", "Fair Value", "% of Net Assets"]
+    assert not_a_schedule(rollforward) and not_a_schedule(swaps) and not not_a_schedule(schedule)
+    assert "principal" not in map_columns(["Counterparty", "Fair Value"])  # "par" must not match inside a word
+    assert "principal" in map_columns(["Par", "Fair Value"])
+
+
+def test_coverage_understands_explicit_xbrl_member_names():
+    from holdings_lens.reconcile import _member_name, _member_found, _is_category, _squash
+    companies = {_squash(c) for c in ["ATI Restoration, LLC", "15484880 Canada Inc. and 15484910 Canada Inc.",
+                                     "Ferrellgas, L.P. and Ferrellgas Partners, L.P."]}
+    raws = [_squash("Adonis Bidco Inc. | Provider of intellectual property management lifecycle software | First lien")]
+    for m in ["arcc:ATIRestorationLLCMember", "arcc:A15484880CanadaInc.And15484910CanadaInc.Member",
+              "arcc:FerrellgasLPAndFerrelgasPartnersLPMember",  # filer's typo
+              "arcc:ProviderOfIntellectualPropertyManagementLifecycleSoftwareMember"]:  # tagged by description
+        assert _member_found(_member_name(m), companies, raws), m
+    assert not _member_found(_member_name("arcc:TotallyDifferentCompanyLLCMember"), companies, raws)
+    assert _is_category("us-gaap:InvestmentUnaffiliatedIssuerMember")
+
+
+def test_combined_borrower_names_match_across_lenders():
+    from holdings_lens.extract import borrower_key
+    assert borrower_key("Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC") == borrower_key("Pluralsight, LLC")
+    assert borrower_key("Cority Software Inc., Cority Software (USA) Inc., and Cority Parent, Inc.") == borrower_key("Cority Software Inc.")
+    assert borrower_key("Ferrellgas, L.P. and Ferrellgas Partners, L.P.") == borrower_key("Ferrellgas, L.P.")
+    # "and" inside one company's name is not a list of entities
+    assert borrower_key("Johnson and Johnson") == "johnson and johnson"
+    assert borrower_key("Food and Drug Co.") == "food and drug"

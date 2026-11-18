@@ -1,5 +1,5 @@
 {
-  "note": "Real SEC filings, checked against each filing's own inline XBRL tags (no hand-made answer key). Field-level accuracy for non-tagged fields still needs a hand-checked sample.",
+  "note": "Real SEC filings from two lenders with different table layouts, checked against each filing's own inline XBRL tags (no hand-made answer key). Ares reports in millions to one decimal, so its total ties to within rounding. Field-level accuracy for non-tagged fields is measured with a hand-checked sample.",
   "filings": [
     {
       "fund": "Golub Capital BDC, Inc. (GBDC)",
@@ -26,6 +26,32 @@
       "totals_match": true,
       "filing_total_usd": 8196353000.0,
       "extracted_total_usd": 8196353000.0
+    },
+    {
+      "fund": "Ares Capital Corporation (ARCC)",
+      "form": "10-Q",
+      "period": "2026-06-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026050307/arcc-20260630.htm",
+      "holdings": 1439,
+      "xbrl_rows_matched": 1318,
+      "xbrl_rows_linked": 1318,
+      "coverage": 1.0,
+      "totals_match": true,
+      "filing_total_usd": 29349300000.0,
+      "extracted_total_usd": 29349300000.0
+    },
+    {
+      "fund": "Ares Capital Corporation (ARCC)",
+      "form": "10-Q",
+      "period": "2026-09-30",
+      "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm",
+      "holdings": 1422,
+      "xbrl_rows_matched": 1294,
+      "xbrl_rows_linked": 1294,
+      "coverage": 1.0,
+      "totals_match": true,
+      "filing_total_usd": 29213000000.0,
+      "extracted_total_usd": 29212600000.0
     }
   ]
 }

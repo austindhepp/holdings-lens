@@ -172,13 +172,16 @@ function vbars(items) {
 function renderReal() {
   const R = D.real && D.real.filings && D.real.filings.length ? D.real.filings : null;
   if (!R) return;
-  const f = R[R.length - 1];
+  const latest = {};  // newest filing per lender
+  R.forEach(f => { if (!latest[f.fund] || f.period > latest[f.fund].period) latest[f.fund] = f; });
+  const L = Object.values(latest);
+  const line = f => `<div style="font-size:16px;margin-top:6px"><b>${esc(f.fund)}</b>, ${esc(f.form)} for ${esc(f.period)}: <b>${f.holdings.toLocaleString()}</b> holdings;
+    <b>${f.xbrl_rows_matched.toLocaleString()} of ${f.xbrl_rows_linked.toLocaleString()}</b> XBRL-tagged rows match; ${pct0(f.coverage)} of tagged investments found;
+    total ${f.totals_match ? "ties" : "differs"} at <b>${usdM(f.filing_total_usd)}</b>. <a class="tiny" href="${esc(f.url)}">EDGAR</a></div>`;
   $("realbox").innerHTML = `<div class="card" style="margin-top:12px;border-color:var(--accent)">
-    <div class="eyebrow" style="margin-bottom:6px">Tested on a real SEC filing</div>
-    <div style="font-size:17px"><b>${esc(f.fund)}</b>, ${esc(f.form)} for ${esc(f.period)}: <b>${f.holdings.toLocaleString()}</b> holdings extracted;
-    <b>${f.xbrl_rows_matched.toLocaleString()} of ${f.xbrl_rows_linked.toLocaleString()}</b> XBRL-tagged rows match;
-    ${pct0(f.coverage)} of tagged investments found; total ${f.totals_match ? "ties to the dollar" : "differs"} at <b>${usdM(f.filing_total_usd)}</b>.</div>
-    <div class="tiny" style="margin-top:6px">${R.length > 1 ? `Prior quarter (${esc(R[0].period)}): ${R[0].xbrl_rows_matched.toLocaleString()}/${R[0].xbrl_rows_linked.toLocaleString()} rows match, total ties. ` : ""}<a href="${esc(f.url)}">Source filing on EDGAR</a></div></div>`;
+    <div class="eyebrow" style="margin-bottom:2px">Tested on real SEC filings${L.length > 1 ? ` from ${L.length} lenders` : ""}</div>
+    ${L.map(line).join("")}
+    <div class="tiny" style="margin-top:8px">${R.length} filings in all, every one reconciled with the same code. Earlier quarters are in the trust table below.</div></div>`;
 }
 
 function renderTop() {
@@ -268,11 +271,16 @@ function renderAnswer(e) {
   return `<div class="answer">${body}</div>${badge}` + (e.sources || []).slice(0, 4).map(s => `<div class="src">H${s.id} · ${esc(s.fund)} ${esc(s.period || "")} · "${esc(s.raw)}"</div>`).join("");
 }
 
+function liveFunds() {
+  const names = [...new Set(((D.real && D.real.filings) || []).map(f => f.fund.replace(/\s*\(.*\)$/, "").replace(/,? Inc\.?$/, "")))];
+  return names.length ? names.join(" and ") : "real BDC filings";
+}
+
 function renderLive() {
   if (!D.ask_url) return "";
   return `<div class="card" style="margin-bottom:14px">
-    <h3 style="margin-bottom:4px">Ask your own question <span class="tiny">live · includes Golub Capital BDC's real 10-Qs</span></h3>
-    <form class="askrow" id="askform"><input id="askq" maxlength="300" placeholder="e.g. Which Golub positions went on non-accrual this quarter?" aria-label="Your question">
+    <h3 style="margin-bottom:4px">Ask your own question <span class="tiny">live · real 10-Qs from ${esc(liveFunds())}</span></h3>
+    <form class="askrow" id="askform"><input id="askq" maxlength="300" placeholder="e.g. Which borrowers do Golub and Ares both lend to, and how differently do they value them?" aria-label="Your question">
     <button id="askbtn" type="submit">Ask</button></form>
     <div class="tiny">Answers come from the extracted data only, with a citation for every number. Usually 10–40 seconds. Limited to a few questions per visitor.</div>
     <div id="liveans" style="margin-top:10px"></div></div>`;

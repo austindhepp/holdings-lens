@@ -16,6 +16,37 @@ from . import xbrl
 from .extract import UNIT_MULT, Holding, company_key
 
 
+import difflib
+import re
+
+
+def _squash(s: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", s.lower())
+
+
+def _member_name(m: str) -> str:
+    """'arcc:A15484880CanadaInc.Member' -> '15484880canadainc' (XBRL names can't start with a digit)."""
+    name = m.split("|")[0].split(":")[-1]
+    name = re.sub(r"Member$", "", name)
+    return _squash(re.sub(r"^A(?=\d)", "", name))
+
+
+def _is_category(m: str) -> bool:
+    """Standard grouping members (affiliated/unaffiliated issuer, etc.), not individual investments."""
+    return m.split(":")[0].lower() in ("us-gaap", "ifrs-full", "srt", "dei") or m.endswith("IssuerMember")
+
+
+def _member_found(name: str, squashed: set, raws: list) -> bool:
+    if not name:
+        return False
+    if name in squashed:
+        return True
+    if len(name) >= 15 and any(name in r for r in raws):  # some filers tag by the business description
+        return True
+    # tolerate a filer's typo in the tag ("Ferrelgas" vs "Ferrellgas")
+    return bool(difflib.get_close_matches(name, squashed, n=1, cutoff=0.93))
+
+
 def reconcile(html: str, holdings: list[Holding], tol: float = 0.5) -> dict:
     import warnings
     from bs4 import XMLParsedAsHTMLWarning
@@ -42,12 +73,17 @@ def reconcile(html: str, holdings: list[Holding], tol: float = 0.5) -> dict:
     untagged = [{"company": h.company, "instrument": h.instrument, "fair_value": h.fair_value}
                 for h in holdings if h.xbrl_fair_value is None and h.fair_value]
 
-    tagged_members = {f.member for f in facts if f.member}
+    tagged_members = {f.member for f in facts if f.member and not _is_category(f.member)}
     extracted_members = {h.xbrl_member for h in linked if h.xbrl_member}
     keys = {h.company_key for h in holdings}
     # A tagged member is covered if its exact row was extracted, or (for company-level tags in the
     # notes, e.g. affiliate rollforwards) if that company appears in the extraction under any spelling.
-    missed = sorted(m for m in tagged_members - extracted_members if company_key(m.split("|")[0]) not in keys)
+    # Explicit members are spelled the XBRL way ("arcc:ATIRestorationLLCMember"): compare them squashed.
+    squashed = {_squash(h.company or "") for h in holdings}
+    raws = [_squash(h.raw or "") for h in holdings]
+    missed = sorted(m for m in tagged_members - extracted_members
+                    if not _is_category(m) and company_key(m.split("|")[0]) not in keys
+                    and not _member_found(_member_name(m), squashed, raws))
 
     totals = [f.value for f in facts if not f.member]
     filing_total = max(totals) if totals else None  # "Total investments" is the largest undimensioned FV
