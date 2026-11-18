@@ -79,6 +79,29 @@ def validate(body: dict) -> tuple[str | None, str | None]:
     return q, None
 
 
+_scope_cache: dict = {}
+
+
+def data_scope() -> str:
+    """Tell the agent exactly which funds and quarters the live database holds, read from the database
+    itself, so it never suggests a question the data can't answer (e.g. cross-fund comparisons with one fund)."""
+    if DB_PATH in _scope_cache:
+        return _scope_cache[DB_PATH]
+    try:
+        import sqlite3
+        con = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+        rows = con.execute("SELECT fund, GROUP_CONCAT(period, ', ') FROM "
+                           "(SELECT fund, period FROM filings ORDER BY period) GROUP BY fund").fetchall()
+        con.close()
+    except Exception:
+        return ""
+    funds = "; ".join(f"{f} (filings dated {p})" for f, p in rows)
+    note = (" There is only one fund, so do not offer or attempt cross-fund comparisons; quarter-over-quarter"
+            " comparisons within the fund are fine." if len(rows) == 1 else "")
+    _scope_cache[DB_PATH] = f"\n\nThe database holds exactly: {funds}.{note} Only suggest follow-ups this data can answer."
+    return _scope_cache[DB_PATH]
+
+
 def _base_post(payload: dict) -> dict:
     return agent._post(payload)
 
@@ -92,7 +115,7 @@ def answer(question: str, post=None) -> dict:
     old_turns = agent.MAX_TURNS
     agent.MAX_TURNS = MAX_TURNS
     try:
-        r = agent.ask(question, db_path=DB_PATH, post=capped, style=LIVE_STYLE)
+        r = agent.ask(question, db_path=DB_PATH, post=capped, style=LIVE_STYLE + data_scope())
     finally:
         agent.MAX_TURNS = old_turns
     c = r["citations"]

@@ -157,3 +157,13 @@ def test_refusal_without_holding_citations_is_not_flagged(live):
                 "stop_reason": "end_turn", "usage": {"input_tokens": 1, "output_tokens": 1}}
     out = live.answer("What was net investment income?", post=fake)
     assert out["grounded"] is None and out["filing_level"] is True and out["unsupported"] == []
+
+
+def test_agent_is_told_what_data_the_live_db_holds(live):
+    seen = []
+    def fake(payload):
+        seen.append(payload["system"])
+        return {"content": [{"type": "text", "text": "ok"}], "stop_reason": "end_turn",
+                "usage": {"input_tokens": 1, "output_tokens": 1}}
+    live.answer("hello", post=fake)
+    assert "The database holds exactly:" in seen[0] and "2026-09-30" in seen[0]

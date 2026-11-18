@@ -52,7 +52,8 @@
   .chip { border:1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 10px; padding: 8px 12px; font: inherit; font-size: 13.5px; cursor:pointer; text-align:left; }
   .chip[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
   .answer { white-space: pre-wrap; }
-  .cite { background: var(--accent-soft); color: var(--accent); border-radius: 4px; padding: 0 4px; font-weight: 650; font-size: 12.5px; }
+  .cite { background: var(--accent-soft); color: var(--accent); border-radius: 4px; padding: 0 4px; font-weight: 650; font-size: 12.5px; margin: 0 1px; }
+  .cite + .cite { margin-left: 4px; }
   .src { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color: var(--muted); border-top: 1px dashed var(--line); padding-top: 8px; margin-top: 10px; overflow-wrap: anywhere; }
   .banner { background: var(--warn-soft); color: var(--warn); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin-bottom: 12px; }
   .check { color: var(--accent); font-weight: 700; } .x { color: var(--bad); font-weight: 700; }
