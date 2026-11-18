@@ -149,3 +149,11 @@ def test_length_limited_answer_is_trimmed_cleanly():
     out = ask.answer("q", post=fake)["answer"]
     assert "H2110 FP" not in out and out.startswith("**Answer: 27 loans.**")
     assert "Wineshipping: $8.3M" in out and "trimmed at the length limit" in out
+
+
+def test_refusal_without_holding_citations_is_not_flagged(live):
+    def fake(payload):
+        return {"content": [{"type": "text", "text": "**I can't answer that from this data.** Total investments were $1 [F1]."}],
+                "stop_reason": "end_turn", "usage": {"input_tokens": 1, "output_tokens": 1}}
+    out = live.answer("What was net investment income?", post=fake)
+    assert out["grounded"] is None and out["filing_level"] is True and out["unsupported"] == []

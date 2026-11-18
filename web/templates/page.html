@@ -256,7 +256,9 @@ function renderAnswer(e) {
   const body = esc(e.answer).replace(/\[H(\d+)\]/g, '<span class="cite">H$1</span>').replace(/\[F(\d+)\]/g, '<span class="cite">F$1</span>');
   const badge = e.grounded === false
     ? `<div class="tiny x">⚠ Not fully grounded${(e.unsupported || []).length ? ": " + e.unsupported.map(i => "H" + i).join(", ") + " cited without being retrieved" : ""}. The citation check flags this automatically.</div>`
-    : `<div class="tiny check">✓ every citation retrieved by the agent</div>`;
+    : e.grounded === true || e.grounded === undefined
+    ? `<div class="tiny check">✓ every citation retrieved by the agent</div>`
+    : `<div class="tiny muted">${e.filing_level ? "Filing-level answer: no individual holdings cited." : "No holdings cited in this answer."}</div>`;
   return `<div class="answer">${body}</div>${badge}` + (e.sources || []).slice(0, 4).map(s => `<div class="src">H${s.id} · ${esc(s.fund)} ${esc(s.period || "")} · "${esc(s.raw)}"</div>`).join("");
 }
 

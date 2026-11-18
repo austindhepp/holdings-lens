@@ -16,6 +16,7 @@ Guardrails, because the page is public:
 from __future__ import annotations
 
 import json
+import re
 import os
 import sys
 import time
@@ -94,7 +95,12 @@ def answer(question: str, post=None) -> dict:
         r = agent.ask(question, db_path=DB_PATH, post=capped, style=LIVE_STYLE)
     finally:
         agent.MAX_TURNS = old_turns
-    return {"answer": r["answer"], "citations": r["citations"], "grounded": r["citations"]["grounded"],
+    c = r["citations"]
+    # No holding cited (e.g. "the data can't answer that", or a filing-level total) is not a grounding
+    # failure: report None so the page shows a neutral note instead of a warning.
+    grounded = c["grounded"] if c["cited"] else None
+    filing_level = bool(re.search(r"\[F\d+\]", r["answer"] or ""))
+    return {"answer": r["answer"], "citations": c, "grounded": grounded, "filing_level": filing_level,
             "unsupported": r["citations"]["nonexistent"] + r["citations"]["not_retrieved"],
             "sources": r["sources"][:8], "usage": r["usage"], "model": r["model"]}
 
