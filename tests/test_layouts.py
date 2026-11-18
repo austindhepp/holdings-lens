@@ -160,3 +160,12 @@ def test_ownership_stakes_without_the_word_equity_are_equity():
                        ("Second lien senior secured notes", "second_lien")]:
         assert lien_of(None, inst) == lien, inst
     assert lien_of("Debt investments", "One stop") == "unitranche"
+
+
+def test_footnote_numbers_in_their_own_column_are_read():
+    from holdings_lens.extract import marker_column
+    cols = {"fair_value": [5], "pct_net_assets": [9]}
+    grid = ["Acme LLC", "", "0.9", "", "0.8", "0.9", "", "(2)(8)", "", "0.1"]
+    assert marker_column(grid, cols) == ["2", "8"]  # between fair value and % of net assets
+    assert marker_column(["Acme", "( 22 )", "", "", "", "( 21 )", "", "( 4 )"], {"fair_value": [5]}) == []  # negatives
+    assert marker_column(["(2)", "", "", "", "", "1.0"], {"fair_value": [5]}) == []  # only right of fair value

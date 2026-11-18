@@ -429,6 +429,26 @@ def inline_markers(text: str) -> list[str]:
     return re.findall(r"\(\s*(\d{1,2})\s*\)", m.group(0)) if m else []
 
 
+# How far past the schedule's last table to look for its footnote definitions. Some filers put other
+# tables (derivatives, affiliate roll-forwards) between the schedule and its footnotes.
+FOOTNOTE_REACH = 12000
+
+MARKER_CELL = re.compile(r"^(?:\(\d{1,2}\)|\([a-z]\))+$")
+
+
+def marker_column(grid: list[str], cols: dict) -> list[str]:
+    """Footnote numbers some filers put in their own column right of the values, e.g. '(2)(6)(9)'.
+    Only cells right of the fair-value column (some filers put it before "% of net assets"), written with no spaces inside the parentheses, count:
+    '( 22 )' there is a negative number, not a footnote."""
+    right_of = max(cols.get("fair_value", [len(grid)]))
+    out = []
+    for pos, cell in enumerate(grid):
+        c = (cell or "").replace(" ", "") if "( " not in (cell or "") else ""
+        if pos > right_of and MARKER_CELL.match(c):
+            out += re.findall(r"\((\w{1,2})\)", c)
+    return out
+
+
 def find_schedule_tables(soup) -> list:
     tables = []
     for t in soup.find_all("table"):
@@ -555,7 +575,8 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
                 pct_net_assets=parse_number(get("pct_net_assets")[0]), units=units, table_idx=t_idx, row_idx=r_idx,
                 raw=" | ".join(nonempty), notes=notes,
             )
-            h.markers = list(dict.fromkeys(markers + inline_markers(get("company")[0]) + inline_markers(get("instrument")[0])))
+            h.markers = list(dict.fromkeys(markers + inline_markers(get("company")[0]) + inline_markers(get("instrument")[0])
+                                           + marker_column(grid, cols)))
             h.base_rate, h.spread_bps = parse_spread(spread, rate)
             h.rate_pct = parse_rate(rate)
             h.lien = lien_of(cur_type, instrument)
@@ -608,7 +629,7 @@ def _apply_footnotes(soup, all_tables, holdings):
     if not holdings:
         return
     last = all_tables[max(h.table_idx for h in holdings)]
-    near = footnote_definitions(soup, last.find_all_next(["p", "div", "td", "ix:footnote", "footnote"], limit=1500))
+    near = footnote_definitions(soup, last.find_all_next(["p", "div", "td", "ix:footnote", "footnote"], limit=FOOTNOTE_REACH))
     glob = footnote_definitions(soup)
     for h in holdings:
         ftexts = []

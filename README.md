@@ -41,6 +41,8 @@ Getting there meant handling what real EDGAR filings do and the synthetic sample
 - footnote numbers reused across the filing, resolved from the footnote block after the schedule
 - unlabeled numeric subtotals
 - (Ares) affiliate roll-forward tables and interest-rate-swap tables that also have "fair value" and "cost" columns but repeat or aren't investments: the first run over-counted by $5.3B and the totals check caught it
+- (Ares) footnote numbers in their own column between fair value and % of net assets, with the definitions several tables further on: non-accrual loans then came out at 2.41% of cost, matching the 2.4% Ares itself reports
+- (Ares) ownership stakes named without the word "equity" ("Limited partnership interest", "Ordinary shares") and no Debt/Equity section headings
 - (Ares) XBRL members spelled as names (`arcc:ATIRestorationLLCMember`), including a filer typo and one tagged by business description
 
 The resulting report (`evals/real_report_gbdc.md`) flags 27 non-accruals ($8.2B portfolio, 0.89% of fair value), positions that newly went on non-accrual this quarter (largest $51.5M), debt re-marks, and borrowers renamed between quarters.
@@ -95,7 +97,7 @@ python -m holdings_lens demo           # cache answers for the landing pages
 | `holdings_lens/evals.py` | Scorecard |
 | `holdings_lens/fetch.py` · `db.py` | EDGAR downloader, SQLite schema and views |
 | `samples/` · `tools/make_samples.py` | **Fictional** filings (2 funds, 2 quarters, 2 layouts) with XBRL tags |
-| `tests/` | 52 tests, a few seconds, no network (API calls mocked) |
+| `tests/` | 53 tests, a few seconds, no network (API calls mocked) |
 | `web/` | Personalized landing pages with charts |
 | `api/ask.py` · `vercel.json` | Live ask box: serverless endpoint with rate limits and a token cap |
 
