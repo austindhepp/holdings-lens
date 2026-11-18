@@ -207,6 +207,11 @@ def lien_of(investment_type: Optional[str], instrument: Optional[str]) -> str:
         return "subordinated"
     if any(k in t for k in ("equity", "stock", "units", "warrant", "preferred")):
         return "equity"
+    # Ownership stakes named without the word "equity": LP/LLC/membership interests, shares, units,
+    # participation rights (common in filers that don't group the schedule under "Equity" headings).
+    if re.search(r"\binterests?\b|\bshares?\b|\bunits?\b|participation|ordinary", t) and \
+            not re.search(r"loan|note|debt|bond|revolv|lien|senior|secured|term|tranche|facility", t):
+        return "equity"
     return "other"
 
 
@@ -554,6 +559,9 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
             h.base_rate, h.spread_bps = parse_spread(spread, rate)
             h.rate_pct = parse_rate(rate)
             h.lien = lien_of(cur_type, instrument)
+            if not h.investment_type:  # filers without "Debt"/"Equity" section headings: derive it
+                h.investment_type = ("Equity investments" if h.lien == "equity" else
+                                     "Debt investments" if h.lien in ("first_lien", "second_lien", "unitranche", "subordinated") else None)
             h.company_key = borrower_key(company)
             if h.cost is not None and h.cost > 0 and fv >= 0:
                 h.mark = round(fv / h.cost, 4)

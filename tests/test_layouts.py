@@ -149,3 +149,14 @@ def test_combined_borrower_names_match_across_lenders():
     # "and" inside one company's name is not a list of entities
     assert borrower_key("Johnson and Johnson") == "johnson and johnson"
     assert borrower_key("Food and Drug Co.") == "food and drug"
+
+
+def test_ownership_stakes_without_the_word_equity_are_equity():
+    from holdings_lens.extract import lien_of
+    for inst in ["Limited partnership interest", "Membership interests", "Ordinary shares", "Common unit",
+                 "Participation rights", "Class B limited liability company interest"]:
+        assert lien_of(None, inst) == "equity", inst
+    for inst, lien in [("First lien senior secured loan", "first_lien"), ("Senior subordinated loan", "subordinated"),
+                       ("Second lien senior secured notes", "second_lien")]:
+        assert lien_of(None, inst) == lien, inst
+    assert lien_of("Debt investments", "One stop") == "unitranche"
