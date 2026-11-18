@@ -6,18 +6,18 @@
     "cell_accuracy": 1.0,
     "row_recall": 1.0,
     "xbrl_match_rate": 1.0,
-    "qa_accuracy": 0.875,
-    "grounded_rate": 0.5,
-    "avg_tokens": 25920.0,
-    "questions": 8
+    "qa_accuracy": 0.8888888888888888,
+    "grounded_rate": 0.6666666666666666,
+    "avg_tokens": 18369.444444444445,
+    "questions": 9
   },
   "examples": [
     {
       "question": "Which borrowers do Golub and Ares both lend to, and where do they disagree most on value?",
-      "answer": "**Golub and Ares share 73 borrowers. The widest gap in debt marks is on WebPT, where Golub values its loan at 70% of cost and Ares values its position at 100%.** The two positions are very different in size and type, so that gap overstates the real disagreement.\n\n- **WebPT:** Golub's non-accrual unitranche loan is marked at 0.70 of cost [H32814]. Ares holds two small first-lien positions of $100,000 each at par [H34935][H34936]. Ares' maturity is 2028-01 and Golub's is 2030-01, so they are probably different tranches.\n- **Pluralsight:** This is the largest like-for-like disagreement. Ares marks its first-lien debt at 0.42 of cost ($18.1M fair value, non-accrual) [H34875]. Golub's blended mark is 0.57, with the unitranche piece at 0.25 (non-accrual) [H32731] and the other pieces near 0.95\u20130.97 [H32732][H32733].\n- **Huskies Parent:** Ares marks it at 0.83 ($173.9M) [H34810], and Golub marks it at 0.97 ($1.9M) [H32320]. That is a 13.4-point gap.\n- **Marcone Yellowstone:** Golub marks it at 0.95 on $55.0M [H32899], and Ares marks it at 0.83 on a small $0.5M position [H35637]. That is an 11.4-point gap.\n- **Revalize:** Ares marks it at 0.82 and Golub at 0.91, a 9.4-point gap [H34886][H32359].\n\nCaveat: the comparison uses Golub's June 30, 2026 10-Q and Ares' September 30, 2026 10-Q. Part of each gap may come from the three-month difference in dates.\n\nI can pull the Ares vs. Golub tranche detail for Pluralsight or Huskies Parent if you want it.",
+      "answer": "**Golub and Ares share 73 borrowers. The widest disagreement is Pluralsight, where Ares values its debt at 42% of cost and Golub at 57%, a gap of 15.2 points.**\n\n- **Pluralsight:** Ares marks its loan at 42% of cost ($18.1M fair value) and has it on non-accrual [H41347]. Golub marks its debt at 57% overall. Its largest position is on non-accrual at 25% of cost, and its other loans are near 95\u201397% [H39203][H39204][H39205].\n- **Huskies Parent (GI Insurity):** Ares values its debt at 83% of cost ($173.9M fair value), and one large loan is marked at 80% [H41285]. Golub values its debt at 97% [H38792]. This is the largest gap on a position with sizable exposure.\n- **WebPT:** Golub marks it at 70% and has it on non-accrual [H39286]. Ares marks it at 81% and has it accruing [H41407][H41408][H41409]. Here Golub is the lower mark.\n- **Marcone Yellowstone:** Ares is at 83% [H42109][H42110] and Golub is at 95%, an 11.4-point gap.\n- **Revalize:** Ares is at 82% [H41358][H41359] and Golub is at 91%, a 9.4-point gap.\n\nCaveat: Golub's marks are from its June 30, 2026 10-Q and Ares' are from its September 30, 2026 10-Q. Some of the gap may be a quarter of timing. Positions also differ a lot in size. Ares' Marcone and Revalize stakes are $0.5M and $0.9M, so those gaps rest on small positions.",
       "sources": [
         {
-          "id": 32320,
+          "id": 38792,
           "company": "Huskies Parent, Inc.",
           "raw": "Huskies Parent, Inc.+ | One stop | SF + | 6.00 % | (i) | 9.74 % | 11/2029 | 1,995 | 1,979 | 0.1 | 1,915",
           "table_idx": 33,
@@ -27,17 +27,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32359,
-          "company": "Revalize, Inc.",
-          "raw": "Revalize, Inc.+(25) | One stop | SF + | 6.50 % | (j) | 8.63 % | cash/ | 1.75 % | PIK | 04/2029 | 20,682 | 20,539 | 0.5 | 18,615",
-          "table_idx": 34,
-          "row_idx": 6,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 32731,
+          "id": 39203,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(7)(25) | One stop | SF + | 7.50 % | (i) | 11.14 % | PIK | 08/2029 | 7,417 | 6,764 | 0.1 | 1,706",
           "table_idx": 43,
@@ -47,7 +37,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32732,
+          "id": 39204,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 4,049 | 3,975 | 0.1 | 3,847",
           "table_idx": 43,
@@ -57,7 +47,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32733,
+          "id": 39205,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 2,025 | 2,025 | 0.1 | 1,923",
           "table_idx": 43,
@@ -67,7 +57,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32814,
+          "id": 39286,
           "company": "WebPT, Inc.",
           "raw": "WebPT, Inc.+(7)(25) | One stop | SF + | 6.26 % | (k) | 7.08 % | cash/ | 3.13 % | PIK | 01/2030 | 949 | 920 | 646",
           "table_idx": 45,
@@ -77,27 +67,17 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32899,
-          "company": "Marcone Yellowstone Buyer, Inc.",
-          "raw": "Marcone Yellowstone Buyer, Inc.+(25) | One stop | SF + | 7.00 % | (j) | 7.58 % | cash/ | 3.25 % | PIK | 06/2028 | 21,087 | 20,917 | 0.5 | 19,610",
-          "table_idx": 48,
-          "row_idx": 27,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 34810,
+          "id": 41285,
           "company": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP",
-          "raw": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP (13) | Insurance software provider | First lien senior secured revolving loan | 9.47 % | SOFR (Q) | 5.50 % | 11/2021 | 11/2029 | 0.8 | 0.8 | 0.7 | (2)(9)",
+          "raw": "Senior subordinated loan | 10.00 % PIK | 11/2021 | 11/2031 | 144.2 | 144.2 | 115.3 | (2)",
           "table_idx": 14,
-          "row_idx": 26,
+          "row_idx": 29,
           "fund": "ARES CAPITAL CORP",
           "period": "2026-09-30",
           "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 34875,
+          "id": 41347,
           "company": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC",
           "raw": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC (4) | Online education learning platform | First lien senior secured loan | 08/2024 | 08/2029 | 46.2 | 43.1 | 18.1 | (2)(8)",
           "table_idx": 18,
@@ -107,7 +87,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 34886,
+          "id": 41358,
           "company": "Revalize, Inc.",
           "raw": "Revalize, Inc. (13) | Developer and operator of software providing configuration, price and quote capabilities | First lien senior secured revolving loan | 10.47 % | SOFR (Q) | 6.25 % | 05/2022 | 04/2029 | 0.4 | 0.4 | 0.3 | (2)(9)",
           "table_idx": 18,
@@ -117,7 +97,17 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 34935,
+          "id": 41359,
+          "company": "Revalize, Inc.",
+          "raw": "First lien senior secured loan | 10.72 % ( 1.75 % PIK) | SOFR (Q) | 6.50 % | 05/2022 | 04/2029 | 0.7 | 0.7 | 0.6 | (2)(9)",
+          "table_idx": 18,
+          "row_idx": 18,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41407,
           "company": "WebPT, Inc. and WPT Intermediate Holdco, Inc.",
           "raw": "WebPT, Inc. and WPT Intermediate Holdco, Inc. (13) | Electronic medical record software provider | First lien senior secured revolving loan | 10.56 % | SOFR (S) | 6.25 % | 08/2019 | 01/2028 | 0.1 | 0.1 | 0.1 | (2)(9)",
           "table_idx": 20,
@@ -127,7 +117,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 34936,
+          "id": 41408,
           "company": "WebPT, Inc. and WPT Intermediate Holdco, Inc.",
           "raw": "First lien senior secured loan | 10.20 % ( 3.13 % PIK) | SOFR (Q) | 6.25 % | 08/2019 | 01/2028 | 0.1 | 0.1 | 0.1 | (2)(9)",
           "table_idx": 20,
@@ -137,11 +127,31 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
         },
         {
-          "id": 35637,
+          "id": 41409,
+          "company": "WebPT, Inc. and WPT Intermediate Holdco, Inc.",
+          "raw": "Senior subordinated loan | 13.25 % PIK | 05/2024 | 05/2029 | 82.0 | 82.0 | 66.4 | (2)",
+          "table_idx": 21,
+          "row_idx": 2,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 42109,
           "company": "Marcone Yellowstone Buyer Inc. and Marcone Yellowstone Holdings, LLC",
           "raw": "Marcone Yellowstone Buyer Inc. and Marcone Yellowstone Holdings, LLC | Distributor of OEM appliance aftermarket parts | First lien senior secured loan | 7.63 % | SOFR (Q) | 3.75 % | 06/2021 | 06/2028 | 0.4 | 0.4 | 0.3 | (2)(9)",
           "table_idx": 52,
           "row_idx": 12,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 42110,
+          "company": "Marcone Yellowstone Buyer Inc. and Marcone Yellowstone Holdings, LLC",
+          "raw": "First lien senior secured loan | 7.63 % | SOFR (Q) | 3.75 % | 12/2021 | 06/2028 | 0.2 | 0.2 | 0.2 | (2)(9)",
+          "table_idx": 52,
+          "row_idx": 13,
           "fund": "ARES CAPITAL CORP",
           "period": "2026-09-30",
           "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
@@ -152,195 +162,26 @@
       "unsupported": [],
       "tools_used": [
         "shared_borrowers",
+        "early_warnings",
         "run_sql"
       ]
     },
     {
       "question": "How do Golub and Ares compare on non-accruals as a share of cost?",
-      "answer": "**Golub has the higher non-accrual share on total cost (2.94% vs 2.39%) at June 30, 2026. Ares is higher on debt only (3.03% vs 1.65%).**\n\n- **Total cost, June 30, 2026:** Golub has $246.3M on non-accrual out of $8.377B, which is 2.94%. It is computed from 1,812 holdings in the Golub 10-Q [F2]. Ares has $707.6M out of $29.675B, which is 2.38%. It is computed from 1,439 holdings in the Ares 10-Q [F7].\n- **Debt only, June 30, 2026:** Golub has $127.7M out of $7.749B, which is 1.65%. Ares has $707.6M out of $23.328B, which is 3.03%.\n- **Why the two views differ:** Ten Golub equity positions carry $118.6M of non-accrual cost, for example [H32949]. Their footnote says non-accrual covers non-cash dividends. Every Ares non-accrual is a loan, for example [H34875].\n- **Latest Ares filing (Sept 30, 2026):** Non-accruals are $711.1M out of $29.478B, which is 2.41% of total cost and 3.11% of debt cost. That is computed from 1,422 holdings in the Ares 10-Q [F6].\n- **Marks:** On the Sept 30 Ares filing, non-accrual debt is carried at $426.1M, or 60% of cost. On the Golub filing, it is $73.3M, or 57%.\n\nI compared June 30 for both funds, because Golub has no later filing.",
+      "answer": "**Golub has the higher non-accrual share on all investments (2.94% of cost vs. Ares's 2.41%). On debt only, Ares is higher (3.11% vs. 1.65%).**\n\n- **All investments:** Golub has $246.3M of non-accruals on $8.38B of cost, and Ares has $711.1M on $29.48B. Both come from the latest filings: Golub's June 30, 2026 10-Q [F2] and Ares's September 30, 2026 10-Q [F6]. Computed from 1,812 and 1,422 holdings.\n- **Why the ranking flips:** $118.6M of Golub's non-accruals are equity positions, for example GS Acquisitionco [H39609] and Symplr [H39518]. Ares has none in equity.\n- **Debt only:** Golub has $127.7M of non-accruals on $7.75B of debt cost. Ares has $711.1M on $22.86B.\n- **Ares's largest non-accruals:** Amerivet [H41540], Teasdale [H42478] and Pathway Vet [H41607].\n- **Marks on the flagged positions:** Ares's non-accruals are valued at 59.9% of cost ($426.1M fair value). Golub's are at 64.4% ($158.6M).\n\nCaveat: the two filings are a quarter apart. Debt-only is the more usual way to read non-accruals, because Golub's footnote says non-accrual covers interest or non-cash dividend income.",
       "sources": [
         {
-          "id": 32949,
-          "company": "Cobepa BlueSky Aggregator, SCSp",
-          "raw": "Cobepa BlueSky Aggregator, SCSp+(7)(24) | Preferred stock | N/A | 15.00 % | Non-Cash | 04/2024 | N/A | 5 | 61 | 35",
-          "table_idx": 50,
-          "row_idx": 39,
+          "id": 39518,
+          "company": "Symplr Software, Inc.",
+          "raw": "Symplr Software, Inc.+(7)(24) | Preferred stock | N/A | 11.00 % | Non-Cash | 10/2021 | N/A | 15 | 22,002 | 0.5 | 17,652",
+          "table_idx": 54,
+          "row_idx": 9,
           "fund": "GOLUB CAPITAL BDC, Inc.",
           "period": "2026-06-30",
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 34875,
-          "company": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC",
-          "raw": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC (4) | Online education learning platform | First lien senior secured loan | 08/2024 | 08/2029 | 46.2 | 43.1 | 18.1 | (2)(8)",
-          "table_idx": 18,
-          "row_idx": 2,
-          "fund": "ARES CAPITAL CORP",
-          "period": "2026-09-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
-        }
-      ],
-      "correct": false,
-      "grounded": false,
-      "unsupported": [
-        32949
-      ],
-      "tools_used": [
-        "run_sql",
-        "run_sql",
-        "run_sql",
-        "run_sql",
-        "run_sql",
-        "run_sql",
-        "run_sql"
-      ]
-    },
-    {
-      "question": "What are Golub's five largest borrowers by fair value as of June 30, 2026?",
-      "answer": "**Golub's largest borrower at June 30, 2026 is GS Acquisitionco, Inc., at $165.7 million fair value.** The top five are below, computed from 1,812 non-cash holdings in the Golub June 30, 2026 10-Q [F2].\n\n- GS Acquisitionco, Inc.: $165,712,000 [H32647, H32648, H32649, H33137\u2013H33140]\n- Bayshore Intermediate #2, L.P.: $131,466,000 [H32576, H32577, H33121]\n- TWAS Holdings, LLC: $110,699,000 [H31550, H31551, H31552]\n- Chestnut Optical Midco, Inc.: $107,169,000 [H33224, H33225, H33226, H33245]\n- Liminex, Inc.: $93,775,000 [H31760\u2013H31763, H32972]\n\nLiminex's lead over the sixth-place borrower, PHM NL SP Bidco B.V. at $91,840,000, is only about $1.9 million.\n\nCaveat: each total adds all of a borrower's rows, including equity and any unfunded commitments marked below par. I did not test whether the ranking changes if you count only debt.",
-      "sources": [
-        {
-          "id": 31550,
-          "company": "TWAS Holdings, LLC",
-          "raw": "TWAS Holdings, LLC*+ | One stop | SF + | 4.75 % | (i) | 8.39 % | 12/2029 | 111,263 | 110,195 | 3.0 | 110,707",
-          "table_idx": 12,
-          "row_idx": 20,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 31551,
-          "company": "TWAS Holdings, LLC",
-          "raw": "TWAS Holdings, LLC+(5) | One stop | N/A(6) | 12/2029 | ( 3 ) | ( 4 )",
-          "table_idx": 12,
-          "row_idx": 21,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 31552,
-          "company": "TWAS Holdings, LLC",
-          "raw": "TWAS Holdings, LLC+(5) | One stop | N/A(6) | 12/2029 | ( 9 ) | ( 4 )",
-          "table_idx": 12,
-          "row_idx": 22,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 31760,
-          "company": "Liminex, Inc.",
-          "raw": "Liminex, Inc.+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 35,115 | 34,788 | 1.0 | 34,939",
-          "table_idx": 18,
-          "row_idx": 43,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 31761,
-          "company": "Liminex, Inc.",
-          "raw": "Liminex, Inc.*+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 23,163 | 22,939 | 0.6 | 23,048",
-          "table_idx": 18,
-          "row_idx": 44,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 31762,
-          "company": "Liminex, Inc.",
-          "raw": "Liminex, Inc.+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 15,713 | 15,536 | 0.4 | 15,635",
-          "table_idx": 18,
-          "row_idx": 45,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 31763,
-          "company": "Liminex, Inc.",
-          "raw": "Liminex, Inc.+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 20,016 | 19,898 | 0.6 | 19,916",
-          "table_idx": 18,
-          "row_idx": 46,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 32576,
-          "company": "Bayshore Intermediate #2, L.P.",
-          "raw": "Bayshore Intermediate #2, L.P.+ | One stop | SF + | 5.00 % | (j) | 8.68 % | 10/2027 | 187 | 188 | 184",
-          "table_idx": 40,
-          "row_idx": 26,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 32577,
-          "company": "Bayshore Intermediate #2, L.P.",
-          "raw": "Bayshore Intermediate #2, L.P.+(25) | One stop | SF + | 5.50 % | (j) | 6.17 % | cash/ | 3.00 % | PIK | 10/2028 | 127,037 | 126,992 | 3.4 | 125,131",
-          "table_idx": 40,
-          "row_idx": 27,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 32647,
-          "company": "GS Acquisitionco, Inc.",
-          "raw": "GS Acquisitionco, Inc.*+ | One stop | SF + | 5.25 % | (j) | 8.98 % | 05/2028 | 120,493 | 120,687 | 3.1 | 113,565",
-          "table_idx": 42,
-          "row_idx": 18,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 32648,
-          "company": "GS Acquisitionco, Inc.",
-          "raw": "GS Acquisitionco, Inc.+ | One stop | SF + | 5.25 % | (j) | 8.98 % | 05/2028 | 539 | 539 | 508",
-          "table_idx": 42,
-          "row_idx": 19,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 32649,
-          "company": "GS Acquisitionco, Inc.",
-          "raw": "GS Acquisitionco, Inc.+ | One stop | SF + | 5.25 % | (j) | 8.98 % | 05/2028 | 122 | 121 | 115",
-          "table_idx": 42,
-          "row_idx": 20,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 32972,
-          "company": "Liminex, Inc.",
-          "raw": "Liminex, Inc.+ | Common stock | N/A | N/A | 11/2020 | N/A | 17 | 633 | 237",
-          "table_idx": 51,
-          "row_idx": 28,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 33121,
-          "company": "Bayshore Intermediate #2, L.P.",
-          "raw": "Bayshore Intermediate #2, L.P.+ | LP interest | N/A | N/A | 10/2021 | N/A | 5,841 | 5,890 | 0.2 | 6,151",
-          "table_idx": 56,
-          "row_idx": 25,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 33137,
+          "id": 39609,
           "company": "GS Acquisitionco, Inc.",
           "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | N/A | 11.00 % | Non-Cash | 04/2021 | N/A | 35 | 53,678 | 1.2 | 45,719",
           "table_idx": 56,
@@ -350,37 +191,487 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 33138,
-          "company": "GS Acquisitionco, Inc.",
-          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | N/A | 11.00 % | Non-Cash | 11/2021 | N/A | 5 | 6,830 | 0.2 | 5,681",
-          "table_idx": 56,
-          "row_idx": 42,
+          "id": 41540,
+          "company": "Amerivet Partners Management, Inc. and AVE Holdings LP",
+          "raw": "Amerivet Partners Management, Inc. and AVE Holdings LP | Veterinary practice management platform | Subordinated loan | 11/2023 | 12/2030 | 88.2 | 77.0 | 52.0 | (2)(8)",
+          "table_idx": 27,
+          "row_idx": 2,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41607,
+          "company": "Pathway Vet Alliance LLC and Jedi Group Holdings LLC",
+          "raw": "Second lien senior secured loan | 03/2020 | 06/2028 | 91.0 | 75.5 | 59.1 | (2)(8)",
+          "table_idx": 30,
+          "row_idx": 5,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 42478,
+          "company": "Teasdale Foods, Inc. and Familia Group Holdings Inc.",
+          "raw": "Teasdale Foods, Inc. and Familia Group Holdings Inc. | Provider of beans, sauces and hominy to the retail, foodservice and wholesale channels | First lien senior secured loan | 12/2020 | 03/2029 | 86.5 | 76.1 | 64.0 | (2)(8)",
+          "table_idx": 70,
+          "row_idx": 18,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        }
+      ],
+      "correct": false,
+      "grounded": true,
+      "unsupported": [],
+      "tools_used": [
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql",
+        "run_sql"
+      ]
+    },
+    {
+      "question": "Which loans might be marked stale: where do Golub and Ares disagree sharply, or did a loan fall from near full value this quarter?",
+      "answer": "**Most likely stale: Golub's Huskies Parent mark, and Ares's Flinn Scientific loans look like the sharpest new cut.**\n\n- **Huskies Parent:** Ares values it at 83% of cost in the September 30, 2026 10-Q [H41282\u2013H41285]. Golub has it at 97% in the June 30, 2026 10-Q [H38792]. The lower mark is the newer one, so Golub may not have caught up.\n- **Flinn Scientific (Ares):** Marks fell from 97.9% to 78.2% [H41873] and 78.9% [H41872] in one quarter. Both are now on non-accrual.\n- **ADG / GEDC (Ares):** The first lien loan fell from 100% to 89.9% and is now on non-accrual [H41527].\n- **Golub drops, March to June 2026:**\n  - G & H Wire fell from 97.7% to 89% [H39673, H39674].\n  - Mario Purchaser fell from 96.5% to 89.2% [H38240\u2013H38244].\n- **WebPT:** Golub has it on non-accrual at 70% [H39286]. Ares has it at 81% and still accruing [H41407\u2013H41409].\n\nPluralsight shows a 15-point gap, but both funds hold it deeply marked: Ares at 42% [H41347] and Golub at 57% [H39203\u2013H39207]. Marcone (83% at Ares [H42109, H42110] against 95% at Golub [H39371\u2013H39375]) is also a wide gap, though Ares's position there is only $500,000.\n\nCaveat: Golub's latest filing is a quarter older than Ares's, so some gaps may just be timing.",
+      "sources": [
+        {
+          "id": 38240,
+          "company": "Mario Purchaser, LLC",
+          "raw": "Mario Purchaser, LLC+(25) | One stop | SF + | 6.00 % | (j) | 7.83 % | cash/ | 2.00 % | PIK | 10/2029 | 453 | 450 | 422",
+          "table_idx": 18,
+          "row_idx": 51,
           "fund": "GOLUB CAPITAL BDC, Inc.",
           "period": "2026-06-30",
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 33139,
-          "company": "GS Acquisitionco, Inc.",
-          "raw": "GS Acquisitionco, Inc.+ | LP interest | N/A | N/A | 09/2021 | N/A | 1 | 363",
-          "table_idx": 56,
+          "id": 38241,
+          "company": "Mario Purchaser, LLC",
+          "raw": "Mario Purchaser, LLC*+(25) | One stop | SF + | 6.00 % | (j) | 7.83 % | cash/ | 2.00 % | PIK | 10/2029 | 11,322 | 11,264 | 0.3 | 10,530",
+          "table_idx": 18,
+          "row_idx": 52,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 38242,
+          "company": "Mario Purchaser, LLC",
+          "raw": "Mario Purchaser, LLC+(25) | One stop | N/A | 14.58 % | PIK | 04/2032 | 5,577 | 5,594 | 0.1 | 4,294",
+          "table_idx": 18,
+          "row_idx": 53,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 38243,
+          "company": "Mario Purchaser, LLC",
+          "raw": "Mario Purchaser, LLC+(25) | One stop | SF + | 6.00 % | (j) | 7.83 % | cash/ | 2.00 % | PIK | 10/2029 | 5,214 | 5,219 | 0.1 | 4,849",
+          "table_idx": 18,
+          "row_idx": 54,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 38244,
+          "company": "Mario Purchaser, LLC",
+          "raw": "Mario Purchaser, LLC+ | One stop | SF + | 5.75 % | (j) | 9.58 % | 10/2029 | 58 | 58 | 48",
+          "table_idx": 19,
+          "row_idx": 2,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 38792,
+          "company": "Huskies Parent, Inc.",
+          "raw": "Huskies Parent, Inc.+ | One stop | SF + | 6.00 % | (i) | 9.74 % | 11/2029 | 1,995 | 1,979 | 0.1 | 1,915",
+          "table_idx": 33,
+          "row_idx": 14,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39203,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(7)(25) | One stop | SF + | 7.50 % | (i) | 11.14 % | PIK | 08/2029 | 7,417 | 6,764 | 0.1 | 1,706",
+          "table_idx": 43,
+          "row_idx": 49,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39204,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 4,049 | 3,975 | 0.1 | 3,847",
+          "table_idx": 43,
+          "row_idx": 50,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39205,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 2,025 | 2,025 | 0.1 | 1,923",
+          "table_idx": 43,
+          "row_idx": 51,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39206,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 50 )",
+          "table_idx": 43,
+          "row_idx": 52,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39207,
+          "company": "Pluralsight, LLC",
+          "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 124 )",
+          "table_idx": 44,
+          "row_idx": 2,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39286,
+          "company": "WebPT, Inc.",
+          "raw": "WebPT, Inc.+(7)(25) | One stop | SF + | 6.26 % | (k) | 7.08 % | cash/ | 3.13 % | PIK | 01/2030 | 949 | 920 | 646",
+          "table_idx": 45,
+          "row_idx": 30,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39371,
+          "company": "Marcone Yellowstone Buyer, Inc.",
+          "raw": "Marcone Yellowstone Buyer, Inc.+(25) | One stop | SF + | 7.00 % | (j) | 7.58 % | cash/ | 3.25 % | PIK | 06/2028 | 21,087 | 20,917 | 0.5 | 19,610",
+          "table_idx": 48,
+          "row_idx": 27,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39372,
+          "company": "Marcone Yellowstone Buyer, Inc.",
+          "raw": "Marcone Yellowstone Buyer, Inc.+(25) | One stop | SF + | 7.00 % | (j) | 7.58 % | cash/ | 3.25 % | PIK | 06/2028 | 21,873 | 21,502 | 0.5 | 20,341",
+          "table_idx": 48,
+          "row_idx": 28,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39373,
+          "company": "Marcone Yellowstone Buyer, Inc.",
+          "raw": "Marcone Yellowstone Buyer, Inc.+(25) | One stop | SF + | 7.25 % | (j) | 7.83 % | cash/ | 3.25 % | PIK | 06/2028 | 6,492 | 6,367 | 0.2 | 6,070",
+          "table_idx": 48,
+          "row_idx": 29,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39374,
+          "company": "Marcone Yellowstone Buyer, Inc.",
+          "raw": "Marcone Yellowstone Buyer, Inc.+(25) | One stop | SF + | 7.00 % | (j) | 7.58 % | cash/ | 3.25 % | PIK | 06/2028 | 2,677 | 2,574 | 0.1 | 2,489",
+          "table_idx": 48,
+          "row_idx": 30,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39375,
+          "company": "Marcone Yellowstone Buyer, Inc.",
+          "raw": "Marcone Yellowstone Buyer, Inc.+(25) | One stop | SF + | 7.00 % | (j) | 7.58 % | cash/ | 3.25 % | PIK | 06/2028 | 7,007 | 6,709 | 0.2 | 6,517",
+          "table_idx": 48,
+          "row_idx": 31,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39673,
+          "company": "G & H Wire Company, Inc.",
+          "raw": "G & H Wire Company, Inc.+ | One stop | SF + | 6.00 % | (j) | 9.82 % | 11/2029 | 139 | 139 | 93",
+          "table_idx": 59,
+          "row_idx": 18,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39674,
+          "company": "G & H Wire Company, Inc.",
+          "raw": "G & H Wire Company, Inc.+(25) | One stop | SF + | 6.00 % | (j) | 9.82 % | PIK | 11/2029 | 3,033 | 3,033 | 0.1 | 2,730",
+          "table_idx": 59,
+          "row_idx": 19,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 41282,
+          "company": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP",
+          "raw": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP (13) | Insurance software provider | First lien senior secured revolving loan | 9.47 % | SOFR (Q) | 5.50 % | 11/2021 | 11/2029 | 0.8 | 0.8 | 0.7 | (2)(9)",
+          "table_idx": 14,
+          "row_idx": 26,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41283,
+          "company": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP",
+          "raw": "First lien senior secured loan | 9.97 % ( 0.50 % PIK) | SOFR (M) | 6.00 % | 11/2021 | 11/2029 | 58.3 | 58.3 | 53.0 | (2)(9)",
+          "table_idx": 14,
+          "row_idx": 27,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41284,
+          "company": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP",
+          "raw": "First lien senior secured loan | 9.97 % | SOFR (Q) | 6.00 % | 10/2025 | 11/2029 | 5.4 | 5.4 | 4.9 | (2)(9)",
+          "table_idx": 14,
+          "row_idx": 28,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41285,
+          "company": "Huskies Parent, Inc., GI Insurity Parent LLC and GI Insurity TopCo LP",
+          "raw": "Senior subordinated loan | 10.00 % PIK | 11/2021 | 11/2031 | 144.2 | 144.2 | 115.3 | (2)",
+          "table_idx": 14,
+          "row_idx": 29,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41347,
+          "company": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC",
+          "raw": "Pluralsight, LLC and Pluralsight Holdings, LLC and Paradigmatic Holdco LLC (4) | Online education learning platform | First lien senior secured loan | 08/2024 | 08/2029 | 46.2 | 43.1 | 18.1 | (2)(8)",
+          "table_idx": 18,
+          "row_idx": 2,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41407,
+          "company": "WebPT, Inc. and WPT Intermediate Holdco, Inc.",
+          "raw": "WebPT, Inc. and WPT Intermediate Holdco, Inc. (13) | Electronic medical record software provider | First lien senior secured revolving loan | 10.56 % | SOFR (S) | 6.25 % | 08/2019 | 01/2028 | 0.1 | 0.1 | 0.1 | (2)(9)",
+          "table_idx": 20,
+          "row_idx": 27,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41408,
+          "company": "WebPT, Inc. and WPT Intermediate Holdco, Inc.",
+          "raw": "First lien senior secured loan | 10.20 % ( 3.13 % PIK) | SOFR (Q) | 6.25 % | 08/2019 | 01/2028 | 0.1 | 0.1 | 0.1 | (2)(9)",
+          "table_idx": 20,
+          "row_idx": 28,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41409,
+          "company": "WebPT, Inc. and WPT Intermediate Holdco, Inc.",
+          "raw": "Senior subordinated loan | 13.25 % PIK | 05/2024 | 05/2029 | 82.0 | 82.0 | 66.4 | (2)",
+          "table_idx": 21,
+          "row_idx": 2,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41527,
+          "company": "ADG, LLC, GEDC Equity, LLC and GEDC Holdco, Inc.",
+          "raw": "ADG, LLC, GEDC Equity, LLC and GEDC Holdco, Inc. (5) | Dental services provider | First lien senior secured loan | 09/2016 | 09/2026 | 15.8 | 15.8 | 14.2 | (2)(8)",
+          "table_idx": 26,
+          "row_idx": 17,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41872,
+          "company": "Flinn Scientific, Inc. and WCI-Quantum Holdings, Inc.",
+          "raw": "Flinn Scientific, Inc. and WCI-Quantum Holdings, Inc. | Distributor of instructional products, services and resources | First lien senior secured revolving loan | 08/2018 | 04/2027 | 13.0 | 12.8 | 10.1 | (2)(8)(12)",
+          "table_idx": 42,
+          "row_idx": 10,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 41873,
+          "company": "Flinn Scientific, Inc. and WCI-Quantum Holdings, Inc.",
+          "raw": "First lien senior secured loan | 07/2017 | 04/2027 | 28.5 | 28.5 | 22.2 | (2)(8)",
+          "table_idx": 42,
+          "row_idx": 11,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 42109,
+          "company": "Marcone Yellowstone Buyer Inc. and Marcone Yellowstone Holdings, LLC",
+          "raw": "Marcone Yellowstone Buyer Inc. and Marcone Yellowstone Holdings, LLC | Distributor of OEM appliance aftermarket parts | First lien senior secured loan | 7.63 % | SOFR (Q) | 3.75 % | 06/2021 | 06/2028 | 0.4 | 0.4 | 0.3 | (2)(9)",
+          "table_idx": 52,
+          "row_idx": 12,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        },
+        {
+          "id": 42110,
+          "company": "Marcone Yellowstone Buyer Inc. and Marcone Yellowstone Holdings, LLC",
+          "raw": "First lien senior secured loan | 7.63 % | SOFR (Q) | 3.75 % | 12/2021 | 06/2028 | 0.2 | 0.2 | 0.2 | (2)(9)",
+          "table_idx": 52,
+          "row_idx": 13,
+          "fund": "ARES CAPITAL CORP",
+          "period": "2026-09-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1287750/000162828026067383/arcc-20260930.htm"
+        }
+      ],
+      "correct": true,
+      "grounded": true,
+      "unsupported": [],
+      "tools_used": [
+        "early_warnings",
+        "shared_borrowers"
+      ]
+    },
+    {
+      "question": "What are Golub's five largest borrowers by fair value as of June 30, 2026?",
+      "answer": "**Golub's largest borrower at June 30, 2026 is GS Acquisitionco, Inc., at $165,712,000 fair value.** These figures sum all of each borrower's rows, debt and equity, in the June 30, 2026 10-Q. They are computed from 1,812 holdings in [F2].\n\n1. GS Acquisitionco, Inc.: $165,712,000 across 7 rows, e.g. [H39119], [H39609]\n2. Bayshore Intermediate #2, L.P.: $131,466,000 across 3 rows [H39048], [H39049], [H39593]\n3. TWAS Holdings, LLC: $110,699,000 across 3 debt rows [H38022], [H38023], [H38024]\n4. Chestnut Optical Midco, Inc.: $107,169,000 across 4 rows, e.g. [H39696], [H39717]\n5. Liminex, Inc.: $93,775,000 across 5 rows, e.g. [H38232], [H39444]\n\nCaveat: ranking by debt only could change the order, because equity is included here. I haven't run that version.",
+      "sources": [
+        {
+          "id": 38022,
+          "company": "TWAS Holdings, LLC",
+          "raw": "TWAS Holdings, LLC*+ | One stop | SF + | 4.75 % | (i) | 8.39 % | 12/2029 | 111,263 | 110,195 | 3.0 | 110,707",
+          "table_idx": 12,
+          "row_idx": 20,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 38023,
+          "company": "TWAS Holdings, LLC",
+          "raw": "TWAS Holdings, LLC+(5) | One stop | N/A(6) | 12/2029 | ( 3 ) | ( 4 )",
+          "table_idx": 12,
+          "row_idx": 21,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 38024,
+          "company": "TWAS Holdings, LLC",
+          "raw": "TWAS Holdings, LLC+(5) | One stop | N/A(6) | 12/2029 | ( 9 ) | ( 4 )",
+          "table_idx": 12,
+          "row_idx": 22,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 38232,
+          "company": "Liminex, Inc.",
+          "raw": "Liminex, Inc.+ | One stop | SF + | 6.25 % | (j) | 10.06 % | 05/2027 | 35,115 | 34,788 | 1.0 | 34,939",
+          "table_idx": 18,
           "row_idx": 43,
           "fund": "GOLUB CAPITAL BDC, Inc.",
           "period": "2026-06-30",
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 33140,
-          "company": "GS Acquisitionco, Inc.",
-          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | SF + | 10.50 % | (j) | 14.23 % | Non-Cash | 08/2023 | N/A | 149 | 124",
-          "table_idx": 56,
-          "row_idx": 44,
+          "id": 39048,
+          "company": "Bayshore Intermediate #2, L.P.",
+          "raw": "Bayshore Intermediate #2, L.P.+ | One stop | SF + | 5.00 % | (j) | 8.68 % | 10/2027 | 187 | 188 | 184",
+          "table_idx": 40,
+          "row_idx": 26,
           "fund": "GOLUB CAPITAL BDC, Inc.",
           "period": "2026-06-30",
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 33224,
+          "id": 39049,
+          "company": "Bayshore Intermediate #2, L.P.",
+          "raw": "Bayshore Intermediate #2, L.P.+(25) | One stop | SF + | 5.50 % | (j) | 6.17 % | cash/ | 3.00 % | PIK | 10/2028 | 127,037 | 126,992 | 3.4 | 125,131",
+          "table_idx": 40,
+          "row_idx": 27,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39119,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.*+ | One stop | SF + | 5.25 % | (j) | 8.98 % | 05/2028 | 120,493 | 120,687 | 3.1 | 113,565",
+          "table_idx": 42,
+          "row_idx": 18,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39444,
+          "company": "Liminex, Inc.",
+          "raw": "Liminex, Inc.+ | Common stock | N/A | N/A | 11/2020 | N/A | 17 | 633 | 237",
+          "table_idx": 51,
+          "row_idx": 28,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39593,
+          "company": "Bayshore Intermediate #2, L.P.",
+          "raw": "Bayshore Intermediate #2, L.P.+ | LP interest | N/A | N/A | 10/2021 | N/A | 5,841 | 5,890 | 0.2 | 6,151",
+          "table_idx": 56,
+          "row_idx": 25,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39609,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | N/A | 11.00 % | Non-Cash | 04/2021 | N/A | 35 | 53,678 | 1.2 | 45,719",
+          "table_idx": 56,
+          "row_idx": 41,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39696,
           "company": "Chestnut Optical Midco, Inc.",
           "raw": "Chestnut Optical Midco, Inc.+ | One stop | SF + | 1.00 % | (j) | 4.73 % | 06/2029 | 45,064 | 42,367 | 1.1 | 41,008",
           "table_idx": 59,
@@ -390,27 +681,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 33225,
-          "company": "Chestnut Optical Midco, Inc.",
-          "raw": "Chestnut Optical Midco, Inc.+(5) | One stop | N/A(6) | 06/2029 | ( 253 )",
-          "table_idx": 60,
-          "row_idx": 2,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 33226,
-          "company": "Chestnut Optical Midco, Inc.",
-          "raw": "Chestnut Optical Midco, Inc.+ | One stop | SF + | 1.00 % | (j) | 4.73 % | 06/2029 | 7,511 | 7,511 | 0.2 | 6,159",
-          "table_idx": 60,
-          "row_idx": 3,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-06-30",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
-        },
-        {
-          "id": 33245,
+          "id": 39717,
           "company": "Chestnut Optical Midco, Inc.",
           "raw": "Chestnut Optical Midco, Inc.+ | LLC interest | N/A | N/A | 06/2024 | N/A | 189 | 53,763 | 1.6 | 60,255",
           "table_idx": 61,
@@ -431,20 +702,10 @@
     },
     {
       "question": "Which Golub loans went on non-accrual for the first time between March and June 2026?",
-      "answer": "**Two Golub borrowers appear on non-accrual in the June 30, 2026 10-Q but not in the March 31, 2026 10-Q: Wineshipping.com and WebPT, with about $8.97 million of fair value combined.**\n\n- **Wineshipping.com, LLC:** four unitranche lines, all flagged non-accrual in June and none in March. The June fair value is $8.33 million (net of a \u2013$175,000 unfunded line) on $11.58 million of cost [H31857] [H31858] [H31859] [H31860]. The March lines [H30058] [H30059] [H30060] [H30061] were marked about 71\u201373% of cost.\n- **WebPT, Inc.:** one unitranche loan, flagged non-accrual in June, with a fair value of $646,000 on $920,000 of cost (a 70.2% mark) [H32814]. In March it was accruing, at 79.4% of cost [H31000].\n- Every other June non-accrual debt borrower already carried the flag in March. That includes Titan Fitness, Plasma Buyer, Pluralsight and Elite Dental. Several of them were re-marked sharply lower in June, but that isn't a new non-accrual.\n\nCaveat: the database holds only these two Golub quarters, so \"first time\" means \"not flagged in March\". I can't see earlier history. Equity positions were left out because you asked about loans.",
+      "answer": "**Two Golub borrowers' loans newly went on non-accrual in the June 30, 2026 10-Q: Wineshipping.com, LLC and WebPT, Inc.** Neither was on non-accrual in the March 31, 2026 10-Q.\n\n- **Wineshipping.com (unitranche):** four lines are flagged in June [H38329] [H38330] [H38331] [H38332]. The three funded lines total about $11.6 million of cost. The largest, $11.0 million at 73.4% of cost, is [H38330]. In March the same lines were not flagged, and the largest was marked at 72.9% [H36531].\n- **WebPT (unitranche):** one line, $920,000 of cost, marked at 70.2% of cost [H39286]. In March it was unflagged at 79.4% [H37472].\n- **Equity, not loans:** GS Acquisitionco [H39609] [H39610] [H39612] and Kaseya [H39618] equity positions are also newly flagged. I excluded them because they aren't loans.\n\nCaveat: the database has only two Golub filings. I can say these loans weren't on non-accrual in March, but not whether they were on non-accrual in earlier periods.",
       "sources": [
         {
-          "id": 30058,
-          "company": "Wineshipping.com LLC",
-          "raw": "Wineshipping.com LLC+(25) | One stop | SF + | 6.25 % | (j) | 4.85 % | cash/ | 5.25 % | PIK | 12/2028 | 242 | 238 | 170",
-          "table_idx": 19,
-          "row_idx": 42,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-03-31",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
-        },
-        {
-          "id": 30059,
+          "id": 36531,
           "company": "Wineshipping.com LLC",
           "raw": "Wineshipping.com LLC+(25) | One stop | SF + | 6.25 % | (j) | 4.85 % | cash/ | 5.25 % | PIK | 12/2028 | 11,140 | 11,001 | 0.2 | 8,021",
           "table_idx": 19,
@@ -454,27 +715,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
         },
         {
-          "id": 30060,
-          "company": "Wineshipping.com LLC",
-          "raw": "Wineshipping.com LLC+(25) | One stop | SF + | 6.25 % | (j) | 4.85 % | cash/ | 5.25 % | PIK | 12/2028 | 301 | 296 | 217",
-          "table_idx": 19,
-          "row_idx": 44,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-03-31",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
-        },
-        {
-          "id": 30061,
-          "company": "Wineshipping.com LLC",
-          "raw": "Wineshipping.com LLC+(5) | One stop | N/A(6) | 12/2028 | ( 209 )",
-          "table_idx": 19,
-          "row_idx": 45,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-03-31",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
-        },
-        {
-          "id": 31000,
+          "id": 37472,
           "company": "WebPT, Inc.",
           "raw": "WebPT, Inc.+(25) | One stop | SF + | 6.26 % | (j) | 6.93 % | cash/ | 3.13 % | PIK | 01/2030 | 942 | 937 | 744",
           "table_idx": 44,
@@ -484,7 +725,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
         },
         {
-          "id": 31857,
+          "id": 38329,
           "company": "Wineshipping.com, LLC",
           "raw": "Wineshipping.com, LLC+(7)(25) | One stop | SF + | 6.25 % | (j) | 4.88 % | cash/ | 5.25 % | PIK | 12/2028 | 261 | 253 | 181",
           "table_idx": 20,
@@ -494,7 +735,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 31858,
+          "id": 38330,
           "company": "Wineshipping.com, LLC",
           "raw": "Wineshipping.com, LLC+(7)(25) | One stop | SF + | 6.25 % | (j) | 4.88 % | cash/ | 5.25 % | PIK | 12/2028 | 11,412 | 11,033 | 0.2 | 8,102",
           "table_idx": 20,
@@ -504,7 +745,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 31859,
+          "id": 38331,
           "company": "Wineshipping.com, LLC",
           "raw": "Wineshipping.com, LLC+(7)(25) | One stop | SF + | 6.25 % | (j) | 4.88 % | cash/ | 5.25 % | PIK | 12/2028 | 308 | 297 | 219",
           "table_idx": 20,
@@ -514,7 +755,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 31860,
+          "id": 38332,
           "company": "Wineshipping.com, LLC",
           "raw": "Wineshipping.com, LLC+(5)(7) | One stop | N/A(6) | 12/2028 | ( 175 )",
           "table_idx": 20,
@@ -524,11 +765,51 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32814,
+          "id": 39286,
           "company": "WebPT, Inc.",
           "raw": "WebPT, Inc.+(7)(25) | One stop | SF + | 6.26 % | (k) | 7.08 % | cash/ | 3.13 % | PIK | 01/2030 | 949 | 920 | 646",
           "table_idx": 45,
           "row_idx": 30,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39609,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | N/A | 11.00 % | Non-Cash | 04/2021 | N/A | 35 | 53,678 | 1.2 | 45,719",
+          "table_idx": 56,
+          "row_idx": 41,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39610,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | N/A | 11.00 % | Non-Cash | 11/2021 | N/A | 5 | 6,830 | 0.2 | 5,681",
+          "table_idx": 56,
+          "row_idx": 42,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39612,
+          "company": "GS Acquisitionco, Inc.",
+          "raw": "GS Acquisitionco, Inc.+(7)(24) | Preferred stock | SF + | 10.50 % | (j) | 14.23 % | Non-Cash | 08/2023 | N/A | 149 | 124",
+          "table_idx": 56,
+          "row_idx": 44,
+          "fund": "GOLUB CAPITAL BDC, Inc.",
+          "period": "2026-06-30",
+          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
+        },
+        {
+          "id": 39618,
+          "company": "Kaseya Inc.",
+          "raw": "Kaseya Inc.+(7)(24) | Preferred stock | SF + | 10.75 % | (j) | 14.60 % | Non-Cash | 06/2022 | N/A | 2 | 3,970 | 0.1 | 2,836",
+          "table_idx": 57,
+          "row_idx": 5,
           "fund": "GOLUB CAPITAL BDC, Inc.",
           "period": "2026-06-30",
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
@@ -544,13 +825,12 @@
         "run_sql",
         "run_sql",
         "run_sql",
-        "run_sql",
         "run_sql"
       ]
     },
     {
       "question": "What is the total fair value of Ares Capital's investments as of September 30, 2026?",
-      "answer": "**Ares Capital's investments had a total fair value of about $29.21 billion ($29,212,600,000) as of September 30, 2026.**\n\n- This is computed from 1,422 holdings in the September 30, 2026 10-Q [F6]. I excluded cash-type rows, though this filing has none.\n- The filing's reported total is $29,213,000,000. My figure is $400,000 lower, a difference of about 0.001%, so the totals match.\n- The June 30, 2026 10-Q showed $29,349,300,000 [F7]. That is about $136.7 million higher than the September figure.",
+      "answer": "**Ares Capital's total investments were about $29.21 billion at fair value as of September 30, 2026.** The exact extracted sum is $29,212,600,000.\n\n- This is computed from 1,422 holdings in the Ares Capital September 30, 2026 10-Q [F6].\n- The filing's own stated total is $29,213,000,000. The $400,000 difference is rounding (about 0.001%).\n- The June 30, 2026 10-Q showed $29,349,300,000 [F7]. That makes the September total about $136.7 million lower.\n\nCaveat: the September 30 filing has 1,706 tagged investments, but only 1,422 rows were extracted. The extracted total still matches the filing total, so the missing rows don't change the number.",
       "sources": [],
       "correct": true,
       "grounded": false,
@@ -562,10 +842,10 @@
     },
     {
       "question": "What does Golub hold in Pluralsight, and how has its value changed since March?",
-      "answer": "**Golub's Pluralsight position was worth $7,302,000 at June 30, 2026, down $161,000 (2.2%) from $7,463,000 at March 31.** That is net debt fair value, and the equity is marked at zero.\n\n- **Non-accrual tranche:** fair value fell from $1,875,000 [H30918] to $1,706,000 [H32731]. That is a $169,000 drop, and its mark went from 27.7% to 25.2% of cost. Principal rose from $7,212,000 to $7,417,000 through capitalized interest (PIK), while cost stayed at $6,764,000.\n- **Two performing tranches:** these are roughly flat. One is $3,841,000 [H30919] to $3,847,000 [H32732]. The other is $1,921,000 [H30920] to $1,923,000 [H32733].\n- **Unfunded commitments:** both are unchanged at -$50,000 [H30921] [H32734] and -$124,000 [H30922] [H32735].\n- **Equity:** the LLC interest has $3,663,000 of cost and is marked at $0 in both quarters [H31347] [H33157].\n- **Overall:** all debt is first-lien-style \"One stop\" unitranche, maturing August 2029. Across the funded debt, fair value is about 57% of cost at June 30 ($12,764,000 cost), down from about 59% at March 31 ($12,749,000 cost).\n\nThese totals come from the 12 Pluralsight rows in the March 31, 2026 and June 30, 2026 Golub 10-Qs [F1] [F2].",
+      "answer": "**Golub's Pluralsight debt was valued at about $7.30 million at June 30, down about $161,000 from $7.46 million at March 31.** Both figures include two small unfunded-commitment marks.\n\n- **Position:** One-stop unitranche loans maturing 2029-08, in three funded tranches, plus an LLC equity interest. The equity has a cost of $3.66 million and is marked at $0 in both quarters [H37819] [H39629].\n- **Non-accrual tranche:** It is marked at 25.2% of cost, or $1.71 million, at June 30 [H39203]. At March 31 it was 27.7%, or $1.88 million [H37390]. It is on non-accrual and PIK.\n- **Other two funded tranches:** At June 30 they were valued at $3.85 million [H39204] and $1.92 million [H39205]. That is up slightly from $3.84 million [H37391] and $1.92 million [H37392] in March, at marks of about 95\u201397%.\n- **Unfunded commitments:** Two commitments are valued at \u2013$50,000 and \u2013$124,000 in both quarters [H39206] [H39207].\n- **Funded cost:** About $12.76 million at June 30 versus $12.75 million at March 31. The decline therefore comes from the mark on the non-accrual tranche, not from repayments.\n\nThe totals are my own sums of the six debt rows in each filing: Golub's March 31 10-Q [F1] and June 30 10-Q [F2].",
       "sources": [
         {
-          "id": 30918,
+          "id": 37390,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(7)(25) | One stop | SF + | 7.50 % | (i) | 11.17 % | PIK | 08/2029 | 7,212 | 6,764 | 0.1 | 1,875",
           "table_idx": 42,
@@ -575,7 +855,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
         },
         {
-          "id": 30919,
+          "id": 37391,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.67 % | cash/ | 1.50 % | PIK | 08/2029 | 4,043 | 3,963 | 0.1 | 3,841",
           "table_idx": 42,
@@ -585,7 +865,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
         },
         {
-          "id": 30920,
+          "id": 37392,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.67 % | cash/ | 1.50 % | PIK | 08/2029 | 2,022 | 2,022 | 0.1 | 1,921",
           "table_idx": 42,
@@ -595,27 +875,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
         },
         {
-          "id": 30921,
-          "company": "Pluralsight, LLC",
-          "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 50 )",
-          "table_idx": 42,
-          "row_idx": 50,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-03-31",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
-        },
-        {
-          "id": 30922,
-          "company": "Pluralsight, LLC",
-          "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 124 )",
-          "table_idx": 43,
-          "row_idx": 2,
-          "fund": "GOLUB CAPITAL BDC, Inc.",
-          "period": "2026-03-31",
-          "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
-        },
-        {
-          "id": 31347,
+          "id": 37819,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+ | LLC interest | N/A | N/A | 08/2024 | N/A | 1,988 | 3,663",
           "table_idx": 56,
@@ -625,7 +885,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000033/gbdc-20260331.htm"
         },
         {
-          "id": 32731,
+          "id": 39203,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(7)(25) | One stop | SF + | 7.50 % | (i) | 11.14 % | PIK | 08/2029 | 7,417 | 6,764 | 0.1 | 1,706",
           "table_idx": 43,
@@ -635,7 +895,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32732,
+          "id": 39204,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 4,049 | 3,975 | 0.1 | 3,847",
           "table_idx": 43,
@@ -645,7 +905,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32733,
+          "id": 39205,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(25) | One stop | SF + | 4.50 % | (i) | 6.64 % | cash/ | 1.50 % | PIK | 08/2029 | 2,025 | 2,025 | 0.1 | 1,923",
           "table_idx": 43,
@@ -655,7 +915,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32734,
+          "id": 39206,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 50 )",
           "table_idx": 43,
@@ -665,7 +925,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 32735,
+          "id": 39207,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+(5) | One stop | N/A(6) | 08/2029 | ( 124 )",
           "table_idx": 44,
@@ -675,7 +935,7 @@
           "url": "https://www.sec.gov/Archives/edgar/data/1476765/000147676526000048/gbdc-20260630.htm"
         },
         {
-          "id": 33157,
+          "id": 39629,
           "company": "Pluralsight, LLC",
           "raw": "Pluralsight, LLC+ | LLC interest | N/A | N/A | 08/2024 | N/A | 1,988 | 3,663",
           "table_idx": 57,
@@ -689,25 +949,25 @@
       "grounded": true,
       "unsupported": [],
       "tools_used": [
-        "run_sql",
         "run_sql"
       ]
     },
     {
       "question": "Which year has the most Golub debt coming due?",
-      "answer": "**2028 has the most Golub debt coming due: about $2.10 billion of principal, or $2.06 billion at fair value.** This is computed from 303 holdings maturing in 2028 in the June 30, 2026 10-Q [F2].\n\nPrincipal by maturity year, from the 1,522 debt holdings with maturity dates in that filing:\n- 2029: $1.57 billion\n- 2031: $1.39 billion\n- 2027: $1.22 billion\n- 2030: $889 million\n- 2032: $474 million\n- 2026: $135 million (27 holdings), the smallest of the main years\n- 2033 and 2034 are small: $63 million and $0.4 million.\n\nEquity positions have no maturity, so I left them out. The \"other\" lien category (35 holdings) is included, and it may hold some non-standard instruments. Maturity dates assume each loan is repaid on its stated date, with no early prepayment or extension.",
+      "answer": "**2028 has the most Golub debt coming due, at about $2.10 billion of principal (about $2.06 billion fair value).** This is computed from 1,522 debt holdings in the Golub Capital BDC June 30, 2026 10-Q [F2].\n\nPrincipal by maturity year:\n- 2028: $2.10 billion\n- 2029: $1.57 billion\n- 2031: $1.39 billion\n- 2027: $1.22 billion\n- 2030: $0.89 billion\n- 2026: $135 million, the smallest of the near-term years\n\nMaturities fall mostly in 2027 to 2031, with 2028 the peak.\n\nCaveat: I excluded equity and money-market rows. \"Other\" lien debt is included, and a few rows have small or zero principal, such as unfunded commitments.",
       "sources": [],
       "correct": true,
       "grounded": false,
       "unsupported": [],
       "tools_used": [
         "run_sql",
+        "run_sql",
         "run_sql"
       ]
     },
     {
       "question": "What share of Golub's portfolio is in software?",
-      "answer": "**Software is 26.0% of Golub's portfolio by fair value.** That is $2,133,337,000 of $8,196,353,000 in total investments, from the June 30, 2026 10-Q [F2].\n\n- This is computed from 1,812 holdings in the filing, including 331 Software positions. Money-market (cash) lines are excluded.\n- Software is the largest industry. The next largest, Healthcare Providers & Services, is 7.78% ($638,065,000).\n- Healthcare Technology (4.41%) and IT Services (3.56%) are classified separately and are not in the 26.0%.\n\nCaveat: this uses the filing's own industry labels and fair value, not cost. The 1,812 holdings include 204 rows with negative fair values, which are probably unfunded commitments marked below par.",
+      "answer": "**Software is about 26.0% of Golub's portfolio by fair value.** That is $2,133,337,000 of $8,196,353,000 in total investments.\n\n- This comes from the June 30, 2026 10-Q, Golub's latest filing. It is computed from 1,812 holdings in [F2], and 331 of them are software positions.\n- Software is the largest industry by a wide margin. The next largest is Healthcare Providers & Services at 7.78% ($638,065,000).\n- The total excludes money-market (cash) lines. It includes equity positions, which are about 7% of the portfolio.\n\nI used fair value, not cost, as the basis. The share would differ slightly on a cost basis.",
       "sources": [],
       "correct": true,
       "grounded": false,

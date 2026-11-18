@@ -44,6 +44,7 @@ Getting there meant handling what real EDGAR filings do and the synthetic sample
 - (Ares) footnote numbers in their own column between fair value and % of net assets, with the definitions several tables further on: non-accrual loans then came out at 2.41% of cost, matching the 2.4% Ares itself reports
 - (Ares) base rate and spread in separate columns ("SOFR (Q)" | "5.25 %") and non-US base rates (NIBOR, TONA, BBSY, CDOR): spreads went from 0 to 890 of 1,008 loans; the rest are fixed-rate or undrawn
 - (Ares) ownership stakes named without the word "equity" ("Limited partnership interest", "Ordinary shares") and no Debt/Equity section headings
+- (Ares) a borrower's rows continuing onto the next page without its name (50 rows, $635M): the name now carries across the page break, and every carried name with an XBRL tag agrees with it
 - (Ares) XBRL members spelled as names (`arcc:ATIRestorationLLCMember`), including a filer typo and one tagged by business description
 
 The resulting report (`evals/real_report_gbdc.md`) flags 27 non-accruals ($8.2B portfolio, 0.89% of fair value), positions that newly went on non-accrual this quarter (largest $51.5M), debt re-marks, and borrowers renamed between quarters.
@@ -65,7 +66,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for the pipeline diagram and the trade-of
 |---|---|---|
 | Lien mix, top-10 concentration, industry mix | New, exited, re-marked and resized positions | Borrowers held by several funds, matched despite different spellings |
 | Weighted average spread (bps) and rate | Fair value change | Each fund's mark on the same borrower, and the dispersion between them |
-| Non-accruals (% of fair value and of cost), PIK | | |
+| Non-accruals (% of fair value and of cost), PIK | Early warning: positions that fell from 95%+ to 90% or less of cost in one quarter | Early warning: one lender near full value while another has cut the same borrower, or only one has it on non-accrual |
 | Mark distribution, watchlist, maturity wall | | |
 
 ## Quick start
@@ -98,7 +99,7 @@ python -m holdings_lens demo           # cache answers for the landing pages
 | `holdings_lens/evals.py` | Scorecard |
 | `holdings_lens/fetch.py` · `db.py` | EDGAR downloader, SQLite schema and views |
 | `samples/` · `tools/make_samples.py` | **Fictional** filings (2 funds, 2 quarters, 2 layouts) with XBRL tags |
-| `tests/` | 54 tests, a few seconds, no network (API calls mocked) |
+| `tests/` | 56 tests, a few seconds, no network (API calls mocked) |
 | `web/` | Personalized landing pages with an interactive explorer (pick filings, compare lenders, build charts) |
 | `api/ask.py` · `vercel.json` | Live ask box: serverless endpoint with rate limits and a token cap |
 

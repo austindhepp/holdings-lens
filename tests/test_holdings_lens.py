@@ -262,3 +262,30 @@ def test_empty_trimmed_answer_explains_itself(tmp_path):
                 "stop_reason": "max_tokens", "usage": {"input_tokens": 1, "output_tokens": 1}}
     p = str(tmp_path / "e.db"); db.connect(p).close()
     assert agent.ask("q", db_path=p, post=fake)["answer"] == agent.EMPTY_NOTE
+
+
+def test_early_warnings_flag_split_marks_and_sudden_drops(tmp_path):
+    import dataclasses
+    from holdings_lens import db
+    from holdings_lens.extract import Holding
+    from holdings_lens.analytics import early_warnings
+    base = {f.name: None for f in dataclasses.fields(Holding)
+            if f.default is dataclasses.MISSING and f.default_factory is dataclasses.MISSING}
+
+    def h(company, cost, fv, na=False):
+        x = Holding(**dict(base, company=company, investment_type="Debt investments", instrument="First lien term loan",
+                           cost=cost, fair_value=fv, units="dollars", table_idx=0, row_idx=0, raw=company))
+        x.lien, x.company_key, x.non_accrual = "first_lien", company.lower(), na
+        x.mark = fv / cost
+        return x
+    p = str(tmp_path / "w.db")
+    con = db.connect(p)
+    db.save_filing(con, "Fund A", "a1", [h("Acme", 100, 98), h("Steady", 100, 100)], period="2026-03-31")
+    db.save_filing(con, "Fund A", "a2", [h("Acme", 100, 80, na=True), h("Steady", 100, 100)], period="2026-06-30")
+    db.save_filing(con, "Fund B", "b1", [h("Acme", 50, 49), h("Steady", 50, 50)], period="2026-06-30")
+    con.close()
+    w = early_warnings(db.connect_readonly(p))
+    assert [s["company_key"] for s in w["split_marks"]] == ["acme"]  # 98% at B vs 80% at A, and non-accrual at A only
+    assert len(w["split_marks"][0]["reasons"]) == 2
+    assert [d["company"] for d in w["sudden_drops"]] == ["Acme"]     # 98% -> 80% in one quarter at Fund A
+    assert w["sudden_drops"][0]["now_non_accrual"]

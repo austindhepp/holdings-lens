@@ -30,6 +30,8 @@
   .controls select, .controls input { font: inherit; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; margin-left: 6px; }
   .kpi .cmp { font-size: 13px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
   table.watch td:first-child { white-space: normal; width: 100%; }
+  .warn { padding: 9px 0; border-bottom: 1px solid var(--line); } .warn:last-child { border-bottom: none; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; vertical-align: 0; }
   .legend { font-size: 12.5px; color: var(--muted); margin: 2px 0 8px; } .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin: 0 5px 0 12px; vertical-align: -1px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; }
   .kpi .num { font-size: clamp(22px, 5vw, 27px); font-weight: 720; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
@@ -128,6 +130,16 @@
     <div class="card"><h3>Biggest re-marks (debt, % of cost)</h3><div id="remarked"></div></div>
     <div class="card"><h3>New, exited, resized, newly non-accrual</h3><div id="moves"></div></div>
   </div>
+
+  <h2>Early warnings: marks that may be stale</h2>
+  <p class="sub">Private credit loans don't trade, so a loan can sit near full value and then be cut to a fraction a quarter later.
+    These are the patterns that come before those surprises: lenders that disagree sharply on the same borrower, and loans
+    that fell from near full value in a single quarter.</p>
+  <div class="grid g2">
+    <div class="card"><h3>Lenders disagree on the same borrower</h3><div id="warnSplit"></div></div>
+    <div class="card"><h3>Fell from near full value in one quarter</h3><div id="warnDrops"></div></div>
+  </div>
+  <p class="tiny" id="warnNote"></p>
 
   <h2>Same borrower, different marks</h2>
   <p class="sub">Borrowers both lenders hold (matched despite different spellings), with each lender's debt valued as % of cost. Big gaps are where lenders disagree on value, a useful early signal.</p>
@@ -359,6 +371,26 @@ function renderChanges(i) {
     + `<div class="tiny" style="margin-top:6px">Largest of each kind shown.</div>`;
 }
 
+function renderWarnings() {
+  const W = E.warnings;
+  if (!W) return;
+  const t = W.thresholds, pc = v => v == null ? "–" : Math.round(v * 100) + "%";
+  const naPill = '<span class="pill na">non-accrual</span>';
+  $("warnSplit").innerHTML = W.split.length ? W.split.map(x => `<div class="warn">
+      <div><b>${esc(x.b)}</b> <span class="down">${x.gap.toFixed(1)} pts apart</span>${x.newer_lower ? ' <span class="pill pik" title="The lower mark is in the more recent filing, so the higher one may not have caught up yet">newer filing is lower</span>' : ""}</div>
+      ${x.f.map(f => `<div class="tiny" style="color:var(--muted)"><i class="dot" style="background:${FUNDCOL[f.fund] || css("--warn")}"></i>${esc(f.fund)} (${esc(f.period)}): <b>${pc(f.mark)}</b> of cost on ${fmtUsd(f.cost)} ${f.na ? naPill : ""}</div>`).join("")}
+      <div class="tiny">${x.reasons.map(esc).join("; ")}</div></div>`).join("")
+    : `<p class="muted">No borrower where one lender is near full value and another has cut it.</p>`;
+  $("warnDrops").innerHTML = W.drops.length ? W.drops.map(d => `<div class="warn">
+      <div><b>${esc(d.company)}</b> <span class="tiny">${esc(d.instrument || "")}</span> ${d.na ? naPill : ""}</div>
+      <div class="tiny" style="color:var(--muted)"><i class="dot" style="background:${FUNDCOL[d.fund] || css("--warn")}"></i>${esc(d.fund)}: ${pc(d.prior)} → <b>${pc(d.now)}</b> of cost
+        (${esc(d.from)} → ${esc(d.to)}), <span class="down">${d.pts.toFixed(1)} pts</span>, fair value ${d.fv_change < 0 ? "−" : "+"}${fmtUsd(Math.abs(d.fv_change))}</div></div>`).join("")
+    : `<p class="muted">No position fell from near full value this quarter.</p>`;
+  $("warnNote").textContent = `Debt only, each lender's latest filing. "Near full value" means at least ${pc(t.near_par)} of cost; "cut" means ${pc(t.cut)} or less; `
+    + `a sudden drop is a fall from ${pc(t.drop_from)}+ to ${pc(t.drop_to)} or less in one quarter. A flag is a prompt to look closer, not a verdict: `
+    + `lenders can hold different loans to the same borrower, and filings from different dates can differ partly because of timing.`;
+}
+
 const ov = {pick: {}, sort: "gap", min: 0, q: ""};
 function initOverlap() {
   const funds = E.funds || [];
@@ -490,7 +522,7 @@ function renderTrust() {
   $("trust-note").textContent = D.trust_note;
 }
 
-renderTop(); renderReal(); initExplorer(); initChanges(); initOverlap(); renderDemo(); renderTrust();
+renderTop(); renderReal(); initExplorer(); initChanges(); renderWarnings(); initOverlap(); renderDemo(); renderTrust();
 </script>
 </body>
 </html>

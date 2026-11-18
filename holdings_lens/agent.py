@@ -52,7 +52,7 @@ Database (SQLite):
     filers put preferred equity on non-accrual for unpaid non-cash dividends.
   - A small negative fair_value on a zero-cost row is usually an unfunded commitment valued below par.
 
-Tools: run_sql for anything; portfolio_summary, compare_filings and shared_borrowers return
+Tools: run_sql for anything; portfolio_summary, compare_filings, shared_borrowers and early_warnings return
 precomputed analytics (with holding ids to cite); get_sources returns original filing rows.
 
 Rules:
@@ -78,6 +78,14 @@ TOOLS = [
         "description": "Quarter-over-quarter changes between two filings of the same fund: new, exited, re-marked and resized positions.",
         "input_schema": {"type": "object", "properties": {"old_filing_id": {"type": "integer"}, "new_filing_id": {"type": "integer"}},
                          "required": ["old_filing_id", "new_filing_id"]},
+    },
+    {
+        "name": "early_warnings",
+        "description": ("Marks that may be stale, from each lender's latest filings: (1) split_marks: the same borrower where one "
+                        "lender still values its debt near full value (>=95% of cost) while another has cut it (<=90%), or only one "
+                        "has it on non-accrual; newer_filing_is_lower=true means the lower mark is in the more recent filing, so the "
+                        "higher one may not have caught up; (2) sudden_drops: positions that fell from >=95% to <=90% of cost in one quarter."),
+        "input_schema": {"type": "object", "properties": {}},
     },
     {
         "name": "shared_borrowers",
@@ -195,6 +203,8 @@ class Tools:
                 return self._analytics(analytics.summary(self.con, int(args["filing_id"])))
             if name == "compare_filings":
                 return self._analytics(analytics.changes(self.con, int(args["old_filing_id"]), int(args["new_filing_id"])))
+            if name == "early_warnings":
+                return self._analytics(analytics.early_warnings(self.con))
             if name == "shared_borrowers":
                 o = analytics.overlap(self.con)
                 shared = o["shared_borrowers"]  # already sorted by how far apart the lenders' marks are

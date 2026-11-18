@@ -178,3 +178,19 @@ def test_base_rate_and_spread_in_separate_columns():
     assert parse_spread(join_base_and_spread("NIBOR (Q)", "4.75 %")) == ("NIBOR", 475.0)
     assert parse_spread(join_base_and_spread("TONA (S)", "5.00 %")) == ("TONA", 500.0)
     assert parse_spread("SF + 4.50 %") == ("SOFR", 450.0)  # combined form unchanged
+
+
+def test_company_carries_across_a_page_break_but_not_past_a_new_section():
+    hdr = ["Company", "Industry", "Investment", "Spread", "Maturity", "Principal", "Cost", "Fair Value"]
+    row = lambda co, inst, fv: [co, "Software", inst, "S + 5.00%", "2029-06-30", "1,000", "1,000", fv]
+    page1 = "<table><tr>" + "".join(f"<td>{x}</td>" for x in hdr) + "</tr>" + \
+        "".join("<tr>" + "".join(f"<td>{x}</td>" for x in r) + "</tr>" for r in [row("Gamma Corp.", "First Lien Term Loan", "990")]) + "</table>"
+    # next page: the borrower's second loan, printed without its name; then a new industry heading and a nameless row
+    page2 = "<table><tr>" + "".join(f"<td>{x}</td>" for x in hdr) + "</tr>" + \
+        "".join("<tr>" + "".join(f"<td>{x}</td>" for x in r) + "</tr>" for r in [row("", "Revolver", "495")]) + \
+        "<tr><td>Health Care</td></tr>" + \
+        "".join("<tr>" + "".join(f"<td>{x}</td>" for x in r) + "</tr>" for r in [row("", "Term Loan", "700")]) + "</table>"
+    hs = extract_holdings(f"<html><body><p>Schedule of Investments (in thousands)</p>{page1}<p>continued</p>{page2}</body></html>")
+    assert [(h.company, h.instrument) for h in hs][:2] == [("Gamma Corp.", "First Lien Term Loan"), ("Gamma Corp.", "Revolver")]
+    assert "company carried from previous page" in hs[1].notes
+    assert hs[2].company == "(unknown)"  # a section heading stops the carry

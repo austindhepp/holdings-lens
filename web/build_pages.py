@@ -126,6 +126,17 @@ def explorer_data(con) -> dict:
                         {"b": x["borrower"], "gap": x["mark_dispersion_pts"],
                          "f": [{"fund": nice_fund(p["fund"]), "mark": p["mark"], "fv": p["fair_value_usd"]} for p in x["funds"]]}
                         for x in o["shared_borrowers"]]
+    from holdings_lens.analytics import early_warnings
+    w = early_warnings(con)
+    out["warnings"] = {
+        "thresholds": w["thresholds"],
+        "split": [{"b": x["borrower"], "gap": x["gap_pts"], "reasons": x["reasons"], "newer_lower": x["newer_filing_is_lower"],
+                   "f": [{"fund": nice_fund(p["fund"]), "period": p["period"], "mark": p["mark"], "fv": p["fair_value_usd"],
+                          "cost": p["cost_usd"], "na": p["non_accrual"]} for p in x["funds"]]} for x in w["split_marks"][:15]],
+        "drops": [{"fund": nice_fund(d["fund"]), "company": d["company"], "instrument": d["instrument"], "from": d["from_period"],
+                   "to": d["to_period"], "prior": d["prior_mark"], "now": d["mark"], "pts": d["change_pts"],
+                   "fv_change": d["fair_value_change_usd"], "na": d["now_non_accrual"]} for d in w["sudden_drops"][:15]],
+    }
     out["funds"] = [nice_fund(f) for f in funds]
     out["by_fund"] = {nice_fund(f): ids for f, ids in by_fund.items()}
     return out

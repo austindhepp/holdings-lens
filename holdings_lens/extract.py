@@ -490,6 +490,7 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
     all_tables = soup.find_all("table")
     layouts = _header_layouts(all_tables)  # t_idx -> (cols, width) for tables with a schedule header
     active = None  # (cols, width) of the last schedule header: carried into headerless continuation tables
+    carry_company, carry_from = None, None  # last company of the previous schedule table (page breaks)
     for t_idx, table in enumerate(all_tables):
         rows = table.find_all("tr")
         header_grid: list[str] = []
@@ -530,7 +531,11 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
             body_start = 0
         else:
             continue
-        cur_company = None  # never carry a company name across tables
+        # A borrower's rows can run across a page break with the name printed only on the first page.
+        # Carry the last company only into the very next schedule table, and only until a row names one
+        # (a section heading such as an industry resets it, as within a table).
+        cur_company = carry_company if carry_from is not None and t_idx - carry_from <= 2 else None
+        carried_page = cur_company is not None
         units = None
         periods_here: list[str] = []
 
@@ -559,6 +564,7 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
                     else:
                         cur_industry = label
                     cur_company = None
+                    carried_page = False
                 continue
             if units is None:
                 units = table_units(table, xbrl.scale_in(els[fv_pos]) if fv_pos is not None else None, doc_units)
@@ -567,9 +573,10 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
             company = strip_footnotes(get("company")[0])
             if company:
                 cur_company = company
+                carried_page = False
             elif cur_company:
                 company = cur_company
-                notes.append("company carried from previous row")
+                notes.append("company carried from previous page" if carried_page else "company carried from previous row")
             else:
                 company = "(unknown)"
                 notes.append("no company name found")
@@ -619,6 +626,7 @@ def extract_holdings(html: str, period: Optional[str] = None) -> list[Holding]:
                 h.notes.append("cash equivalent: not part of total investments")
             holdings.append(h)
         table_periods[t_idx] = max(set(periods_here), key=periods_here.count) if periods_here else None
+        carry_company, carry_from = cur_company, t_idx
 
     # Assign every table to a schedule date (untagged continuation tables inherit the previous one),
     # then keep the requested schedule.

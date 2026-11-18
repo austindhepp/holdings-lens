@@ -257,3 +257,68 @@ def report_markdown(rep: dict, limit: int = 15) -> str:
             L.append(f"- {s['borrower']}: " + "; ".join(f"{p['fund']} {_p(p['mark'])}" for p in s["funds"])
                      + f" (spread of {s['mark_dispersion_pts']} pts)")
     return "\n".join(L) + "\n"
+
+
+def early_warnings(con, near_par: float = 0.95, cut: float = 0.90, drop_from: float = 0.95, drop_to: float = 0.90) -> dict:
+    """Marks that may be stale. Two patterns behind private credit's "par to zero" surprises:
+      1. split_marks: lenders disagree sharply on the same borrower: one still values its debt near full
+         value (>= near_par of cost) while another has cut it (<= cut), or only one has it on non-accrual.
+      2. sudden_drops: a lender's position fell from near full value (>= drop_from) to <= drop_to in one quarter.
+    Debt only, each lender's latest filing (and the one before it, for drops)."""
+    filings = _rows(con, "SELECT id, fund, period FROM filings ORDER BY fund, period")
+    by_fund = defaultdict(list)
+    for f in filings:
+        by_fund[f["fund"]].append(f)
+
+    def borrowers(fid):
+        out = defaultdict(lambda: {"fv": 0.0, "cost": 0.0, "non_accrual": False, "ids": [], "name": None})
+        q = f"SELECT * FROM v_holdings WHERE filing_id = ? AND lien IN ({','.join('?' * len(DEBT))})"
+        for r in _rows(con, q, [fid, *DEBT]):
+            b = out[r["company_key"]]
+            b["fv"] += r["fair_value_usd"] or 0
+            b["cost"] += r["cost_usd"] or 0
+            b["non_accrual"] = b["non_accrual"] or bool(r["non_accrual"])
+            b["ids"].append(r["id"])
+            b["name"] = b["name"] or r["company"]
+        for b in out.values():
+            b["mark"] = round(b["fv"] / b["cost"], 4) if b["cost"] > 0 else None
+        return out
+
+    latest = {fund: fs[-1] for fund, fs in by_fund.items()}
+    pos = {fund: borrowers(f["id"]) for fund, f in latest.items()}
+    split = []
+    for key in set().union(*[set(p) for p in pos.values()]) if pos else []:
+        held = [(fund, pos[fund][key]) for fund in pos if key in pos[fund] and pos[fund][key]["mark"] is not None]
+        if len(held) < 2:
+            continue
+        marks = [b["mark"] for _, b in held]
+        hi, lo = max(marks), min(marks)
+        reasons = []
+        if hi >= near_par and lo <= cut:
+            reasons.append(f"one lender values it at {hi:.0%} of cost, another at {lo:.0%}")
+        na = [b["non_accrual"] for _, b in held]
+        if any(na) and not all(na):
+            reasons.append("on non-accrual at one lender only")
+        if not reasons:
+            continue
+        per = [{"fund": fund, "period": latest[fund]["period"], "company_as_reported": b["name"], "mark": b["mark"],
+                "fair_value_usd": b["fv"], "cost_usd": b["cost"], "non_accrual": b["non_accrual"], "ids": b["ids"]}
+               for fund, b in sorted(held, key=lambda x: x[1]["mark"])]
+        lower, higher = per[0], per[-1]
+        split.append({"borrower": higher["company_as_reported"], "company_key": key, "gap_pts": round(100 * (hi - lo), 1),
+                      "reasons": reasons, "funds": per,
+                      # the lower mark sits in the newer filing: the higher one may simply not have caught up yet
+                      "newer_filing_is_lower": lower["period"] > higher["period"]})
+    split.sort(key=lambda s: -s["gap_pts"])
+
+    drops = []
+    for fund, fs in by_fund.items():
+        if len(fs) < 2:
+            continue
+        c = changes(con, fs[-2]["id"], fs[-1]["id"])
+        for r in c["remarked"]:
+            if r["prior_mark"] >= drop_from and r["mark"] <= drop_to:
+                drops.append(dict(r, fund=fund, from_period=fs[-2]["period"], to_period=fs[-1]["period"]))
+    drops.sort(key=lambda r: r["change_pts"])
+    return {"thresholds": {"near_par": near_par, "cut": cut, "drop_from": drop_from, "drop_to": drop_to},
+            "split_marks": split, "sudden_drops": drops}
