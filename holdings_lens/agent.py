@@ -116,7 +116,19 @@ def cited_ids(text: str) -> set[int]:
                     ids.add(a)
                 i += 1
     return ids
-ID_COL = re.compile(r"(^|_)id($|_)", re.I)
+ID_COL = re.compile(r"(^|_)ids?($|_)", re.I)  # id, ids, holding_id, holding_ids, old_id, prior_id ...
+ID_LIST = re.compile(r"^\s*\d+(\s*[,;|\s]\s*\d+)*\s*$")  # "3006,3007,3008" from GROUP_CONCAT(id)
+
+
+def _ids_in(value) -> list[int]:
+    """Holding ids in one result cell: an integer, or a GROUP_CONCAT-style list of integers."""
+    if isinstance(value, bool):
+        return []
+    if isinstance(value, int):
+        return [value]
+    if isinstance(value, str) and ID_LIST.match(value):
+        return [int(x) for x in re.findall(r"\d+", value)]
+    return []
 
 
 def _collect_ids(obj, seen: set):
@@ -157,8 +169,8 @@ class Tools:
         for r in rows if reads_holdings else []:  # only holding ids count as retrieved rows
             for k, v in r.items():
                 # id, holding_id, old_id, new_id, prior_id ... but never filing ids
-                if isinstance(v, int) and ID_COL.search(k) and "filing" not in k.lower():
-                    self.seen_ids.add(v)
+                if ID_COL.search(k) and "filing" not in k.lower():
+                    self.seen_ids.update(_ids_in(v))
         return json.dumps({"columns": cols, "rows": rows, "truncated": truncated}, default=str)
 
     def get_sources(self, ids: list[int]) -> str:

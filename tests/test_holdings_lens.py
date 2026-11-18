@@ -208,3 +208,24 @@ def test_grouped_and_range_citations_are_all_checked():
             "typo range [H1–H90000] counts only its endpoints. Filing [F2] is not a holding.")
     ids = cited_ids(text)
     assert {6663, 6664, 6665, 6770, 6771, 6772, 6773, 6774, 12, 13, 14, 5, 7, 99, 1, 90000} == ids
+
+
+def test_ids_returned_by_group_concat_count_as_retrieved(tmp_path):
+    import json
+    from holdings_lens import db
+    from holdings_lens.agent import Tools
+    from holdings_lens.extract import extract_holdings
+    import os
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    p = str(tmp_path / "t.db")
+    con = db.connect(p)
+    db.save_filing(con, "Lakeshore", "samples/lakeshore_2026q3.html",
+                   extract_holdings(open(os.path.join(root, "samples", "lakeshore_2026q3.html")).read()), period="2026-09-30")
+    con.close()
+    t = Tools(p)
+    out = json.loads(t.run_sql("SELECT company_key, GROUP_CONCAT(id) AS ids, COUNT(*) n FROM v_holdings GROUP BY company_key"))
+    expected = {int(i) for r in out["rows"] for i in str(r["ids"]).split(",")}
+    assert expected and t.seen_ids == expected
+    t2 = Tools(p)
+    t2.run_sql("SELECT filing_id, COUNT(*) AS n, 'x' AS note FROM v_holdings GROUP BY filing_id")
+    assert t2.seen_ids == set()  # filing ids and counts are never mistaken for holding ids
