@@ -27,6 +27,7 @@ API_URL = "https://api.anthropic.com/v1/messages"
 MODEL = os.environ.get("HOLDINGS_MODEL", "claude-sonnet-5-5")
 MAX_TURNS = 8
 MAX_ROWS = 200
+SHARED_LIMIT = 20  # the full overlap list can run to dozens of borrowers; the widest gaps are what matter
 
 SYSTEM = """You are a careful private-credit analyst assistant. You answer questions about
 BDC (business development company) portfolios using ONLY the holdings database and tools.
@@ -195,7 +196,12 @@ class Tools:
             if name == "compare_filings":
                 return self._analytics(analytics.changes(self.con, int(args["old_filing_id"]), int(args["new_filing_id"])))
             if name == "shared_borrowers":
-                return self._analytics(analytics.overlap(self.con))
+                o = analytics.overlap(self.con)
+                shared = o["shared_borrowers"]  # already sorted by how far apart the lenders' marks are
+                o = dict(o, total_shared=len(shared), shared_borrowers=shared[:SHARED_LIMIT],
+                         note=f"Showing the {min(SHARED_LIMIT, len(shared))} borrowers with the widest mark gaps of "
+                              f"{len(shared)} shared. Use run_sql for others.")
+                return self._analytics(o)
         except (KeyError, ValueError, TypeError) as e:
             return json.dumps({"error": f"bad arguments: {e}"})
         if name == "run_sql":
@@ -230,12 +236,30 @@ def check_citations(answer: str, tools: Tools) -> dict:
     }
 
 
+FINALIZE = ("You ran out of room before giving an answer. Using only what you have already retrieved, "
+            "give the final answer now: under 150 words, key number first, with citations. No more tool calls.")
+EMPTY_NOTE = "The answer ran past the length limit before it could be written. Please try a narrower question."
+
+
+def _add_user_text(messages: list, text: str) -> None:
+    """Append a user instruction while keeping user/assistant turns alternating."""
+    last = messages[-1] if messages else None
+    if last and last["role"] == "user":
+        if isinstance(last["content"], str):
+            last["content"] = [{"type": "text", "text": last["content"]}]
+        last["content"].append({"type": "text", "text": text})
+    else:
+        messages.append({"role": "user", "content": [{"type": "text", "text": text}]})
+
+
 TRIMMED_NOTE = "\n\n_(Answer trimmed at the length limit. Ask a narrower question for more detail.)_"
 
 
 def trim_to_complete(text: str) -> str:
     """Cut a length-limited answer back to its last complete line or sentence."""
     text = text.rstrip()
+    if not text:
+        return ""
     cut = text.rfind("\n")
     if cut < len(text) * 0.5:  # no late line break: fall back to the last sentence end
         cut = max(text.rfind(". "), text.rfind(".\n"), text.rfind(".)"))
@@ -258,7 +282,24 @@ def ask(question: str, db_path: str = DEFAULT_DB, post: Callable[[dict], dict] =
         messages.append({"role": "assistant", "content": content})
         tool_uses = [b for b in content if b.get("type") == "tool_use"]
         if resp.get("stop_reason") == "max_tokens":  # out of room: never show a sentence cut mid-word
-            answer = trim_to_complete("".join(b.get("text", "") for b in content if b.get("type") == "text"))
+            text = "".join(b.get("text", "") for b in content if b.get("type") == "text")
+            if tool_uses or len(text.strip()) < 200:
+                # It ran out while still working (often mid tool call), so there's no real answer yet.
+                # Ask once more, tools off, to answer from what it has already retrieved.
+                messages.pop()
+                if text.strip():
+                    messages.append({"role": "assistant", "content": [{"type": "text", "text": text}]})
+                _add_user_text(messages, FINALIZE)
+                resp = post({"model": model or MODEL, "max_tokens": 1500, "system": SYSTEM + style,
+                             "tools": TOOLS, "tool_choice": {"type": "none"}, "messages": messages})
+                for k in usage:
+                    usage[k] += resp.get("usage", {}).get(k, 0)
+                text = "".join(b.get("text", "") for b in resp.get("content", []) if b.get("type") == "text")
+                answer = trim_to_complete(text) if resp.get("stop_reason") == "max_tokens" else text.strip()
+            else:
+                answer = trim_to_complete(text)
+            if not answer.strip():
+                answer = EMPTY_NOTE
             break
         if not tool_uses:
             answer = "".join(b.get("text", "") for b in content if b.get("type") == "text").strip()

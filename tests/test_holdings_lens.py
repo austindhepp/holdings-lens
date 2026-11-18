@@ -229,3 +229,36 @@ def test_ids_returned_by_group_concat_count_as_retrieved(tmp_path):
     t2 = Tools(p)
     t2.run_sql("SELECT filing_id, COUNT(*) AS n, 'x' AS note FROM v_holdings GROUP BY filing_id")
     assert t2.seen_ids == set()  # filing ids and counts are never mistaken for holding ids
+
+
+def test_running_out_of_room_mid_tool_call_still_gives_an_answer(tmp_path):
+    from holdings_lens import agent
+    calls = []
+    def fake(payload):
+        calls.append(payload)
+        if len(calls) == 1:  # out of room while writing a tool call: no text yet
+            return {"content": [{"type": "tool_use", "id": "t1", "name": "run_sql", "input": {"query": "SELECT"}}],
+                    "stop_reason": "max_tokens", "usage": {"input_tokens": 5, "output_tokens": 1500}}
+        return {"content": [{"type": "text", "text": "**Short final answer.**"}], "stop_reason": "end_turn",
+                "usage": {"input_tokens": 5, "output_tokens": 20}}
+    import os
+    from holdings_lens import db
+    p = str(tmp_path / "e.db"); db.connect(p).close()
+    r = agent.ask("Which borrowers are shared?", db_path=p, post=fake)
+    assert r["answer"] == "**Short final answer.**"
+    final = calls[1]
+    assert final["tool_choice"] == {"type": "none"}
+    roles = [m["role"] for m in final["messages"]]
+    assert all(a != b for a, b in zip(roles, roles[1:]))  # turns still alternate
+    assert not any(b.get("type") == "tool_use" for m in final["messages"] if isinstance(m["content"], list) for b in m["content"])
+
+
+def test_empty_trimmed_answer_explains_itself(tmp_path):
+    from holdings_lens import agent, db
+    def fake(payload):
+        if payload.get("tool_choice"):
+            return {"content": [], "stop_reason": "max_tokens", "usage": {"input_tokens": 1, "output_tokens": 1}}
+        return {"content": [{"type": "tool_use", "id": "t1", "name": "run_sql", "input": {}}],
+                "stop_reason": "max_tokens", "usage": {"input_tokens": 1, "output_tokens": 1}}
+    p = str(tmp_path / "e.db"); db.connect(p).close()
+    assert agent.ask("q", db_path=p, post=fake)["answer"] == agent.EMPTY_NOTE
