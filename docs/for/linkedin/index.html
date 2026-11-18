@@ -78,7 +78,11 @@
   <h1>Built with LinkedIn's AI work in mind.</h1>
   <p class="lede">An AI agent for private-credit data. It extracts every holding from the schedule-of-investments tables BDCs file with the SEC, checks each number against the filing's own XBRL tags, and answers analyst questions with a verified citation for every figure.</p>
   
-  <div class="grid g4" id="kpis"></div>
+
+  <h2 style="margin-top:28px">Ask the agent</h2>
+  <div id="demo"></div>
+
+  <div class="grid g4" id="kpis" style="margin-top:28px"></div>
   <div id="realbox"></div>
 
   <h2>How it works</h2>
@@ -110,9 +114,6 @@
   <h2>Same borrower, different marks</h2>
   <p class="sub">Matching borrowers across funds (despite different spellings) shows where lenders disagree on value, a useful early signal.</p>
   <div class="card"><div id="dispersion"></div></div>
-
-  <h2>Ask the agent</h2>
-  <div id="demo"></div>
 
   <h2>Why you can trust the numbers</h2>
   <p class="sub">Measured on every bundled filing, against hand-checked answer keys and against the filings' own XBRL tags.</p>
@@ -289,7 +290,7 @@ function renderDemo() {
   const ex = D.demo.examples || [];
   let html = renderLive();
   html += D.demo.placeholder ? `<div class="banner">Preview: the agent hasn't been run for this page yet, so answers aren't shown. Everything else on this page is real output.</div>` : "";
-  if (D.ask_url) html += `<div class="tiny" style="margin:4px 0 8px">Or browse answers saved from the test set:</div>`;
+  if (D.ask_url) html += `<div class="tiny" style="margin:4px 0 8px">Or click a saved example (questions about the fictional sample funds):</div>`;
   html += `<div class="chips">` + ex.map((e, i) => `<button class="chip" data-i="${i}" aria-pressed="${i === 0}">${esc(e.question)}</button>`).join("") + `</div><div class="card" id="ans"></div>`;
   $("demo").innerHTML = html;
   const show = i => {
